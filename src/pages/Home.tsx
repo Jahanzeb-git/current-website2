@@ -7,7 +7,7 @@ import Testimonials from '../components/Testimonials';
 import ExpandableText from '../components/ExpandableText';
 import { useTheme } from '../context/ThemeContext';
 import Ai from '../Assets/images/Ai.jpg';
-import nural from './Assets/images/nural.jpg';
+import nural from '../Assets/images/nural.jpg';
 
 const completedProjects = [
   {
