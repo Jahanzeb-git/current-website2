@@ -12,8 +12,7 @@ const completedProjects = [
     title: 'AI-Powered Data Science',
     description:
       'Advanced data analysis platform using machine learning algorithms for predictive analytics.',
-    image:
-      'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&q=80',
+    image:  '/Assets/images/Ai-powered.jpg', // Update the image path
     tags: ['Python', 'TensorFlow', 'React', 'AWS'],
     demoUrl: 'https://demo.example.com',
     sourceUrl: 'https://github.com',
