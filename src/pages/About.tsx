@@ -163,7 +163,7 @@ const About = () => {
           <img
             src={profileImage}
             alt="Profile"
-            className="w-64 h-64 rounded-2xl object-cover shadow-xl cursor-pointer"
+            className="w-64 h-64 object-cover shadow-xl cursor-pointer"
             onClick={() => setShowImage(true)}
           />
         </motion.div>
