@@ -9,7 +9,7 @@ import { useTheme } from '../context/ThemeContext';
 
 const completedProjects = [
   {
-    title: 'AIA-Powered Data Science',
+    title: 'AI-Powered Data Science',
     description:
       'Advanced data analysis platform using machine learning algorithms for predictive analytics.',
     image:
