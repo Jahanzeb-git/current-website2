@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import profileImage from '../Assets/images/Me.png';
 
 const skills = [
   {
@@ -160,7 +161,7 @@ const About = () => {
           whileHover={{ scale: 1.05 }}
         >
           <img
-            src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80"
+            src={profileImage}
             alt="Profile"
             className="w-64 h-64 rounded-2xl object-cover shadow-xl cursor-pointer"
             onClick={() => setShowImage(true)}
