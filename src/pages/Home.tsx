@@ -7,6 +7,7 @@ import Testimonials from '../components/Testimonials';
 import ExpandableText from '../components/ExpandableText';
 import { useTheme } from '../context/ThemeContext';
 import Ai from '../Assets/images/Ai.jpg';
+import nural from './Assets/images/nural.jpg';
 
 const completedProjects = [
   {
@@ -22,8 +23,7 @@ const completedProjects = [
     title: 'Neural Network Visualizer',
     description:
       'Interactive visualization tool for understanding neural network architectures and data flow.',
-    image:
-      'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80',
+    image: nural, // Use the Imported image
     tags: ['D3.js', 'Python', 'TypeScript'],
     demoUrl: 'https://demo.example.com',
     sourceUrl: 'https://github.com',
