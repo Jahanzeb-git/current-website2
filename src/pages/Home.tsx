@@ -6,14 +6,14 @@ import ProgressMilestones from '../components/ProgressMilestones';
 import Testimonials from '../components/Testimonials';
 import ExpandableText from '../components/ExpandableText';
 import { useTheme } from '../context/ThemeContext';
-import AiPowered from '../Assets/images/Ai-powered.jpg';
+import Ai from '../Assets/images/Ai.jpg';
 
 const completedProjects = [
   {
     title: 'AI-Powered Data Science',
     description:
       'Advanced data analysis platform using machine learning algorithms for predictive analytics.',
-    image: AiPowered, // Use the imported image 
+    image: Ai, // Use the imported image 
     tags: ['Python', 'TensorFlow', 'React', 'AWS'],
     demoUrl: 'https://demo.example.com',
     sourceUrl: 'https://github.com',
