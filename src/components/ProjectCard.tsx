@@ -15,28 +15,18 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
-  const isMobile = window.innerWidth <= 768; // Mobile breakpoint
-
   return (
     <motion.div
-      initial={{ y: isMobile ? 0 : 50, opacity: 0 }}
+      initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: isMobile ? 0 : index * 0.1 }}
-      className={`group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden ${
-        !isMobile
-          ? 'hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
-          : ''
-      }`}
+      transition={{ delay: index * 0.1 }}
+      className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
     >
       <div className="aspect-video overflow-hidden">
         <img
           src={project.image}
           alt={project.title}
-          className={`w-full h-full object-cover ${
-            !isMobile
-              ? 'transform group-hover:scale-110 transition-transform duration-300'
-              : ''
-          }`}
+          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
         />
       </div>
       <div className="p-6">
