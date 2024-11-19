@@ -160,17 +160,18 @@ const About = () => {
           className="md:w-1/2 flex justify-center"
           whileHover={{ scale: 1.05 }}
         >
-        <div
-          className="w-64 h-64 rounded-lg overflow-hidden shadow-xl cursor-pointer"
-          onClick={() => setShowImage(true)}
-        >
-          <img
-            src={profileImage}
-            alt="Profile"
-            className="w-full h-full object-cover transform scale-150"
-            style={{ objectPosition: "center" }}
-          />
+        <div className="w-64 h-64 rounded-lg overflow-hidden shadow-xl">
+            <img
+              src={profileImage}
+              alt="Profile"
+              className="w-full h-full object-cover"
+              style={{
+              transform: "scale(1.3)", // Zoom the image itself
+              objectPosition: "center",
+              }}
+            />
         </div>
+
 
         </motion.div>
       </motion.div>
