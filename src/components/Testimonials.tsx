@@ -8,19 +8,19 @@ const testimonials = [
     content: "Jahanzeb's expertise in machine learning and data analysis transformed our business intelligence capabilities. His innovative solutions helped us achieve remarkable results.",
     author: "Sarah Chen",
     position: "CTO, TechVision Analytics",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80",
+    image: "",
   },
   {
     content: "Working with Jahanzeb was exceptional. His deep understanding of data science and ability to communicate complex concepts clearly made our project a success.",
     author: "Michael Rodriguez",
     position: "Lead Data Scientist, AI Innovations",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80",
+    image: "",
   },
   {
     content: "His contributions to our ML infrastructure were invaluable. The solutions he implemented continue to drive efficiency and insights across our organization.",
     author: "Emily Watson",
     position: "Director of Analytics, DataFlow",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80",
+    image: "",
   },
 ];
 
