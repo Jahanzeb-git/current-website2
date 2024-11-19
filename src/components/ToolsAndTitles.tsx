@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Code, Database, BarChart2, Cpu, GitHub, Cloud } from 'lucide-react';
+import { Code, Database, BarChart2, Cpu, GitBranch, Cloud } from 'lucide-react';
 
 const tools = [
   {
@@ -25,7 +25,7 @@ const tools = [
     description: 'Open-source library for machine learning.',
   },
   {
-    icon: <GitHub className="w-8 h-8" />,
+    icon: <GitBranch className="w-8 h-8" />,
     title: 'GitHub',
     description: 'Version control and collaboration platform.',
   },
