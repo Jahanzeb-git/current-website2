@@ -8,6 +8,8 @@ import ExpandableText from '../components/ExpandableText';
 import { useTheme } from '../context/ThemeContext';
 import Ai from '../Assets/images/Ai.jpg';
 import nural from '../Assets/images/nural.jpg';
+import quantum from '../Assets/images/quantum.png';
+import sustainable from '../Assets/images/sustainable.jpeg';
 
 const completedProjects = [
   {
@@ -35,8 +37,7 @@ const inProgressProjects = [
     title: 'Quantum Computing Research',
     description:
       'Exploring quantum algorithms for optimization problems in data science.',
-    image:
-      '',
+    image: quantum,
     tags: ['Quantum', 'Python', 'Research'],
     status: 'Research Phase',
   },
@@ -44,8 +45,7 @@ const inProgressProjects = [
     title: 'Sustainable AI Platform',
     description:
       'Developing an energy-efficient AI platform for environmental data analysis.',
-    image:
-      '',
+    image: sustainable,
     tags: ['Green AI', 'Cloud', 'Sustainability'],
     status: 'Development',
   },
