@@ -57,7 +57,7 @@ const Home = () => {
   const expandableTextData = {
     title: 'My Approach to Data Science',
     body: `
-      Data science blends curiosity, creativity, and problem-solving. I transform raw data into actionable insights through meticulous analysis and machine learning tools.
+      For me, data science is a mix of curiosity, creativity, and problem-solving. It’s not just about numbers but about asking the right questions, finding hidden patterns, and turning raw data into real solutions. I begin by fully understanding your goals because this clarity is key to meaningful insights. I take pride in cleaning and structuring data, ensuring it's solid before analysis begins, as a strong foundation is essential for accurate results. Once the data is ready, I dive deep into it, testing hypotheses and experimenting to uncover valuable insights using tools like machine learning and statistical models. My focus is on transforming data into practical, actionable insights that you can apply right away — not just numbers, but real solutions. I also believe that data science is always evolving, and so is my process. I constantly refine models and strategies to adapt to new data and changing needs. Ultimately, I aim to make complex problems simpler and deliver solutions that drive real-world impact. Every project is an opportunity to learn and create something meaningful.
     `,
   };
 
@@ -116,7 +116,8 @@ const Home = () => {
         </h2>
         <p className="text-md md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
           Welcome to my portfolio! I turn complex data into clear, practical
-          solutions using machine learning and data analysis.
+          solutions. With a passion for machine learning and data analysis, I
+          help businesses grow and innovate by making data work for them.
         </p>
       </motion.div>
 
