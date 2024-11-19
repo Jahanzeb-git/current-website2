@@ -164,7 +164,7 @@ const About = () => {
         src={profileImage}
         alt="Profile"
         className="w-64 h-64 object-cover rounded-lg shadow-xl cursor-pointer"
-        style={{ objectPosition: "center", transform: "scale(1.2)" }}
+        style={{ objectPosition: "center", transform: "scale(3.2)" }}
         onClick={() => setShowImage(true)}
         />
         </motion.div>
