@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import ProjectCard from '../components/ProjectCard';
-import ToolsAndTitles from '../components/ToolsAndTitles';
 import Testimonials from '../components/Testimonials';
 import ExpandableText from '../components/ExpandableText';
 import { useTheme } from '../context/ThemeContext';
@@ -137,8 +136,6 @@ const Home = () => {
         </div>
       </motion.section>
 
-      {/* ToolsAndTitles */}
-      <ToolsAndTitles />
 
       {/* In Progress Projects */}
       <motion.section
