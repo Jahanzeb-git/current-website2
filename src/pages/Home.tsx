@@ -36,7 +36,7 @@ const inProgressProjects = [
     description:
       'Exploring quantum algorithms for optimization problems in data science.',
     image:
-      'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80',
+      '',
     tags: ['Quantum', 'Python', 'Research'],
     status: 'Research Phase',
   },
@@ -45,7 +45,7 @@ const inProgressProjects = [
     description:
       'Developing an energy-efficient AI platform for environmental data analysis.',
     image:
-      'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&q=80',
+      '',
     tags: ['Green AI', 'Cloud', 'Sustainability'],
     status: 'Development',
   },
