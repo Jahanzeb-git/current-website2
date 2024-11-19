@@ -167,7 +167,7 @@ const About = () => {
           <img
             src={profileImage}
             alt="Profile"
-            className="w-full h-full object-cover transform scale-100"
+            className="w-full h-full object-cover transform scale-130"
             style={{ objectPosition: "center" }}
           />
         </div>
