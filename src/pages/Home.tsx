@@ -9,6 +9,7 @@ import Ai from '../Assets/images/Ai.jpg';
 import nural from '../Assets/images/nural.jpg';
 import quantum from '../Assets/images/quantum.png';
 import sustainable from '../Assets/images/sustainable.jpeg';
+import ToolsAndTitles from '../components/ToolsAndTitles';
 
 const completedProjects = [
   {
@@ -183,6 +184,9 @@ const Home = () => {
           ))}
         </div>
       </motion.section>
+
+      {/*Tools and Technologies section*/}
+      <ToolsAndTitles/>
 
       {/* Expandable Text */}
       <ExpandableText
