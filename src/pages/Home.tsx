@@ -7,11 +7,45 @@ import Ai from '../Assets/images/Ai.jpg';
 import nural from '../Assets/images/nural.jpg';
 
 const completedProjects = [
-  { /* ... */ },
+  {
+    title: 'AI-Powered Data Science',
+    description:
+      'Advanced data analysis platform using machine learning algorithms for predictive analytics.',
+    image: Ai, // Use the imported image 
+    tags: ['Python', 'TensorFlow', 'React', 'AWS'],
+    demoUrl: 'https://demo.example.com',
+    sourceUrl: 'https://github.com',
+  },
+  {
+    title: 'Neural Network Visualizer',
+    description:
+      'Interactive visualization tool for understanding neural network architectures and data flow.',
+    image: nural, // Use the Imported image
+    tags: ['D3.js', 'Python', 'TypeScript'],
+    demoUrl: 'https://demo.example.com',
+    sourceUrl: 'https://github.com',
+  },
 ];
 
 const inProgressProjects = [
-  { /* ... */ },
+  {
+    title: 'Quantum Computing Research',
+    description:
+      'Exploring quantum algorithms for optimization problems in data science.',
+    image:
+      'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80',
+    tags: ['Quantum', 'Python', 'Research'],
+    status: 'Research Phase',
+  },
+  {
+    title: 'Sustainable AI Platform',
+    description:
+      'Developing an energy-efficient AI platform for environmental data analysis.',
+    image:
+      'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&q=80',
+    tags: ['Green AI', 'Cloud', 'Sustainability'],
+    status: 'Development',
+  },
 ];
 
 const LazyProgressMilestones = React.lazy(() =>
