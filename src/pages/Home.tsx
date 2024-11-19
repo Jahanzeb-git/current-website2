@@ -108,7 +108,7 @@ const Home = () => {
         transition={{ delay: 0.2 }}
         className="text-center mb-16"
       >
-        <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-800 dark:text-white">
+        <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
           I am Jahanzeb
         </h1>
         <h2 className="text-xl md:text-2xl font-semibold text-gray-600 dark:text-gray-300 mb-4">
