@@ -166,7 +166,7 @@ const About = () => {
               alt="Profile"
               className="w-full h-full object-cover"
               style={{
-              transform: "scale(1.3)", // Zoom the image itself
+              transform: "scale(1.35)", // Zoom the image itself
               objectPosition: "center",
               }}
             />
