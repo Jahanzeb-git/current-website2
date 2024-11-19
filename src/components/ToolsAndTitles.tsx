@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Python, Database, BarChart2, Cpu, GitHub, Cloud } from 'lucide-react';
+import { Code, Database, BarChart2, Cpu, GitHub, Cloud } from 'lucide-react';
 
 const tools = [
   {
-    icon: <Python className="w-8 h-8" />,
+    icon: <Code className="w-8 h-8" />,  // Replaced Python with Code
     title: 'Python',
     description: 'Versatile programming language for data science.',
   },
