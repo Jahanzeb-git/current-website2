@@ -139,52 +139,60 @@ const Home = () => {
       </motion.section>
 
 
-      {/* In Progress Projects */}
-      <motion.section
-        ref={inProgressRef}
-        initial={{ opacity: 0 }}
-        animate={inProgressInView ? { opacity: 1 } : {}}
-        className="mb-20"
+{/* In Progress Projects */}
+<motion.section
+  ref={inProgressRef}
+  initial={{ opacity: 0 }}
+  animate={inProgressInView ? { opacity: 1 } : {}}
+  className="mb-20"
+>
+  <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-800 dark:text-white">
+    In Progress
+  </h2>
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+    {inProgressProjects.map((project, index) => (
+      <motion.div
+        key={index}
+        initial={{ y: 50, opacity: 0 }}
+        animate={inProgressInView ? { y: 0, opacity: 1 } : {}}
+        transition={{ delay: index * 0.2 }}
+        className="relative group bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
       >
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-800 dark:text-white">
-          In Progress
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {inProgressProjects.map((project, index) => (
-            <motion.div
-              key={index}
-              initial={{ y: 50, opacity: 0 }}
-              animate={inProgressInView ? { y: 0, opacity: 1 } : {}}
-              transition={{ delay: index * 0.2 }}
-              className="group bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
-            >
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-lg md:text-xl font-bold mb-2 text-gray-800 dark:text-white">
-                  {project.title}
-                </h3>
-                <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+        {/* Badge for Phase */}
+        <span
+          className={`absolute top-3 left-3 px-3 py-1 text-xs md:text-sm font-semibold rounded-full text-white 
+            ${project.status === 'Development' ? 'bg-emerald-500' : 'bg-blue-500'}`}
+        >
+          {project.status === 'Development' ? 'Development Phase' : 'Research Phase'}
+        </span>
+        
+        <img
+          src={project.image}
+          alt={project.title}
+          className="w-full h-48 object-cover"
+        />
+        <div className="p-4">
+          <h3 className="text-lg md:text-xl font-bold mb-2 text-gray-800 dark:text-white">
+            {project.title}
+          </h3>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4">
+            {project.description}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {project.tags.map((tag, i) => (
+              <span
+                key={i}
+                className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
-      </motion.section>
+      </motion.div>
+    ))}
+  </div>
+</motion.section>
 
       {/*Tools and Technologies section*/}
       <ToolsAndTitles/>
