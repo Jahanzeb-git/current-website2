@@ -117,6 +117,8 @@ const Contact = () => {
           </div>
         </motion.div>
       </div>
+      {/* Add the Chatbot component */}
+      <Chatbot />
     </motion.div>
   );
 };
