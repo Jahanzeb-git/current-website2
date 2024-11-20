@@ -5,26 +5,41 @@ import { Send } from 'lucide-react';
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state
 
   const handleSend = async () => {
     if (!input.trim()) return;
+
+    const sanitizedInput = input.trim();
     
     // Add the user's message to the chat
-    setMessages((prevMessages) => [...prevMessages, `You: ${input}`]);
-
-    // Call the chatbot API
-    const response = await fetch('/.netlify/functions/chatbot', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input }),
-    });
-    const data = await response.json();
-
-    // Add the chatbot's response to the chat
-    setMessages((prevMessages) => [...prevMessages, `Bot: ${data.response}`]);
-
-    // Clear the input field
+    setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
+    setLoading(true);  // Set loading to true while waiting for bot response
+
+    try {
+      // Call the chatbot API
+      const response = await fetch('/.netlify/functions/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: sanitizedInput }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch response from the API');
+      }
+
+      const data = await response.json();
+      console.log(data);  // Log the data to check its structure
+
+      // Add the chatbot's response to the chat
+      setMessages((prevMessages) => [...prevMessages, `Bot: ${data.response || 'Sorry, there was an error.'}`]);
+    } catch (error) {
+      console.error('Error fetching bot response:', error);
+      setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
+    } finally {
+      setLoading(false);  // Set loading to false after getting the response
+    }
   };
 
   return (
@@ -47,6 +62,9 @@ const Chatbot: React.FC = () => {
               {msg}
             </div>
           ))}
+          {loading && (
+            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
+          )}
         </div>
         <div className="flex items-center space-x-3">
           <input
