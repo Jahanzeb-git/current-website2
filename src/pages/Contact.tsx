@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
-import chatbot from '../chatbot';
+import Chatbot from '../components/chatbot';
 
 const Contact = () => {
   return (
