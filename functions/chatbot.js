@@ -1,4 +1,3 @@
-// Import Client from the gradio-client package
 import { Client } from "@gradio/client";
 
 // API Handler for chatbot
@@ -19,13 +18,18 @@ export async function handler(event, context) {
         top_p: 0.95,      // Control the diversity
       });
 
-      // Return the result
+      console.log(result);  // Log the full response to check the structure
+
+      // Ensure response data is correct
+      const responseText = result.data || 'Sorry, there was an issue getting the response from the AI.';
+
       return {
         statusCode: 200,
-        body: JSON.stringify({ response: result.data }), // Sending back the result data
+        body: JSON.stringify({ response: responseText }),  // Sending back the result data
       };
 
     } catch (error) {
+      console.error("Error:", error);  // Log the error for debugging
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'Error communicating with the Gradio model.' }),
