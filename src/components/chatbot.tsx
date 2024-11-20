@@ -13,7 +13,7 @@ const Chatbot: React.FC = () => {
     setMessages((prevMessages) => [...prevMessages, `You: ${input}`]);
 
     // Call the chatbot API
-    const response = await fetch('/api/chatbot', {
+    const response = await fetch('/.netlify/functions/chatbot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: input }),
