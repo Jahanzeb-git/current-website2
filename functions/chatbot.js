@@ -1,26 +1,30 @@
-const { Client } = require('gradio-client');
+// Import Client from the gradio-client package
+import { Client } from "@gradio/client";
 
 // API Handler for chatbot
-exports.handler = async (event, context) => {
+export async function handler(event, context) {
   if (event.httpMethod === 'POST') {
     const { message } = JSON.parse(event.body);
 
-    const client = new Client("jahanzebahmed/LLama"); // Replace with your model path
-
     try {
-      const result = await client.predict({
-        message: message,
-        system_message: "You are a friendly Chatbot.",
-        max_tokens: 512,
-        temperature: 0.7,
-        top_p: 0.95,
-        api_name: "/chat",
+      // Connect to the Gradio client model
+      const client = await Client.connect("jahanzebahmed/LLama");  // Replace with your model path
+
+      // Send the prediction request to the Gradio API
+      const result = await client.predict("/chat", {  // Ensure you're using the correct endpoint
+        message: message, // The input message
+        system_message: "You are a friendly Chatbot.", // System message
+        max_tokens: 512,  // Max tokens for response
+        temperature: 0.7, // Control the randomness
+        top_p: 0.95,      // Control the diversity
       });
 
+      // Return the result
       return {
         statusCode: 200,
-        body: JSON.stringify({ response: result }),
+        body: JSON.stringify({ response: result.data }), // Sending back the result data
       };
+
     } catch (error) {
       return {
         statusCode: 500,
@@ -34,4 +38,4 @@ exports.handler = async (event, context) => {
     statusCode: 405,
     body: JSON.stringify({ error: `Method ${event.httpMethod} not allowed` }),
   };
-};
+}
