@@ -1,32 +1,37 @@
-// Import necessary modules
-import fetch from 'node-fetch';
+const { Client } = require('gradio-client');
 
-export default async (req, res) => {
-  if (req.method === 'POST') {
-    const { message } = req.body;
+// API Handler for chatbot
+exports.handler = async (event, context) => {
+  if (event.httpMethod === 'POST') {
+    const { message } = JSON.parse(event.body);
+
+    const client = new Client("jahanzebahmed/LLama"); // Replace with your model path
 
     try {
-      const response = await fetch('https://api.gradio.app/jahanzebahmed/LLama/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message,
-          system_message: "You are a friendly Chatbot.",
-          max_tokens: 512,
-          temperature: 0.7,
-          top_p: 0.95,
-        }),
+      const result = await client.predict({
+        message: message,
+        system_message: "You are a friendly Chatbot.",
+        max_tokens: 512,
+        temperature: 0.7,
+        top_p: 0.95,
+        api_name: "/chat",
       });
 
-      const data = await response.json();
-      res.status(200).json({ response: data.result });
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ response: result }),
+      };
     } catch (error) {
-      res.status(500).json({ error: 'Error communicating with the chatbot API' });
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Error communicating with the Gradio model.' }),
+      };
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
+
+  // If not POST method, return 405 Method Not Allowed
+  return {
+    statusCode: 405,
+    body: JSON.stringify({ error: `Method ${event.httpMethod} not allowed` }),
+  };
 };
