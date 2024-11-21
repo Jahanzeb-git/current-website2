@@ -25,7 +25,7 @@ export async function handler(event, context) {
       const chatCompletion = await client.chatCompletion({
         model: "Qwen/Qwen2.5-Coder-32B-Instruct", // Use the model you want
         messages: messages,  // Pass the system and user messages
-        max_tokens: 500,  // Set the maximum tokens for the response
+        max_tokens: 200,  // Set the maximum tokens for the response
       });
 
       // Extract the generated message from the response
