@@ -53,7 +53,7 @@ const Chatbot: React.FC = () => {
         Chat with my BOT
       </h2>
       <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-        Ask me anything about data science!
+        Ask me anything about Data Science. Powered by Qwen3.2-32B.
       </p>
       <div className="space-y-4">
         <div className="h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
