@@ -41,6 +41,11 @@ const Chatbot: React.FC = () => {
       setLoading(false);  // Set loading to false after getting the response
     }
   };
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
+  };
 
   return (
     <motion.div
