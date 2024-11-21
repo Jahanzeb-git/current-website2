@@ -100,6 +100,9 @@ const Chatbot: React.FC = () => {
             <Send className="w-5 h-5" />
           </button>
         </div>
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
+            Bot can make mistakes. Check important info.
+          </p>
       </div>
     </motion.div>
   );
