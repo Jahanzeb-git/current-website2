@@ -13,7 +13,6 @@ const Chatbot: React.FC = () => {
 
     const sanitizedInput = input.trim();
     
-    // Add the user's message to the chat
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
     setLoading(true);
@@ -47,7 +46,12 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  // Scroll to bottom of the chat whenever a new message is added
+  // Scroll to the top when the component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Scroll to the bottom of the chat whenever a new message is added
   useEffect(() => {
     if (chatEndRef?.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -76,7 +80,6 @@ const Chatbot: React.FC = () => {
         {loading && (
           <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
         )}
-         {/* Make "Powered by" text dynamic to appear under latest message */}
         <div
           className={`text-sm text-2xl text-gray-900 dark:text-gray-100 italic opacity-70 ${
             messages.length === 0 ? 'absolute top-0' : 'relative mt-2'
