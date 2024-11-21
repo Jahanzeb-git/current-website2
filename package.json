@@ -17,7 +17,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.2",
-    "react-intersection-observer": "^9.8.1"
+    "react-intersection-observer": "^9.8.1",
+    "react-katex": "^3.0.0",
+    "katex": "^0.16.8"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",
