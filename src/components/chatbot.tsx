@@ -7,20 +7,17 @@ import 'katex/dist/katex.min.css'; // Import KaTeX CSS for styling
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); // Track loading state
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const sanitizedInput = input.trim();
-
-    // Add the user's message to the chat
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
-    setLoading(true); // Set loading to true while waiting for bot response
+    setLoading(true);
 
     try {
-      // Call the chatbot API
       const response = await fetch('/.netlify/functions/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,9 +29,8 @@ const Chatbot: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log(data); // Log the data to check its structure
+      console.log(data); // Log to check response structure
 
-      // Add the chatbot's response to the chat
       setMessages((prevMessages) => [
         ...prevMessages,
         `Bot: ${data.response || 'Sorry, there was an error.'}`,
@@ -46,7 +42,7 @@ const Chatbot: React.FC = () => {
         'Bot: Sorry, something went wrong.',
       ]);
     } finally {
-      setLoading(false); // Set loading to false after getting the response
+      setLoading(false);
     }
   };
 
@@ -68,31 +64,21 @@ const Chatbot: React.FC = () => {
       const blockMathRegex = /\$\$(.+?)\$\$/g;
       const inlineMathRegex = /\$(.+?)\$/g;
 
-      // Render block math if found
-      if (blockMathRegex.test(content)) {
-        const parts = content.split(blockMathRegex);
-        return parts.map((part, index) =>
-          index % 2 === 1 ? (
-            <BlockMath key={index}>{part.trim()}</BlockMath>
-          ) : (
-            <span key={index}>{part}</span>
-          )
+      const handledContent = content
+        .split(blockMathRegex)
+        .flatMap((blockPart, index) =>
+          index % 2 === 1
+            ? [<BlockMath key={index}>{blockPart.trim()}</BlockMath>]
+            : blockPart.split(inlineMathRegex).map((inlinePart, inlineIndex) =>
+                inlineIndex % 2 === 1 ? (
+                  <InlineMath key={`${index}.${inlineIndex}`}>{inlinePart.trim()}</InlineMath>
+                ) : (
+                  <span key={`${index}.${inlineIndex}`}>{inlinePart}</span>
+                )
+              )
         );
-      }
 
-      // Render inline math if found
-      if (inlineMathRegex.test(content)) {
-        const parts = content.split(inlineMathRegex);
-        return parts.map((part, index) =>
-          index % 2 === 1 ? (
-            <InlineMath key={index}>{part.trim()}</InlineMath>
-          ) : (
-            <span key={index}>{part}</span>
-          )
-        );
-      }
-
-      return <span>{content}</span>;
+      return <>{handledContent}</>;
     }
 
     return <span>{msg}</span>;
@@ -137,7 +123,7 @@ const Chatbot: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown} // Add the keydown event handler
+            onKeyDown={handleKeyDown}
             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             placeholder="Type your message..."
           />
