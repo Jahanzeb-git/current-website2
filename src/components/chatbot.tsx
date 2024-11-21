@@ -72,7 +72,7 @@ const Chatbot: React.FC = () => {
             <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
           )}
            {/* Add the imprinted "Powered by" text in the center */}
-            <div className="absolute text-center text-sm text-gray-400 dark:text-gray-600 italic opacity-50">
+            <div className="absolute text-center text-sm text-2xl text-gray-900 dark:text-gray-100 italic opacity-70">
                 Powered by Qwen3.2-32B.
             </div>
         </div>
