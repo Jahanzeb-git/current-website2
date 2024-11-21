@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
-import { BlockMath, InlineMath } from 'react-katex';
-import 'katex/dist/katex.min.css'; // Import KaTeX CSS for styling
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const sanitizedInput = input.trim();
+
+    // Add the user's message to the chat
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
-    setLoading(true);
+    setLoading(true); // Set loading to true while waiting for bot response
 
     try {
+      // Call the chatbot API
       const response = await fetch('/.netlify/functions/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,20 +30,15 @@ const Chatbot: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log(data); // Log to check response structure
+      console.log(data); // Log the data to check its structure
 
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        `Bot: ${data.response || 'Sorry, there was an error.'}`,
-      ]);
+      // Add the chatbot's response to the chat
+      setMessages((prevMessages) => [...prevMessages, `Bot: ${data.response || 'Sorry, there was an error.'}`]);
     } catch (error) {
       console.error('Error fetching bot response:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        'Bot: Sorry, something went wrong.',
-      ]);
+      setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false after getting the response
     }
   };
 
@@ -50,38 +46,6 @@ const Chatbot: React.FC = () => {
     if (e.key === 'Enter') {
       handleSend();
     }
-  };
-
-  const renderMessage = (msg: string) => {
-    if (msg.startsWith('You:')) {
-      return <span className="text-orange-600 opacity-80">{msg}</span>;
-    }
-
-    if (msg.startsWith('Bot:')) {
-      const content = msg.replace('Bot: ', '');
-
-      // Regular expressions to identify LaTeX parts
-      const blockMathRegex = /\$\$(.+?)\$\$/g;
-      const inlineMathRegex = /\$(.+?)\$/g;
-
-      const handledContent = content
-        .split(blockMathRegex)
-        .flatMap((blockPart, index) =>
-          index % 2 === 1
-            ? [<BlockMath key={index}>{blockPart.trim()}</BlockMath>]
-            : blockPart.split(inlineMathRegex).map((inlinePart, inlineIndex) =>
-                inlineIndex % 2 === 1 ? (
-                  <InlineMath key={`${index}.${inlineIndex}`}>{inlinePart.trim()}</InlineMath>
-                ) : (
-                  <span key={`${index}.${inlineIndex}`}>{inlinePart}</span>
-                )
-              )
-        );
-
-      return <>{handledContent}</>;
-    }
-
-    return <span>{msg}</span>;
   };
 
   return (
@@ -105,8 +69,15 @@ const Chatbot: React.FC = () => {
             </div>
           )}
           {messages.map((msg, index) => (
-            <div key={index} className="mb-2 text-gray-800 dark:text-white">
-              {renderMessage(msg)}
+            <div
+              key={index}
+              className={`mb-2 ${
+                msg.startsWith('You:')
+                  ? 'text-orange-600 opacity-80' // Style for user messages
+                  : 'text-gray-800 dark:text-white' // Style for bot messages
+              }`}
+            >
+              {msg}
             </div>
           ))}
           {loading && (
@@ -123,7 +94,7 @@ const Chatbot: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleKeyDown} // Add the keydown event handler
             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             placeholder="Type your message..."
           />
@@ -134,7 +105,7 @@ const Chatbot: React.FC = () => {
             <Send className="w-5 h-5" />
           </button>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 italic mt-4">
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
           Bot can make mistakes. Check important info.
         </p>
       </div>
