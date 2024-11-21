@@ -11,11 +11,11 @@ const Chatbot: React.FC = () => {
     if (!input.trim()) return;
 
     const sanitizedInput = input.trim();
-    
+
     // Add the user's message to the chat
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
-    setLoading(true);  // Set loading to true while waiting for bot response
+    setLoading(true); // Set loading to true while waiting for bot response
 
     try {
       // Call the chatbot API
@@ -30,7 +30,7 @@ const Chatbot: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log(data);  // Log the data to check its structure
+      console.log(data); // Log the data to check its structure
 
       // Add the chatbot's response to the chat
       setMessages((prevMessages) => [...prevMessages, `Bot: ${data.response || 'Sorry, there was an error.'}`]);
@@ -38,7 +38,7 @@ const Chatbot: React.FC = () => {
       console.error('Error fetching bot response:', error);
       setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
     } finally {
-      setLoading(false);  // Set loading to false after getting the response
+      setLoading(false); // Set loading to false after getting the response
     }
   };
 
@@ -69,16 +69,21 @@ const Chatbot: React.FC = () => {
             </div>
           )}
           {messages.map((msg, index) => (
-            <div key={index} className="mb-2 text-gray-800 dark:text-white">
+            <div
+              key={index}
+              className={`mb-2 ${
+                msg.startsWith('You:')
+                  ? 'text-orange-600 opacity-80' // Style for user messages
+                  : 'text-gray-800 dark:text-white' // Style for bot messages
+              }`}
+            >
               {msg}
             </div>
           ))}
           {loading && (
             <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
           )}
-          {
-          // Only show powered-by text at the bottom if there are messages
-          messages.length > 0 && (
+          {messages.length > 0 && (
             <div className="text-sm text-gray-900 dark:text-gray-100 italic opacity-70 mt-2">
               Powered by Qwen3.2-32B.
             </div>
@@ -89,7 +94,7 @@ const Chatbot: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}  // Add the keydown event handler
+            onKeyDown={handleKeyDown} // Add the keydown event handler
             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             placeholder="Type your message..."
           />
@@ -100,9 +105,9 @@ const Chatbot: React.FC = () => {
             <Send className="w-5 h-5" />
           </button>
         </div>
-          <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-            Bot can make mistakes. Check important info.
-          </p>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
+          Bot can make mistakes. Check important info.
+        </p>
       </div>
     </motion.div>
   );
