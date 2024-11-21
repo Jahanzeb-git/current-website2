@@ -2,7 +2,9 @@
   functions = "functions"
 
 [functions]
-  timeout = 30 
+  # Specify timeout within a block
+  [functions.timeout]
+  value = 30  # Timeout in seconds
 
 [build.environment]
   NODE_VERSION = "18"
