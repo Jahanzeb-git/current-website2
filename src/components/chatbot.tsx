@@ -67,7 +67,7 @@ const Chatbot: React.FC = () => {
       <div className="text-center text-gray-600 dark:text-gray-300 mb-6">
         Ask me anything about Data Science.
       </div>
-      <div className="relative h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+      <div className="relative h-80 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
         {messages.map((msg, index) => (
           <div key={index} className="mb-2 text-gray-800 dark:text-white">
             {msg}
