@@ -6,8 +6,8 @@ const Footer = () => {
   const [showColophon, setShowColophon] = useState(false);
 
   const socialLinks = [
-    { icon: <Github className="w-5 h-5" />, url: 'https://github.com', label: 'GitHub' },
-    { icon: <Linkedin className="w-5 h-5" />, url: 'https://linkedin.com', label: 'LinkedIn' },
+    { icon: <Github className="w-5 h-5" />, url: 'https://github.com/Jahanzeb-git', label: 'GitHub' },
+    { icon: <Linkedin className="w-5 h-5" />, url: 'https://www.linkedin.com/in/2024-jahanzebahmed/', label: 'LinkedIn' },
     { icon: <MessageSquare className="w-5 h-5" />, url: 'https://wa.me/', label: 'WhatsApp' },
   ];
 
