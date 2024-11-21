@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
+import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css'; // Import KaTeX CSS for styling
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
@@ -33,10 +35,16 @@ const Chatbot: React.FC = () => {
       console.log(data); // Log the data to check its structure
 
       // Add the chatbot's response to the chat
-      setMessages((prevMessages) => [...prevMessages, `Bot: ${data.response || 'Sorry, there was an error.'}`]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        `Bot: ${data.response || 'Sorry, there was an error.'}`,
+      ]);
     } catch (error) {
       console.error('Error fetching bot response:', error);
-      setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        'Bot: Sorry, something went wrong.',
+      ]);
     } finally {
       setLoading(false); // Set loading to false after getting the response
     }
@@ -46,6 +54,48 @@ const Chatbot: React.FC = () => {
     if (e.key === 'Enter') {
       handleSend();
     }
+  };
+
+  const renderMessage = (msg: string) => {
+    if (msg.startsWith('You:')) {
+      return <span className="text-orange-600 opacity-80">{msg}</span>;
+    }
+
+    if (msg.startsWith('Bot:')) {
+      const content = msg.replace('Bot: ', '');
+
+      // Regular expressions to identify LaTeX parts
+      const blockMathRegex = /\$\$(.+?)\$\$/g;
+      const inlineMathRegex = /\$(.+?)\$/g;
+
+      // Render block math if found
+      if (blockMathRegex.test(content)) {
+        const parts = content.split(blockMathRegex);
+        return parts.map((part, index) =>
+          index % 2 === 1 ? (
+            <BlockMath key={index}>{part.trim()}</BlockMath>
+          ) : (
+            <span key={index}>{part}</span>
+          )
+        );
+      }
+
+      // Render inline math if found
+      if (inlineMathRegex.test(content)) {
+        const parts = content.split(inlineMathRegex);
+        return parts.map((part, index) =>
+          index % 2 === 1 ? (
+            <InlineMath key={index}>{part.trim()}</InlineMath>
+          ) : (
+            <span key={index}>{part}</span>
+          )
+        );
+      }
+
+      return <span>{content}</span>;
+    }
+
+    return <span>{msg}</span>;
   };
 
   return (
@@ -69,15 +119,8 @@ const Chatbot: React.FC = () => {
             </div>
           )}
           {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${
-                msg.startsWith('You:')
-                  ? 'text-orange-600 opacity-80' // Style for user messages
-                  : 'text-gray-800 dark:text-white' // Style for bot messages
-              }`}
-            >
-              {msg}
+            <div key={index} className="mb-2 text-gray-800 dark:text-white">
+              {renderMessage(msg)}
             </div>
           ))}
           {loading && (
@@ -105,7 +148,7 @@ const Chatbot: React.FC = () => {
             <Send className="w-5 h-5" />
           </button>
         </div>
-        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
+        <p className="text-sm text-gray-600 dark:text-gray-300 italic mt-4">
           Bot can make mistakes. Check important info.
         </p>
       </div>
