@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send } from 'lucide-react';
+import { Send, BookOpen } from 'lucide-react';
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
+  const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -53,8 +54,41 @@ const Chatbot: React.FC = () => {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
     >
+      {/* Documentation Icon */}
+      <div
+        className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
+        onClick={() => setShowDocumentation(!showDocumentation)}
+      >
+        <BookOpen />
+      </div>
+
+      {/* Documentation Section */}
+      {showDocumentation && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute top-0 left-0 right-0 bottom-0 bg-white dark:bg-gray-800 bg-opacity-90 backdrop-blur-sm p-6 z-10"
+        >
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
+          <p className="text-gray-700 dark:text-gray-300">
+            This is the documentation section. Here you can find details about the chatbot's capabilities, commands, and general usage.
+            <br />
+            <br />
+            You can ask the bot anything related to Data Science, and it will try to respond based on the information it has.
+          </p>
+          <button
+            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
+            onClick={() => setShowDocumentation(false)}
+          >
+            Close Documentation
+          </button>
+        </motion.div>
+      )}
+
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         Chat with my BOT
       </h2>
