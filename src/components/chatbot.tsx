@@ -7,7 +7,6 @@ const Chatbot: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
   const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
-  const [typingMessage, setTypingMessage] = useState<string>(''); // To store the typing message
   const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
 
   const handleSend = async () => {
@@ -47,12 +46,15 @@ const Chatbot: React.FC = () => {
 
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
-    setTypingMessage(''); // Reset the typing message
-
-    // Typing effect: add one character at a time with a delay
+    
+    // Typing effect: Add one character at a time with a delay
     let i = 0;
     const interval = setInterval(() => {
-      setTypingMessage((prev) => prev + message[i]);
+      setMessages((prevMessages) => {
+        const newMessage = prevMessages.slice(); // Create a copy of the messages array
+        newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`; // Update the last message (bot's response)
+        return newMessage;
+      });
       i += 1;
       if (i === message.length) {
         clearInterval(interval); // Stop once all characters are typed
@@ -132,8 +134,8 @@ const Chatbot: React.FC = () => {
               {msg}
             </div>
           ))}
-          {isTyping && (
-            <div className="mb-2 text-gray-800 dark:text-white">Bot: {typingMessage}</div>
+          {loading && (
+            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
           )}
           {messages.length > 0 && !isTyping && (
             <div className="text-sm text-gray-900 dark:text-gray-100 italic opacity-70 mt-2">
@@ -166,3 +168,4 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+
