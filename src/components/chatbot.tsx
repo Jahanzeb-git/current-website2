@@ -71,7 +71,7 @@ const Chatbot: React.FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="absolute top-0 left-0 right-0 bottom-0 bg-white dark:bg-gray-800 bg-opacity-90 backdrop-blur-sm p-6 z-10"
+          className="absolute top-0 left-0 right-0 bottom-0 rounded-xl bg-white dark:bg-gray-800 bg-opacity-90 backdrop-blur-sm p-6 z-10"
         >
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
           <p className="text-gray-700 dark:text-gray-300">
