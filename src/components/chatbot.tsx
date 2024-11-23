@@ -7,6 +7,8 @@ const Chatbot: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
   const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
+  const [typingMessage, setTypingMessage] = useState<string>(''); // To store the typing message
+  const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -33,14 +35,30 @@ const Chatbot: React.FC = () => {
       const data = await response.json();
       console.log(data); // Log the data to check its structure
 
-      // Add the chatbot's response to the chat
-      setMessages((prevMessages) => [...prevMessages, `Bot: ${data.response || 'Sorry, there was an error.'}`]);
+      // Start the typing effect for the bot's response
+      startTypingEffect(data.response || 'Sorry, there was an error.');
     } catch (error) {
       console.error('Error fetching bot response:', error);
       setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
     } finally {
       setLoading(false); // Set loading to false after getting the response
     }
+  };
+
+  const startTypingEffect = (message: string) => {
+    setIsTyping(true);
+    setTypingMessage(''); // Reset the typing message
+
+    // Typing effect: add one character at a time with a delay
+    let i = 0;
+    const interval = setInterval(() => {
+      setTypingMessage((prev) => prev + message[i]);
+      i += 1;
+      if (i === message.length) {
+        clearInterval(interval); // Stop once all characters are typed
+        setIsTyping(false);
+      }
+    }, 50); // Delay between each character
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -71,7 +89,7 @@ const Chatbot: React.FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="absolute top-0 left-0 right-0 bottom-0 rounded-xl bg-white dark:bg-gray-800 bg-opacity-90 backdrop-blur-sm p-6 z-10"
+          className="absolute top-0 left-0 right-0 bottom-0 bg-white dark:bg-gray-800 bg-opacity-90 backdrop-blur-sm p-6 z-10 rounded-xl"
         >
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
           <p className="text-gray-700 dark:text-gray-300">
@@ -114,10 +132,10 @@ const Chatbot: React.FC = () => {
               {msg}
             </div>
           ))}
-          {loading && (
-            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
+          {isTyping && (
+            <div className="mb-2 text-gray-800 dark:text-white">Bot: {typingMessage}</div>
           )}
-          {messages.length > 0 && (
+          {messages.length > 0 && !isTyping && (
             <div className="text-sm text-gray-900 dark:text-gray-100 italic opacity-70 mt-2">
               Powered by Qwen3.2-32B.
             </div>
