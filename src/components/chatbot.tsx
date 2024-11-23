@@ -95,19 +95,29 @@ const Chatbot: React.FC = () => {
         >
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
           <p className="text-gray-700 dark:text-gray-300">
-            This is the documentation section. Here you can find details about the chatbot's capabilities, commands, and general usage.
+            This chatbot is powered by an advanced AI model tailored for Data Science-related queries. 
+            You can ask it any question regarding Data Science and it will respond with detailed answers.
             <br />
             <br />
-            You can ask the bot anything related to Data Science, and it will try to respond based on the information it has.
-          </p>
-          <button
-            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
-            onClick={() => setShowDocumentation(false)}
-          >
-            Close Documentation
-          </button>
-        </motion.div>
-      )}
+            The chatbot is hosted via a secure API service designed specifically for this purpose. 
+            You interact with the chatbot by sending your questions to our custom API endpoint, which processes 
+            the request and provides you with an answer. 
+        </p>
+        <h4 className="font-bold mt-4">How to Use:</h4>
+        <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
+          <li>Send a message to the API at <code>https://yourdomain.com/ask</code> with a key "user_message".</li>
+          <li>Receive a response from the bot with a key "response".</li>
+          <li>Example request body: <code>{"{ 'user_message': 'What is Data Science?' }"}</code></li>
+        </ul>
+        <button
+          className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
+          onClick={() => setShowDocumentation(false)}
+        >
+          Close Documentation
+        </button>
+    </motion.div>
+  )}
+
 
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         Chat with my BOT
