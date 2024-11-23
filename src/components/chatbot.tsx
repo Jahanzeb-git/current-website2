@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, BookOpen } from 'lucide-react';
 
@@ -8,6 +8,19 @@ const Chatbot: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
   const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
   const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
+
+  // Retrieve stored messages from sessionStorage when the component mounts
+  useEffect(() => {
+    const storedMessages = sessionStorage.getItem('chatMessages');
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
+    }
+  }, []);
+
+  // Store messages to sessionStorage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -46,12 +59,12 @@ const Chatbot: React.FC = () => {
 
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
-    
+
     // Typing effect: Add one character at a time with a delay
     let i = 0;
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
-        const newMessage = prevMessages.slice(); // Create a copy of the messages array
+        const newMessage = [...prevMessages]; // Create a copy of the messages array
         newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`; // Update the last message (bot's response)
         return newMessage;
       });
@@ -95,29 +108,28 @@ const Chatbot: React.FC = () => {
         >
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
           <p className="text-gray-700 dark:text-gray-300">
-            This chatbot is powered by an advanced AI model tailored for Data Science-related queries. 
+            This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
             You can ask it any question regarding Data Science and it will respond with detailed answers.
             <br />
             <br />
-            The chatbot is hosted via a secure API service designed specifically for this purpose. 
-            You interact with the chatbot by sending your questions to our custom API endpoint, which processes 
-            the request and provides you with an answer. 
-        </p>
-        <h4 className="font-bold mt-4">How to Use:</h4>
-        <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
-          <li>Send a message to the API at <code>https://yourdomain.com/ask</code> with a key "user_message".</li>
-          <li>Receive a response from the bot with a key "response".</li>
-          <li>Example request body: <code>{"{ 'user_message': 'What is Data Science?' }"}</code></li>
-        </ul>
-        <button
-          className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
-          onClick={() => setShowDocumentation(false)}
-        >
-          Close Documentation
-        </button>
-    </motion.div>
-  )}
-
+            The chatbot is hosted via a secure API service designed specifically for this purpose.
+            You interact with the chatbot by sending your questions to our custom API endpoint, which processes
+            the request and provides you with an answer.
+          </p>
+          <h4 className="font-bold mt-4">How to Use:</h4>
+          <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
+            <li>Send a message to the API at <code>https://yourdomain.com/ask</code> with a key "user_message".</li>
+            <li>Receive a response from the bot with a key "response".</li>
+            <li>Example request body: <code>{"{ 'user_message': 'What is Data Science?' }"}</code></li>
+          </ul>
+          <button
+            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
+            onClick={() => setShowDocumentation(false)}
+          >
+            Close Documentation
+          </button>
+        </motion.div>
+      )}
 
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         Chat with my BOT
@@ -178,3 +190,4 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+
