@@ -5,9 +5,11 @@ import { Send, BookOpen } from 'lucide-react';
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); // Track loading state
-  const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
-  const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showDocumentation, setShowDocumentation] = useState<boolean>(false);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [apiKeyExpiration, setApiKeyExpiration] = useState<number | null>(null); // Timer for API key expiration
 
   // Retrieve stored messages from sessionStorage when the component mounts
   useEffect(() => {
@@ -30,14 +32,18 @@ const Chatbot: React.FC = () => {
     // Add the user's message to the chat
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
-    setLoading(true); // Set loading to true while waiting for bot response
+    setLoading(true);
 
     try {
-      // Call the chatbot API
-      const response = await fetch('/.netlify/functions/chatbot', {
+      // Call the chatbot API (app_response endpoint)
+      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/app_response', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: sanitizedInput }),
+        body: JSON.stringify({
+          prompt: sanitizedInput,
+          system_prompt: "You are Engineer.",
+          tokens: 500,
+        }),
       });
 
       if (!response.ok) {
@@ -45,7 +51,7 @@ const Chatbot: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log(data); // Log the data to check its structure
+      console.log(data);
 
       // Start the typing effect for the bot's response
       startTypingEffect(data.response || 'Sorry, there was an error.');
@@ -53,24 +59,22 @@ const Chatbot: React.FC = () => {
       console.error('Error fetching bot response:', error);
       setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
     } finally {
-      setLoading(false); // Set loading to false after getting the response
+      setLoading(false);
     }
   };
 
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
-
-    // Typing effect: Add one character at a time with a delay
     let i = 0;
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
-        const newMessage = [...prevMessages]; // Create a copy of the messages array
-        newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`; // Update the last message (bot's response)
+        const newMessage = [...prevMessages];
+        newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`;
         return newMessage;
       });
       i += 1;
       if (i === message.length) {
-        clearInterval(interval); // Stop once all characters are typed
+        clearInterval(interval);
         setIsTyping(false);
       }
     }, 50); // Delay between each character
@@ -81,6 +85,31 @@ const Chatbot: React.FC = () => {
       handleSend();
     }
   };
+
+  const generateApiKey = async () => {
+    try {
+      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/generate_api', {
+        method: 'GET', // Assuming it's a GET request based on the description
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate API key');
+      }
+
+      const data = await response.json();
+      setApiKey(data["One Time API key"]);
+      setApiKeyExpiration(Date.now() + 60000); // API key expires in 60 seconds
+    } catch (error) {
+      console.error('Error generating API key:', error);
+    }
+  };
+
+  // Timer to remove API key after 60 seconds
+  useEffect(() => {
+    if (apiKeyExpiration && Date.now() > apiKeyExpiration) {
+      setApiKey(null); // Remove the API key after the expiration time
+    }
+  }, [apiKeyExpiration]);
 
   return (
     <motion.div
@@ -118,10 +147,26 @@ const Chatbot: React.FC = () => {
           </p>
           <h4 className="font-bold mt-4">How to Use:</h4>
           <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
-            <li>Send a message to the API at <code>https://yourdomain.com/ask</code> with a key "user_message".</li>
-            <li>Receive a response from the bot with a key "response".</li>
-            <li>Example request body: <code>{"{ 'user_message': 'What is Data Science?' }"}</code></li>
+            <li>Send a message to the API at <code>https://jahanzebahmed22.pythonanywhere.com/app_response</code> with a key "prompt" and "system_prompt".</li>
+            <li>For the /response endpoint, you need to pass an API key in the header. Use the button below to generate your API key.</li>
           </ul>
+
+          {/* API Key Generation Button */}
+          <button
+            onClick={generateApiKey}
+            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
+          >
+            Generate API Key
+          </button>
+
+          {apiKey && (
+            <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+              <p className="font-bold">Your API Key:</p>
+              <p className="text-sm">{apiKey}</p>
+              <p className="text-xs text-red-500">This API key is valid for 60 seconds.</p>
+            </div>
+          )}
+
           <button
             className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
             onClick={() => setShowDocumentation(false)}
@@ -149,8 +194,8 @@ const Chatbot: React.FC = () => {
               key={index}
               className={`mb-2 ${
                 msg.startsWith('You:')
-                  ? 'text-orange-600 opacity-80' // Style for user messages
-                  : 'text-gray-800 dark:text-white' // Style for bot messages
+                  ? 'text-orange-600 opacity-80'
+                  : 'text-gray-800 dark:text-white'
               }`}
             >
               {msg}
@@ -165,25 +210,22 @@ const Chatbot: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="mt-4 flex items-center space-x-2">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown} // Add the keydown event handler
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
-            placeholder="Type your message..."
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message"
+            className="w-full p-2 border rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white focus:outline-none"
           />
           <button
             onClick={handleSend}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full p-2 transition-colors"
+            className="bg-emerald-600 text-white p-2 rounded-md"
           >
-            <Send className="w-5 h-5" />
+            <Send size={20} />
           </button>
         </div>
-        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
-          Bot can make mistakes. Check important info.
-        </p>
       </div>
     </motion.div>
   );
