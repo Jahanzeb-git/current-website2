@@ -8,8 +8,6 @@ const Chatbot: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
   const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
   const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
-  const [apiKey, setApiKey] = useState<string | null>(null); // Store the API key
-  const [apiKeyExpiration, setApiKeyExpiration] = useState<number | null>(null); // Store expiration time for the API key
 
   // Retrieve stored messages from sessionStorage when the component mounts
   useEffect(() => {
@@ -24,37 +22,6 @@ const Chatbot: React.FC = () => {
     sessionStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
-  // Function to handle API key generation
-  const handleGenerateApiKey = async () => {
-    try {
-      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/generate_api', {
-        method: 'GET',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate API key');
-      }
-
-      const data = await response.json();
-      const { "One Time API key": generatedKey, "Generation Time": generationTime } = data;
-
-      // Set the API key and set expiration time to 1 minute from now
-      setApiKey(generatedKey);
-      setApiKeyExpiration(Date.now() + 60000); // 1 minute = 60000 milliseconds
-
-      // Store the API key for 1 minute
-      setTimeout(() => {
-        setApiKey(null); // Clear API key after 1 minute
-      }, 60000);
-
-      alert(`API Key Generated! \nKey: ${generatedKey}\nGenerated at: ${generationTime}`);
-    } catch (error) {
-      console.error('Error generating API key:', error);
-      alert('Failed to generate API key');
-    }
-  };
-
-  // Function to handle sending messages to the bot
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -66,17 +33,11 @@ const Chatbot: React.FC = () => {
     setLoading(true); // Set loading to true while waiting for bot response
 
     try {
-      if (!apiKey) {
-        alert('Please generate an API key first!');
-        setLoading(false);
-        return;
-      }
-
-      // Call the /response API
-      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/response', {
+      // Call the chatbot API
+      const response = await fetch('/.netlify/functions/chatbot', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
-        body: JSON.stringify({ prompt: sanitizedInput, system_prompt: 'Answer as a chatbot' }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: sanitizedInput }),
       });
 
       if (!response.ok) {
@@ -87,7 +48,7 @@ const Chatbot: React.FC = () => {
       console.log(data); // Log the data to check its structure
 
       // Start the typing effect for the bot's response
-      startTypingEffect(data.output || 'Sorry, there was an error.');
+      startTypingEffect(data.response || 'Sorry, there was an error.');
     } catch (error) {
       console.error('Error fetching bot response:', error);
       setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
@@ -163,19 +124,6 @@ const Chatbot: React.FC = () => {
           </ul>
           <button
             className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
-            onClick={handleGenerateApiKey}
-          >
-            Generate API Key
-          </button>
-          {apiKey && (
-            <div className="mt-4 text-gray-900 dark:text-white">
-              <strong>Your API Key:</strong> {apiKey}
-              <br />
-              <small>Expires in 1 minute</small>
-            </div>
-          )}
-          <button
-            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
             onClick={() => setShowDocumentation(false)}
           >
             Close Documentation
@@ -192,34 +140,50 @@ const Chatbot: React.FC = () => {
       <div className="space-y-4 relative">
         <div className="h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
           {messages.length === 0 && (
-            <div className="absolute top-2 left-2 text-sm text-gray-900 dark:text-white">
-              Chat history will appear here.
+            <div className="absolute top-2 left-2 text-sm text-gray-900 dark:text-gray-100 italic opacity-70">
+              Powered by Qwen3.2-32B.
             </div>
           )}
           {messages.map((msg, index) => (
-            <p key={index} className="text-gray-700 dark:text-gray-300 mb-2">
+            <div
+              key={index}
+              className={`mb-2 ${
+                msg.startsWith('You:')
+                  ? 'text-orange-600 opacity-80' // Style for user messages
+                  : 'text-gray-800 dark:text-white' // Style for bot messages
+              }`}
+            >
               {msg}
-            </p>
+            </div>
           ))}
-          {loading && <p className="text-gray-700 dark:text-gray-300">Bot is typing...</p>}
-          {isTyping && <p className="text-gray-700 dark:text-gray-300">...</p>}
+          {loading && (
+            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
+          )}
+          {messages.length > 0 && !isTyping && (
+            <div className="text-sm text-gray-900 dark:text-gray-100 italic opacity-70 mt-2">
+              Powered by Qwen3.2-32B.
+            </div>
+          )}
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center space-x-3">
           <input
             type="text"
-            className="flex-1 p-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-lg"
-            placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleKeyDown} // Add the keydown event handler
+            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+            placeholder="Type your message..."
           />
           <button
             onClick={handleSend}
-            className="ml-2 p-2 bg-emerald-600 text-white rounded-full"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full p-2 transition-colors"
           >
-            <Send />
+            <Send className="w-5 h-5" />
           </button>
         </div>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
+          Bot can make mistakes. Check important info.
+        </p>
       </div>
     </motion.div>
   );
