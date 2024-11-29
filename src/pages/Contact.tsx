@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import Chatbot from '../components/chatbot';
-import test from '../components/test';
 
 const Contact = () => {
   return (
@@ -119,8 +118,8 @@ const Contact = () => {
           </div>
         </motion.div>
       </div>
-      {/* Add the test component */}
-      <test />
+      {/* Add the chatbot component */}
+      <chatbot />
     </motion.div>
   );
 };
