@@ -1,192 +1,130 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Send, BookOpen } from 'lucide-react';
+import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
+import Chatbot from '../components/chatbot';
+import test from '../components/test';
 
-const Chatbot: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); // Track loading state
-  const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
-  const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
-
-  // Retrieve stored messages from sessionStorage when the component mounts
-  useEffect(() => {
-    const storedMessages = sessionStorage.getItem('chatMessages');
-    if (storedMessages) {
-      setMessages(JSON.parse(storedMessages));
-    }
-  }, []);
-
-  // Store messages to sessionStorage whenever they change
-  useEffect(() => {
-    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
-  }, [messages]);
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const sanitizedInput = input.trim();
-
-    // Add the user's message to the chat
-    setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
-    setInput('');
-    setLoading(true); // Set loading to true while waiting for bot response
-
-    try {
-      // Call the chatbot API
-      const response = await fetch('/.netlify/functions/chatbot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: sanitizedInput }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch response from the API');
-      }
-
-      const data = await response.json();
-      console.log(data); // Log the data to check its structure
-
-      // Start the typing effect for the bot's response
-      startTypingEffect(data.response || 'Sorry, there was an error.');
-    } catch (error) {
-      console.error('Error fetching bot response:', error);
-      setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
-    } finally {
-      setLoading(false); // Set loading to false after getting the response
-    }
-  };
-
-  const startTypingEffect = (message: string) => {
-    setIsTyping(true);
-
-    // Typing effect: Add one character at a time with a delay
-    let i = 0;
-    const interval = setInterval(() => {
-      setMessages((prevMessages) => {
-        const newMessage = [...prevMessages]; // Create a copy of the messages array
-        newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`; // Update the last message (bot's response)
-        return newMessage;
-      });
-      i += 1;
-      if (i === message.length) {
-        clearInterval(interval); // Stop once all characters are typed
-        setIsTyping(false);
-      }
-    }, 50); // Delay between each character
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSend();
-    }
-  };
-
+const Contact = () => {
   return (
     <motion.div
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="max-w-4xl mx-auto px-4 pt-32 pb-16"
     >
-      {/* Documentation Icon */}
-      <div
-        className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
-        onClick={() => setShowDocumentation(!showDocumentation)}
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="text-center mb-16"
       >
-        <BookOpen />
-      </div>
-
-      {/* Documentation Section */}
-      {showDocumentation && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="absolute top-0 left-0 right-0 bottom-0 bg-white dark:bg-gray-800 bg-opacity-90 backdrop-blur-sm p-6 z-10 rounded-xl"
-        >
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
-          <p className="text-gray-700 dark:text-gray-300">
-            This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
-            You can ask it any question regarding Data Science and it will respond with detailed answers.
-            <br />
-            <br />
-            The chatbot is hosted via a secure API service designed specifically for this purpose.
-            You interact with the chatbot by sending your questions to our custom API endpoint, which processes
-            the request and provides you with an answer.
-          </p>
-          <h4 className="font-bold mt-4">How to Use:</h4>
-          <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
-            <li>Send a message to the API at <code>https://yourdomain.com/ask</code> with a key "user_message".</li>
-            <li>Receive a response from the bot with a key "response".</li>
-            <li>Example request body: <code>{"{ 'user_message': 'What is Data Science?' }"}</code></li>
-          </ul>
-          <button
-            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
-            onClick={() => setShowDocumentation(false)}
-          >
-            Close Documentation
-          </button>
-        </motion.div>
-      )}
-
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
-        Chat with my BOT
-      </h2>
-      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-        Ask me anything about Data Science.
-      </p>
-      <div className="space-y-4 relative">
-        <div className="h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-          {messages.length === 0 && (
-            <div className="absolute top-2 left-2 text-sm text-gray-900 dark:text-gray-100 italic opacity-70">
-              Powered by Qwen3.2-32B.
-            </div>
-          )}
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${
-                msg.startsWith('You:')
-                  ? 'text-orange-600 opacity-80' // Style for user messages
-                  : 'text-gray-800 dark:text-white' // Style for bot messages
-              }`}
-            >
-              {msg}
-            </div>
-          ))}
-          {loading && (
-            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
-          )}
-          {messages.length > 0 && !isTyping && (
-            <div className="text-sm text-gray-900 dark:text-gray-100 italic opacity-70 mt-2">
-              Powered by Qwen3.2-32B.
-            </div>
-          )}
-        </div>
-        <div className="flex items-center space-x-3">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown} // Add the keydown event handler
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
-            placeholder="Type your message..."
-          />
-          <button
-            onClick={handleSend}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full p-2 transition-colors"
-          >
-            <Send className="w-5 h-5" />
-          </button>
-        </div>
-        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
-          Bot can make mistakes. Check important info.
+        <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
+          Get in Touch
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-300">
+          Let's discuss how we can work together on your next data science project.
         </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <motion.div
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+        >
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+            Send a Message
+          </h2>
+          <form className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+              />
+            </div>
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Message
+              </label>
+              <textarea
+                id="message"
+                rows={4}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              Send Message
+            </button>
+          </form>
+        </motion.div>
+
+        <motion.div
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="space-y-6"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+              Connect
+            </h2>
+            <div className="space-y-4">
+              <a
+                href="mailto:contact@example.com"
+                className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              >
+                <Mail className="w-5 h-5" />
+                <span>contact@example.com</span>
+              </a>
+              <a
+                href="#"
+                className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              >
+                <Github className="w-5 h-5" />
+                <span>GitHub</span>
+              </a>
+              <a
+                href="#"
+                className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              >
+                <Linkedin className="w-5 h-5" />
+                <span>LinkedIn</span>
+              </a>
+              <a
+                href="#"
+                className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              >
+                <Twitter className="w-5 h-5" />
+                <span>Twitter</span>
+              </a>
+            </div>
+          </div>
+        </motion.div>
       </div>
+      {/* Add the Chatbot component */}
+      <Chatbot />
+      {/* Add the test component */}
+      <test />
     </motion.div>
   );
 };
 
-export default Chatbot;
+export default Contact;
