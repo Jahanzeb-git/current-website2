@@ -163,15 +163,6 @@ const Chatbot: React.FC = () => {
                 }`}
               </pre>
             </li>
-            <li>
-              <strong>Example Headers:</strong>
-              <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
-                {`{
-                "Content-Type": "application/json",
-                "x-api-key": "879479379749734597"
-                }`}
-              </pre>
-            </li>
           </ul>
 
 
