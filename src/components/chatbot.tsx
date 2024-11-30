@@ -145,7 +145,8 @@ const Chatbot: React.FC = () => {
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">Endpoint</h3>
           <p className="text-gray-700 dark:text-gray-300">
             https://jahanzebahmed22.pythonanywhere.com/response, <b>Method</b>: POST, <b>Header</b>: x-api-key: your_api_key_here,
-            <b>Expected Request Body</b>: <b></>"prompt"</b>></>:"What is a Capital of Pakistan?", <b></>"system_prompt"</b></>:"you are Intellegent", <b>"tokens"</b>:500
+            <b>Expected Request Body</b>: <b>"prompt"</b>:"What is a Capital of Pakistan?", <b>"system_prompt"</b>:"you are Intellegent", <b>"tokens"</b>:500
+          </p>
 
           <div className="mt-4">
             <motion.button
