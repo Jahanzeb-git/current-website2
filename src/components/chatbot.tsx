@@ -8,8 +8,6 @@ const Chatbot: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
   const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
   const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
-  const [apiKey, setApiKey] = useState<string | null>(null); // Store API key
-  const [apiKeyTimeout, setApiKeyTimeout] = useState<NodeJS.Timeout | null>(null); // Store timeout reference
 
   // Retrieve stored messages from sessionStorage when the component mounts
   useEffect(() => {
@@ -84,27 +82,6 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const handleGenerateApiKey = async () => {
-    try {
-      const response = await fetch('/.netlify/functions/chatbot?action=generate_api');
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to generate API key');
-      }
-      const data = await response.json();
-      setApiKey(data.apiKey);
-
-      const timeout = setTimeout(() => {
-        setApiKey(null);
-        setApiKeyTimeout(null);
-      }, 60000);
-      setApiKeyTimeout(timeout);
-    } catch (error) {
-      console.error('Error generating API key:', error);
-      setMessages((prevMessages) => [...prevMessages, `Error: ${error.message}`]);
-    }
-  };
-
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -132,45 +109,21 @@ const Chatbot: React.FC = () => {
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
           <p className="text-gray-700 dark:text-gray-300">
             This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
-            You can interact with the API using the following steps:
+            You can ask it any question regarding Data Science and it will respond with detailed answers.
+            <br />
+            <br />
+            The chatbot is hosted via a secure API service designed specifically for this purpose.
+            You interact with the chatbot by sending your questions to our custom API endpoint, which processes
+            the request and provides you with an answer.
           </p>
-          <h4 className="font-bold mt-4">Endpoint:</h4>
-          <p className="text-gray-700 dark:text-gray-300">
-            <code>https://jahanzebahmed22.pythonanywhere.com/response</code>
-          </p>
-          <h4 className="font-bold mt-4">Input Structure:</h4>
-          <pre className="bg-gray-200 dark:bg-gray-700 p-4 rounded-lg text-sm">
-            {`{
-  "user_message": "Your question here"
-}`}
-          </pre>
-          <h4 className="font-bold mt-4">Headers:</h4>
-          <pre className="bg-gray-200 dark:bg-gray-700 p-4 rounded-lg text-sm">
-            {`{
-  "Authorization": "Bearer YOUR_API_KEY"
-}`}
-          </pre>
+          <h4 className="font-bold mt-4">How to Use:</h4>
+          <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
+            <li>Send a message to the API at <code>https://yourdomain.com/ask</code> with a key "user_message".</li>
+            <li>Receive a response from the bot with a key "response".</li>
+            <li>Example request body: <code>{"{ 'user_message': 'What is Data Science?' }"}</code></li>
+          </ul>
           <button
-            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full w-full"
-            onClick={handleGenerateApiKey}
-          >
-            Generate API Key
-          </button>
-          {apiKey && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mt-4 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-sm"
-            >
-              <p className="text-green-600 dark:text-green-400">Here is your API key:</p>
-              <code className="break-words">{apiKey}</code>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">This key will disappear after 60 seconds.</p>
-            </motion.div>
-          )}
-          <button
-            className="mt-4 bg-red-500 text-white px-4 py-2 rounded-full w-full"
+            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
             onClick={() => setShowDocumentation(false)}
           >
             Close Documentation
@@ -196,8 +149,8 @@ const Chatbot: React.FC = () => {
               key={index}
               className={`mb-2 ${
                 msg.startsWith('You:')
-                  ? 'text-orange-600 opacity-80'
-                  : 'text-gray-800 dark:text-white' 
+                  ? 'text-orange-600 opacity-80' // Style for user messages
+                  : 'text-gray-800 dark:text-white' // Style for bot messages
               }`}
             >
               {msg}
@@ -217,31 +170,20 @@ const Chatbot: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 px-4 py
-                    )}
-        </div>
-        <div className="flex items-center space-x-3">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none"
-            placeholder="Type your message here..."
+            onKeyDown={handleKeyDown} // Add the keydown event handler
+            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+            placeholder="Type your message..."
           />
           <button
             onClick={handleSend}
-            disabled={loading}
-            className={`flex items-center justify-center w-12 h-12 rounded-full ${
-              loading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full p-2 transition-colors"
           >
-            <Send />
+            <Send className="w-5 h-5" />
           </button>
         </div>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
+          Bot can make mistakes. Check important info.
+        </p>
       </div>
     </motion.div>
   );
