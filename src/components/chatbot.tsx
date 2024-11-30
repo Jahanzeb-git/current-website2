@@ -145,23 +145,21 @@ const Chatbot: React.FC = () => {
           <h4 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">How to Use</h4>
           <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mt-2">
             <li>
-              API Endpoint: <code>jahanzebahmed22.pythonanywhere.com/response</code>
+              API Endpoint: <p>jahanzebahmed22.pythonanywhere.com/response</p>
             </li>
             <li>
-              Expected Request Type: <code>POST</code>
+              Expected Request Type: <p>POST</p>
             </li>
             <li>
-              API Key in Header: <code>'x-api-key': '879479379749734597'</code>
+              API Key in Header: <p>'x-api-key': '879479379749734597'</p>
             </li>
             <li>
               <strong>Expected Request Body:</strong>
-              <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
-                    {`{
+              <p className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
                 "prompt": "who are you?",
                 "system_prompt": "You are Intelligent",
                 "tokens": 500
-                }`}
-              </pre>
+              </p>
             </li>
           </ul>
 
