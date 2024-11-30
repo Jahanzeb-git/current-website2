@@ -120,9 +120,7 @@ const Chatbot: React.FC = () => {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative ${
-        showDocumentation ? 'min-h-screen' : 'min-h-[500px]'
-      }`}
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
     >
       <div
         className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
@@ -141,8 +139,8 @@ const Chatbot: React.FC = () => {
         >
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
           <p className="text-gray-700 dark:text-gray-300">
-            This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
-            You can ask it any question regarding Data Science and it will respond with detailed answers.
+              This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
+              You can ask it any question regarding Data Science and it will respond with detailed answers.
           </p>
           <h4 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">How to Use</h4>
           <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mt-2">
@@ -158,23 +156,25 @@ const Chatbot: React.FC = () => {
             <li>
               <strong>Expected Request Body:</strong>
               <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
-                {`{
-  "prompt": "who are you?",
-  "system_prompt": "You are Intelligent",
-  "tokens": 500
-}`}
+                    {`{
+                "prompt": "who are you?",
+                "system_prompt": "You are Intelligent",
+                "tokens": 500
+                }`}
               </pre>
             </li>
             <li>
               <strong>Example Headers:</strong>
               <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
                 {`{
-  "Content-Type": "application/json",
-  "x-api-key": "879479379749734597"
-}`}
+                "Content-Type": "application/json",
+                "x-api-key": "879479379749734597"
+                }`}
               </pre>
             </li>
           </ul>
+
+
           <div className="mt-4">
             <motion.button
               onClick={generateApiKey}
@@ -184,6 +184,7 @@ const Chatbot: React.FC = () => {
             >
               Generate API Key
             </motion.button>
+
             {apiKey && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
@@ -200,6 +201,7 @@ const Chatbot: React.FC = () => {
                 <span className="text-sm text-gray-600">({apiKeyTimer}s)</span>
               </motion.div>
             )}
+
             {error && (
               <motion.p
                 initial={{ opacity: 0, x: 10 }}
@@ -211,6 +213,7 @@ const Chatbot: React.FC = () => {
               </motion.p>
             )}
           </div>
+
           <button
             className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
             onClick={() => setShowDocumentation(false)}
@@ -223,51 +226,51 @@ const Chatbot: React.FC = () => {
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         Chat with my BOT
       </h2>
-      <p className="text-center mb-4 text-gray-600 dark:text-gray-300">
-        Ask anything about Data Science, and the bot will respond!
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
+        Ask me anything about Data Science.
       </p>
-      <motion.div
-        className={`min-h-[200px] bg-gray-100 dark:bg-gray-700 p-4 rounded-lg overflow-y-auto shadow-inner ${
-          showDocumentation ? 'max-h-[500px]' : 'max-h-[300px]'
-        }`}
-      >
-        {messages.length === 0 ? (
-          <p className="text-gray-500 text-center">No messages yet. Start the conversation!</p>
-        ) : (
-          messages.map((message, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: idx * 0.05 }}
-              className="mb-2 text-gray-800 dark:text-gray-200"
+      <div className="space-y-4 relative">
+        <div className="h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+          {messages.length === 0 && (
+            <div className="absolute top-2 left-2 text-sm text-gray-900 dark:text-gray-100 italic opacity-70">
+              Powered by Qwen3.2-32B.
+            </div>
+          )}
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`mb-2 ${
+                msg.startsWith('You:')
+                  ? 'text-orange-600 opacity-80'
+                  : 'text-gray-800 dark:text-white'
+              }`}
             >
-              {message}
-            </motion.div>
-          ))
-        )}
-      </motion.div>
-      {isTyping && (
-        <div className="text-center text-gray-500 dark:text-gray-400 mt-2">Bot is typing...</div>
-      )}
-      <div className="mt-4 flex items-center">
-        <input
-          type="text"
-          placeholder="Type your message..."
-          className="flex-grow bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white p-3 rounded-l-lg focus:outline-none"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <motion.button
-          onClick={handleSend}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-3 rounded-r-lg"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          disabled={loading}
-        >
-          <Send />
-        </motion.button>
+              {msg}
+            </div>
+          ))}
+          {loading && (
+            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
+          )}
+        </div>
+        <div className="flex items-center space-x-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message..."
+            className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+          />
+          <button
+            className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+            onClick={handleSend}
+          >
+            <Send />
+          </button>
+        </div>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
+          Bot can make mistakes. Check important info.
+        </p>
       </div>
     </motion.div>
   );
