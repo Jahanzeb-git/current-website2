@@ -88,12 +88,12 @@ const Chatbot: React.FC = () => {
     try {
       const response = await fetch('/.netlify/functions/chatbot?action=generate_api');
       if (!response.ok) {
-        throw new Error('Failed to generate API key');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to generate API key');
       }
       const data = await response.json();
       setApiKey(data.apiKey);
 
-      // Set a timeout to clear the API key after 60 seconds
       const timeout = setTimeout(() => {
         setApiKey(null);
         setApiKeyTimeout(null);
@@ -101,7 +101,7 @@ const Chatbot: React.FC = () => {
       setApiKeyTimeout(timeout);
     } catch (error) {
       console.error('Error generating API key:', error);
-      setApiKey(null);
+      setMessages((prevMessages) => [...prevMessages, `Error: ${error.message}`]);
     }
   };
 
@@ -151,7 +151,7 @@ const Chatbot: React.FC = () => {
 }`}
           </pre>
           <button
-            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
+            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full w-full"
             onClick={handleGenerateApiKey}
           >
             Generate API Key
@@ -165,12 +165,12 @@ const Chatbot: React.FC = () => {
               className="mt-4 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-sm"
             >
               <p className="text-green-600 dark:text-green-400">Here is your API key:</p>
-              <code>{apiKey}</code>
+              <code className="break-words">{apiKey}</code>
               <p className="text-gray-500 dark:text-gray-400 mt-2">This key will disappear after 60 seconds.</p>
             </motion.div>
           )}
           <button
-            className="mt-4 bg-red-500 text-white px-4 py-2 rounded-full"
+            className="mt-4 bg-red-500 text-white px-4 py-2 rounded-full w-full"
             onClick={() => setShowDocumentation(false)}
           >
             Close Documentation
@@ -196,8 +196,8 @@ const Chatbot: React.FC = () => {
               key={index}
               className={`mb-2 ${
                 msg.startsWith('You:')
-                  ? 'text-orange-600 opacity-80' // Style for user messages
-                  : 'text-gray-800 dark:text-white' // Style for bot messages
+                  ? 'text-orange-600 opacity-80'
+                  : 'text-gray-800 dark:text-white' 
               }`}
             >
               {msg}
@@ -217,13 +217,22 @@ const Chatbot: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown} // Add the keydown event handler
+            onKeyDown={handleKeyDown}
+            className="flex-1 px-4 py
+                    )}
+        </div>
+        <div className="flex items-center space-x-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none"
             placeholder="Type your message here..."
           />
           <button
             onClick={handleSend}
-            disabled={loading} // Disable the send button while loading
+            disabled={loading}
             className={`flex items-center justify-center w-12 h-12 rounded-full ${
               loading
                 ? 'bg-gray-400 cursor-not-allowed'
@@ -239,4 +248,3 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
-
