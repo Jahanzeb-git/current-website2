@@ -5,11 +5,12 @@ import { Send, BookOpen } from 'lucide-react';
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); // Track loading state
-  const [showDocumentation, setShowDocumentation] = useState<boolean>(false); // State for documentation
-  const [isTyping, setIsTyping] = useState<boolean>(false); // Track typing status
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showDocumentation, setShowDocumentation] = useState<boolean>(false);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [apiKey, setApiKey] = useState<string | null>(null); // Track the API key state
+  const [error, setError] = useState<string | null>(null); // Track error state for API key generation
 
-  // Retrieve stored messages from sessionStorage when the component mounts
   useEffect(() => {
     const storedMessages = sessionStorage.getItem('chatMessages');
     if (storedMessages) {
@@ -17,7 +18,6 @@ const Chatbot: React.FC = () => {
     }
   }, []);
 
-  // Store messages to sessionStorage whenever they change
   useEffect(() => {
     sessionStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
@@ -26,14 +26,11 @@ const Chatbot: React.FC = () => {
     if (!input.trim()) return;
 
     const sanitizedInput = input.trim();
-
-    // Add the user's message to the chat
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
-    setLoading(true); // Set loading to true while waiting for bot response
+    setLoading(true);
 
     try {
-      // Call the chatbot API
       const response = await fetch('/.netlify/functions/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,40 +42,55 @@ const Chatbot: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log(data); // Log the data to check its structure
-
-      // Start the typing effect for the bot's response
       startTypingEffect(data.response || 'Sorry, there was an error.');
     } catch (error) {
       console.error('Error fetching bot response:', error);
       setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
     } finally {
-      setLoading(false); // Set loading to false after getting the response
+      setLoading(false);
     }
   };
 
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
-
-    // Typing effect: Add one character at a time with a delay
     let i = 0;
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
-        const newMessage = [...prevMessages]; // Create a copy of the messages array
-        newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`; // Update the last message (bot's response)
+        const newMessage = [...prevMessages];
+        newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`;
         return newMessage;
       });
       i += 1;
       if (i === message.length) {
-        clearInterval(interval); // Stop once all characters are typed
+        clearInterval(interval);
         setIsTyping(false);
       }
-    }, 50); // Delay between each character
+    }, 50);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSend();
+    }
+  };
+
+  // Function to generate API key
+  const generateApiKey = async () => {
+    try {
+      const response = await fetch('/.netlify/functions/chatbot?action=generate_api', {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate API key');
+      }
+
+      const data = await response.json();
+      setApiKey(data.apiKey); // Store the generated API key
+      setError(null); // Clear any previous error
+    } catch (error) {
+      setApiKey(null); // Clear the API key if generation failed
+      setError('API Key already generated or failed to generate.'); // Set the error message
     }
   };
 
@@ -89,7 +101,6 @@ const Chatbot: React.FC = () => {
       transition={{ delay: 0.5 }}
       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
     >
-      {/* Documentation Icon */}
       <div
         className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
         onClick={() => setShowDocumentation(!showDocumentation)}
@@ -97,7 +108,6 @@ const Chatbot: React.FC = () => {
         <BookOpen />
       </div>
 
-      {/* Documentation Section */}
       {showDocumentation && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -122,6 +132,29 @@ const Chatbot: React.FC = () => {
             <li>Receive a response from the bot with a key "response".</li>
             <li>Example request body: <code>{"{ 'user_message': 'What is Data Science?' }"}</code></li>
           </ul>
+
+          {/* Generate API Key Button */}
+          <div className="mt-4">
+            <button
+              onClick={generateApiKey}
+              className="bg-emerald-600 text-white px-4 py-2 rounded-full"
+            >
+              Generate API Key
+            </button>
+
+            {apiKey && (
+              <p className="mt-2 text-green-600 dark:text-green-400">
+                API Key: {apiKey}
+              </p>
+            )}
+
+            {error && (
+              <p className="mt-2 text-red-600 dark:text-red-400">
+                Error: {error}
+              </p>
+            )}
+          </div>
+
           <button
             className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
             onClick={() => setShowDocumentation(false)}
@@ -149,8 +182,8 @@ const Chatbot: React.FC = () => {
               key={index}
               className={`mb-2 ${
                 msg.startsWith('You:')
-                  ? 'text-orange-600 opacity-80' // Style for user messages
-                  : 'text-gray-800 dark:text-white' // Style for bot messages
+                  ? 'text-orange-600 opacity-80'
+                  : 'text-gray-800 dark:text-white'
               }`}
             >
               {msg}
@@ -170,7 +203,7 @@ const Chatbot: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown} // Add the keydown event handler
+            onKeyDown={handleKeyDown}
             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             placeholder="Type your message..."
           />
@@ -190,3 +223,4 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+
