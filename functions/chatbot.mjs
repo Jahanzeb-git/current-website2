@@ -36,29 +36,59 @@ export async function handler(event, context) {
 
     // Handle API Key generation
     if (httpMethod === 'GET' && queryStringParameters.action === 'generate_api') {
-      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/generate_api');
+      try {
+        const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/generate_api');
+        const data = await response.json();
 
-      if (!response.ok) throw new Error(`Failed to generate API key: ${response.statusText}`);
-      const data = await response.json();
+        if (response.status === 403) {
+          // Handle API key already generated
+          return {
+            statusCode: 403,
+            body: JSON.stringify({
+              error: data.error,
+              message: data.message,
+            }),
+          };
+        }
 
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ apiKey: data.apiKey }),
-      };
+        if (response.ok) {
+          // Handle successful API key generation
+          return {
+            statusCode: 200,
+            body: JSON.stringify({
+              apiKey: data['One Time API key'],
+              generationTime: data['Generation Time'],
+            }),
+          };
+        }
+
+        // Handle unexpected status codes
+        throw new Error(`Unexpected status code: ${response.status}`);
+      } catch (error) {
+        console.error('Error during API key generation:', error.message);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            error: 'Internal server error',
+            details: error.message,
+          }),
+        };
+      }
     }
 
-    // Handle unsupported methods
+    // Return a 405 response for unsupported HTTP methods
     return {
       statusCode: 405,
       body: JSON.stringify({ error: `Method ${httpMethod} not allowed.` }),
     };
   } catch (error) {
     console.error('Error:', error.message);
-
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error', details: error.message }),
+      body: JSON.stringify({
+        error: 'Internal server error',
+        details: error.message,
+      }),
     };
   }
 }
-
