@@ -120,7 +120,7 @@ const Chatbot: React.FC = () => {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative min-h-[600px]"
     >
       <div
         className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
