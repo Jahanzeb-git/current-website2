@@ -142,27 +142,10 @@ const Chatbot: React.FC = () => {
               This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
               You can ask it any question regarding Data Science and it will respond with detailed answers.
           </p>
-          <h4 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">How to Use</h4>
-          <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mt-2">
-            <li>
-              API Endpoint: <p>jahanzebahmed22.pythonanywhere.com/response</p>
-            </li>
-            <li>
-              Expected Request Type: <p>POST</p>
-            </li>
-            <li>
-              API Key in Header: <p>'x-api-key': '879479379749734597'</p>
-            </li>
-            <li>
-              <strong>Expected Request Body:</strong>
-              <p className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
-                "prompt": "who are you?",
-                "system_prompt": "You are Intelligent",
-                "tokens": 500
-              </p>
-            </li>
-          </ul>
-
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">Endpoint</h3>
+          <p className="text-gray-700 dark:text-gray-300">
+            https://jahanzebahmed22.pythonanywhere.com/response, <b>Method</b>: POST, <b>Header</b>: x-api-key: your_api_key_here,
+            <b>Expected Request Body</b>: <b></>"prompt"</b>></>:"What is a Capital of Pakistan?", <b></>"system_prompt"</b></>:"you are Intellegent", <b>"tokens"</b>:500
 
           <div className="mt-4">
             <motion.button
