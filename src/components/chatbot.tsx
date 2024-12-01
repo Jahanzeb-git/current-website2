@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, BookOpen, ClipboardCopy } from 'lucide-react';
+import { GoogleLogin } from 'react-google-login';
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
@@ -11,6 +12,7 @@ const Chatbot: React.FC = () => {
   const [apiKey, setApiKey] = useState<string | null>(null); // Track the API key state
   const [error, setError] = useState<string | null>(null); // Track error state for API key generation
   const [apiKeyTimer, setApiKeyTimer] = useState<number | null>(null); // Timer for API key expiration
+  const [googleToken, setGoogleToken] = useState<string | null>(null); // Track Google token state
 
   useEffect(() => {
     const storedMessages = sessionStorage.getItem('chatMessages');
@@ -88,18 +90,23 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  // Function to generate API key
-  const generateApiKey = async () => {
+  // Function to handle Google login success and send token to backend
+  const handleLoginSuccess = async (response: any) => {
+    const token = response.tokenId;
+    setGoogleToken(token); // Store the Google token
+
     try {
-      const response = await fetch('/.netlify/functions/chatbot?action=generate_api', {
-        method: 'GET',
+      const res = await fetch('/.netlify/functions/chatbot?action=generate_api', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ google_token: token }), // Send token to backend
       });
 
-      if (!response.ok) {
+      if (!res.ok) {
         throw new Error('Failed to generate API key');
       }
 
-      const data = await response.json();
+      const data = await res.json();
       setApiKey(data.apiKey); // Store the generated API key
       setApiKeyTimer(60); // Start a 60-second timer
       setError(null); // Clear any previous error
@@ -107,6 +114,10 @@ const Chatbot: React.FC = () => {
       setApiKey(null); // Clear the API key if generation failed
       setError('API Key already generated or failed to generate.'); // Set the error message
     }
+  };
+
+  const handleLoginFailure = (response: any) => {
+    setError('Google login failed. Please try again.');
   };
 
   const copyToClipboard = () => {
