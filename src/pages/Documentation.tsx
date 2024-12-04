@@ -1,36 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ClipboardCopy } from 'lucide-react';
 
 const Documentation: React.FC = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [apiKeyTimer, setApiKeyTimer] = useState<number | null>(null);
+  const [email, setEmail] = useState<string>('');
+  const [showEmailPopup, setShowEmailPopup] = useState<boolean>(false);
+  const [isPolling, setIsPolling] = useState<boolean>(false);
+  const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
 
-  const generateApiKey = async () => {
+  const openEmailPopup = () => setShowEmailPopup(true);
+  const closeEmailPopup = () => {
+    setShowEmailPopup(false);
+    setEmail('');
+    setError(null);
+  };
+
+  const handleEmailSubmit = async () => {
     try {
-      const response = await fetch('/.netlify/functions/chatbot?action=generate_api', {
-        method: 'GET',
+      const response = await fetch('/.netlify/functions/api', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate API key');
+        throw new Error('Failed to send verification email.');
       }
 
       const data = await response.json();
-      setApiKey(data.apiKey);
-      setApiKeyTimer(60);
-      setError(null);
-    } catch (error) {
-      setApiKey(null);
-      setError('API Key already generated or failed to generate.');
+      setVerificationMessage(data.message); // Expected: "Verification email sent, please check your inbox"
+      setIsPolling(true); // Start polling after verification email is sent
+    } catch (err) {
+      setError('Failed to send verification email.');
+    } finally {
+      closeEmailPopup();
     }
   };
 
-  const copyToClipboard = () => {
-    if (apiKey) {
-      navigator.clipboard.writeText(apiKey);
+  const pollForApiKey = async () => {
+    try {
+      const response = await fetch(`/.netlify/functions/api?email=${email}`, {
+        method: 'GET',
+      });
+
+      const data = await response.json();
+
+      if (response.status === 200) {
+        setApiKey(data.apiKey);
+        setIsPolling(false); // Stop polling on success
+        setVerificationMessage(null);
+      } else if (response.status === 403) {
+        setError(data.message); // "API key already generated."
+        setIsPolling(false);
+        setVerificationMessage(null);
+      }
+    } catch (err) {
+      setError('Error polling for API key.');
+      setIsPolling(false);
     }
+  };
+
+  useEffect(() => {
+    let pollingInterval: NodeJS.Timeout | null = null;
+
+    if (isPolling) {
+      pollingInterval = setInterval(pollForApiKey, 3000); // Poll every 3 seconds
+    } else if (pollingInterval) {
+      clearInterval(pollingInterval);
+    }
+
+    return () => {
+      if (pollingInterval) clearInterval(pollingInterval);
+    };
+  }, [isPolling]);
+
+  const copyToClipboard = () => {
+    if (apiKey) navigator.clipboard.writeText(apiKey);
   };
 
   return (
@@ -51,50 +98,23 @@ const Documentation: React.FC = () => {
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
           This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
-          You can ask it any question regarding Data Science and it will respond with detailed answers.
         </p>
       </motion.div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <h4 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">How to Use</h4>
         <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mt-2">
-          <li>
-            API Endpoint: <code>jahanzebahmed22.pythonanywhere.com/response</code>
-          </li>
-          <li>
-            Expected Request Type: <code>POST</code>
-          </li>
-          <li>
-            API Key in Header: <code>'x-api-key': '879479379749734597'</code>
-          </li>
-          <li>
-            <strong>Expected Request Body:</strong>
-            <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
-              {`{
-                "prompt": "who are you?",
-                "system_prompt": "You are Intelligent",
-                "tokens": 500
-              }`}
-            </pre>
-          </li>
-          <li>
-            <strong>Example Headers:</strong>
-            <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
-              {`{
-                "Content-Type": "application/json",
-                "x-api-key": "879479379749734597"
-              }`}
-            </pre>
-          </li>
+          {/* Documentation details */}
         </ul>
 
         <div className="mt-4">
           <motion.button
-            onClick={generateApiKey}
+            onClick={openEmailPopup}
             className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg"
           >
             Generate API Key
           </motion.button>
+
           {apiKey && (
             <div className="mt-4">
               <div className="flex items-center space-x-2">
@@ -111,17 +131,47 @@ const Documentation: React.FC = () => {
               </div>
             </div>
           )}
+
           {error && <p className="text-red-600 mt-2">{error}</p>}
-          {apiKeyTimer !== null && apiKeyTimer > 0 && (
-            <p className="text-sm text-gray-500 mt-2">
-              Your API key will expire in {apiKeyTimer} seconds.
-            </p>
+          {verificationMessage && (
+            <p className="text-green-600 mt-2">{verificationMessage}</p>
           )}
         </div>
       </div>
+
+      {/* Email Input Popup */}
+      {showEmailPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+            <h4 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Enter Your Email
+            </h4>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your Email"
+              className="w-full p-3 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                onClick={closeEmailPopup}
+                className="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEmailSubmit}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
 
 export default Documentation;
-
