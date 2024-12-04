@@ -8,11 +8,20 @@ const Chatbot: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [showDocumentation, setShowDocumentation] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [apiKey, setApiKey] = useState<string | null>(null); // Store API Key
-  const [email, setEmail] = useState<string>(''); // Store Email
-  const [showEmailInput, setShowEmailInput] = useState<boolean>(false); // Show email input
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [apiKey, setApiKey] = useState<string | null>(null); // Track the API key state
+  const [error, setError] = useState<string | null>(null); // Track error state for API key generation
   const [apiKeyTimer, setApiKeyTimer] = useState<number | null>(null); // Timer for API key expiration
+
+  useEffect(() => {
+    const storedMessages = sessionStorage.getItem('chatMessages');
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
+    }
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -29,6 +38,7 @@ const Chatbot: React.FC = () => {
 
   const handleSend = async () => {
     if (!input.trim()) return;
+
     const sanitizedInput = input.trim();
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
     setInput('');
@@ -78,20 +88,11 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const handleGenerateApiKey = async () => {
-    // Validate email input
-    if (!email) {
-      setError('Please enter a valid email.');
-      return;
-    }
-    setShowEmailInput(false); // Hide email input after submit
-    setLoading(true);
-    
+  // Function to generate API key
+  const generateApiKey = async () => {
     try {
       const response = await fetch('/.netlify/functions/chatbot?action=generate_api', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        method: 'GET',
       });
 
       if (!response.ok) {
@@ -99,33 +100,13 @@ const Chatbot: React.FC = () => {
       }
 
       const data = await response.json();
-      setMessages((prevMessages) => [...prevMessages, `Bot: A verification email has been sent to ${email}. Please check your inbox.`]);
-      pollForApiKeyVerification(); // Start polling for the API key
+      setApiKey(data.apiKey); // Store the generated API key
+      setApiKeyTimer(60); // Start a 60-second timer
+      setError(null); // Clear any previous error
     } catch (error) {
-      setError('Error generating API key. Try again later.');
-    } finally {
-      setLoading(false);
+      setApiKey(null); // Clear the API key if generation failed
+      setError('API Key already generated or failed to generate.'); // Set the error message
     }
-  };
-
-  // Poll the /return_api endpoint to check API key verification status
-  const pollForApiKeyVerification = async () => {
-    const interval = setInterval(async () => {
-      const response = await fetch('/.netlify/functions/chatbot?action=return_api', {
-        method: 'GET',
-      });
-
-      if (response.status === 200 || response.status === 403) {
-        clearInterval(interval); // Stop polling
-        const data = await response.json();
-        if (data.apiKey) {
-          setApiKey(data.apiKey); // Show the API key to the user
-          setApiKeyTimer(60); // Start the 60s timer
-        } else {
-          setError('API Key generation failed. Please try again.');
-        }
-      }
-    }, 5000); // Poll every 5 seconds
   };
 
   const copyToClipboard = () => {
@@ -158,26 +139,45 @@ const Chatbot: React.FC = () => {
         >
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h3>
           <p className="text-gray-700 dark:text-gray-300">
-            This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
+              This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
+              You can ask it any question regarding Data Science and it will respond with detailed answers.
           </p>
           <h4 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">How to Use</h4>
           <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mt-2">
-            <li>API Endpoint: <code>jahanzebahmed22.pythonanywhere.com/response</code></li>
-            <li>Expected Request Type: <code>POST</code></li>
-            <li>API Key in Header: <code>'x-api-key': '879479379749734597'</code></li>
-            <li><strong>Expected Request Body:</strong></li>
-            <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
-              {{
+            <li>
+              API Endpoint: <code>jahanzebahmed22.pythonanywhere.com/response</code>
+            </li>
+            <li>
+              Expected Request Type: <code>POST</code>
+            </li>
+            <li>
+              API Key in Header: <code>'x-api-key': '879479379749734597'</code>
+            </li>
+            <li>
+              <strong>Expected Request Body:</strong>
+              <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
+                    {`{
                 "prompt": "who are you?",
                 "system_prompt": "You are Intelligent",
                 "tokens": 500
-              }}
-            </pre>
+                }`}
+              </pre>
+            </li>
+            <li>
+              <strong>Example Headers:</strong>
+              <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded mt-2 text-sm">
+                {`{
+                "Content-Type": "application/json",
+                "x-api-key": "879479379749734597"
+                }`}
+              </pre>
+            </li>
           </ul>
+
 
           <div className="mt-4">
             <motion.button
-              onClick={() => setShowEmailInput(true)}
+              onClick={generateApiKey}
               className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-full"
               whileHover={{ scale: 1.0 }}
               whileTap={{ scale: 0.9 }}
@@ -185,63 +185,93 @@ const Chatbot: React.FC = () => {
               Generate API Key
             </motion.button>
 
-            {showEmailInput && (
-              <div className="mt-4 flex flex-col">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white mb-2"
+            {apiKey && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-2 flex items-center space-x-2 text-green-600 dark:text-green-400"
+              >
+                <span>API Key: {apiKey}</span>
+                <ClipboardCopy
+                  className="w-5 h-5 cursor-pointer"
+                  onClick={copyToClipboard}
+                  title="Copy to clipboard"
                 />
-                <motion.button
-                  onClick={handleGenerateApiKey}
-                  className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-full"
-                  whileHover={{ scale: 1.0 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  Continue
-                </motion.button>
-                {error && <p className="text-red-500 mt-2">{error}</p>}
-              </div>
+                <span className="text-sm text-gray-600">({apiKeyTimer}s)</span>
+              </motion.div>
+            )}
+
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-2 text-red-600 dark:text-red-400"
+              >
+                Error: {error}
+              </motion.p>
             )}
           </div>
+
+          <button
+            className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-full"
+            onClick={() => setShowDocumentation(false)}
+          >
+            Close Documentation
+          </button>
         </motion.div>
       )}
 
-      <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-6">
-        {messages.map((message, index) => (
-          <div key={index} className="text-lg text-gray-700 dark:text-white">
-            {message}
-          </div>
-        ))}
-        {loading && <div className="text-lg text-gray-700 dark:text-white">Bot is typing...</div>}
+      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
+        Chat with my BOT
+      </h2>
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
+        Ask me anything about Data Science.
+      </p>
+      <div className="space-y-4 relative">
+        <div className="h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+          {messages.length === 0 && (
+            <div className="absolute top-2 left-2 text-sm text-gray-900 dark:text-gray-100 italic opacity-70">
+              Powered by Qwen3.2-32B.
+            </div>
+          )}
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`mb-2 ${
+                msg.startsWith('You:')
+                  ? 'text-orange-600 opacity-80'
+                  : 'text-gray-800 dark:text-white'
+              }`}
+            >
+              {msg}
+            </div>
+          ))}
+          {loading && (
+            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
+          )}
+        </div>
+        <div className="flex items-center space-x-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message..."
+            className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+          />
+          <button
+            className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+            onClick={handleSend}
+          >
+            <Send />
+          </button>
+        </div>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
+          Bot can make mistakes. Check important info.
+        </p>
       </div>
-
-      {apiKey && (
-        <div className="bg-gray-200 dark:bg-gray-600 p-4 rounded-lg mb-6 text-center">
-          <h3 className="text-xl text-gray-800 dark:text-white">Your API Key</h3>
-          <p className="mt-2">{apiKey}</p>
-          <p className="mt-2">Expires in: {apiKeyTimer}s</p>
-          <motion.button
-            onClick={copyToClipboard}
-            className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white px-4 py-2 rounded-full mt-2"
-          >
-            <ClipboardCopy /> Copy API Key
-          </motion.button>
-        </div>
-      )}
-
-      {!apiKey && !showEmailInput && (
-        <div className="mt-4">
-          <motion.button
-            onClick={() => setShowDocumentation(true)}
-            className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white px-4 py-2 rounded-full"
-          >
-            <BookOpen /> Documentation
-          </motion.button>
-        </div>
-      )}
     </motion.div>
   );
 };
