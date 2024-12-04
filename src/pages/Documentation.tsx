@@ -1,4 +1,3 @@
-// Documentation.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ClipboardCopy } from 'lucide-react';
@@ -92,39 +91,31 @@ const Documentation: React.FC = () => {
         <div className="mt-4">
           <motion.button
             onClick={generateApiKey}
-            className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-full"
-            whileHover={{ scale: 1.0 }}
-            whileTap={{ scale: 0.9 }}
+            className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg"
           >
             Generate API Key
           </motion.button>
-
           {apiKey && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mt-2 flex items-center space-x-2 text-green-600 dark:text-green-400"
-            >
-              <span>API Key: {apiKey}</span>
-              <ClipboardCopy
-                className="w-5 h-5 cursor-pointer"
-                onClick={copyToClipboard}
-                title="Copy to clipboard"
-              />
-              <span className="text-sm text-gray-600">({apiKeyTimer}s)</span>
-            </motion.div>
+            <div className="mt-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700 dark:text-gray-300">API Key:</span>
+                <input
+                  type="text"
+                  value={apiKey}
+                  readOnly
+                  className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md text-sm text-gray-800 dark:text-white w-64"
+                />
+                <button onClick={copyToClipboard} className="text-blue-500">
+                  <ClipboardCopy />
+                </button>
+              </div>
+            </div>
           )}
-
-          {error && (
-            <motion.p
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mt-2 text-red-600 dark:text-red-400"
-            >
-              Error: {error}
-            </motion.p>
+          {error && <p className="text-red-600 mt-2">{error}</p>}
+          {apiKeyTimer !== null && apiKeyTimer > 0 && (
+            <p className="text-sm text-gray-500 mt-2">
+              Your API key will expire in {apiKeyTimer} seconds.
+            </p>
           )}
         </div>
       </div>
@@ -133,3 +124,4 @@ const Documentation: React.FC = () => {
 };
 
 export default Documentation;
+
