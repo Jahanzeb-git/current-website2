@@ -1,9 +1,9 @@
 export async function handler(event, context) {
-  const { httpMethod, queryStringParameters } = event;
+  const { httpMethod, queryStringParameters, body } = event;
 
   try {
     // Handle chatbot conversation
-    if (httpMethod === 'POST') {
+    if (httpMethod === 'POST' && event.path === '/chatbot') {
       const { message } = JSON.parse(event.body || '{}');
 
       if (!message) {
@@ -15,7 +15,7 @@ export async function handler(event, context) {
 
       const payload = {
         prompt: message,
-        system_prompt: "You are Jahanzeb Ahmed, a 22-year-old Data Scientist...",
+        system_prompt: "Role play a person named 'Jahanzeb Ahmed', a 21 Years old Data Scientist Based in Karachi, Pakistan. with 2 Years of Experience in Ml and DS. Don't Mention that you're roleplaying in the conversation ever.",
         tokens: 500,
       };
 
@@ -35,45 +35,72 @@ export async function handler(event, context) {
     }
 
     // Handle API Key generation
-    if (httpMethod === 'GET' && queryStringParameters.action === 'generate_api') {
-      try {
-        const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/generate_api');
-        const data = await response.json();
+    if (httpMethod === 'POST' && event.path === '/generate_api') {
+      const { email } = JSON.parse(event.body || '{}');
 
-        if (response.status === 403) {
-          // Handle API key already generated
-          return {
-            statusCode: 403,
-            body: JSON.stringify({
-              error: data.error,
-              message: data.message,
-            }),
-          };
-        }
-
-        if (response.ok) {
-          // Handle successful API key generation
-          return {
-            statusCode: 200,
-            body: JSON.stringify({
-              apiKey: data['One Time API key'],
-              generationTime: data['Generation Time'],
-            }),
-          };
-        }
-
-        // Handle unexpected status codes
-        throw new Error(`Unexpected status code: ${response.status}`);
-      } catch (error) {
-        console.error('Error during API key generation:', error.message);
+      if (!email) {
         return {
-          statusCode: 500,
+          statusCode: 400,
+          body: JSON.stringify({ error: 'Email is required' }),
+        };
+      }
+
+      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/generate_api', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
           body: JSON.stringify({
-            error: 'Internal server error',
-            details: error.message,
+            error: data.error,
+            message: data.message,
           }),
         };
       }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Verification email sent' }),
+      };
+    }
+
+    // Handle API Key retrieval
+    if (httpMethod === 'GET' && event.path === '/return_api') {
+      const { email } = queryStringParameters;
+
+      if (!email) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: 'Email is required' }),
+        };
+      }
+
+      const response = await fetch(`https://jahanzebahmed22.pythonanywhere.com/return_api?email=${encodeURIComponent(email)}`);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          body: JSON.stringify({
+            error: data.error,
+            message: data.message,
+          }),
+        };
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          apiKey: data.api_key,
+          generationTime: data.generation_date,
+        }),
+      };
     }
 
     // Return a 405 response for unsupported HTTP methods
