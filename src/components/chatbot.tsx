@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, BookOpen } from 'lucide-react';
-import Documentation from '../Documentation';
+import Documentation from '../components/Documentation';
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
