@@ -1,4 +1,3 @@
-// Chatbot.tsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, BookOpen } from 'lucide-react';
@@ -142,3 +141,4 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+
