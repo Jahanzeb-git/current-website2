@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, BookOpen } from 'lucide-react';
-import Documentation from '../components/Documentation';
+import { useNavigate } from 'react-router-dom';
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [showDocumentation, setShowDocumentation] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedMessages = sessionStorage.getItem('chatMessages');
@@ -83,12 +83,10 @@ const Chatbot: React.FC = () => {
     >
       <div
         className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
-        onClick={() => setShowDocumentation(!showDocumentation)}
+        onClick={() => navigate('/documentation')}
       >
         <BookOpen />
       </div>
-
-      {showDocumentation && <Documentation onClose={() => setShowDocumentation(false)} />}
 
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         Chat with my BOT
