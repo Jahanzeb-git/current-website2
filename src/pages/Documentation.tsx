@@ -61,39 +61,49 @@ const Documentation: React.FC = () => {
   };
 
   const startPolling = async () => {
-    setPolling(true);
-    try {
-      for (let i = 0; i < 10; i++) {
-        const response = await fetch(
-          `/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`
-        );
-        const data = await response.json();
+  setPolling(true);
+  try {
+    for (let i = 0; i < 10; i++) {
+      const response = await fetch(
+        `/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`
+      );
 
-        if (response.ok) {
+      if (response.ok) {
+        // Attempt to parse JSON only if the response is not empty
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
           setApiKey(data.api_key);
           setApiKeyTimer(60);
           localStorage.setItem('apiKey', data.api_key);
           localStorage.setItem('apiKeyTimer', '60');
           setPolling(false);
           return;
-        } else if (response.status === 403) {
-          setApiKey(data.message || 'API key already generated.');
-          setApiKeyTimer(60);
-          localStorage.setItem('apiKey', data.message || 'API key already generated.');
-          localStorage.setItem('apiKeyTimer', '60');
-          setPolling(false);
-          return;
-        } else if (response.status === 400) {
-          await new Promise((resolve) => setTimeout(resolve, 3000));
+        } else {
+          throw new Error("Unexpected response format from server.");
         }
+      } else if (response.status === 403) {
+        const data = await response.json();
+        setApiKey(data.message || 'API key already generated.');
+        setApiKeyTimer(60);
+        localStorage.setItem('apiKey', data.message || 'API key already generated.');
+        localStorage.setItem('apiKeyTimer', '60');
+        setPolling(false);
+        return;
+      } else if (response.status === 400) {
+        // Retry after a delay for timeout error
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      } else {
+        throw new Error("Server returned an unexpected error.");
       }
-      setError('Verification timed out. Please try again later.');
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during polling.');
-    } finally {
-      setPolling(false);
     }
-  };
+    setError('Verification timed out. Please try again later.');
+  } catch (err: any) {
+    setError(err.message || 'An error occurred during polling.');
+  } finally {
+    setPolling(false);
+  }
+};
 
   const copyToClipboard = () => {
     if (apiKey) {
