@@ -166,6 +166,9 @@ const Documentation: React.FC = () => {
           <p className="text-gray-700 dark:text-gray-300">
             <b>Header :</b> x-api-key: your-api-key
           </p>
+           <p className="text-gray-700 dark:text-gray-300">
+            <b>Rate Limitation:</b> 100/day and 10/minute
+          </p>
           <p>.</p>
           <p className="text-green-700 dark:text-gray-300">
             Click the button below to generate one time API key.
