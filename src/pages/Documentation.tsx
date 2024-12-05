@@ -76,7 +76,7 @@ const Documentation: React.FC = () => {
       try {
         data = await response.json();
       } catch (e) {
-        setError('Failed to parse server response. Please try again.');
+        setError('Varification Time out! Please try again.');
         setPolling(false);
         return;
       }
