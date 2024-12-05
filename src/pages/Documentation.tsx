@@ -1,16 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ClipboardCopy } from 'lucide-react';
+import { useHistory } from 'react-router-dom'; // Added to handle redirection back to the same tab
 
 const Documentation: React.FC = () => {
   const [email, setEmail] = useState<string>(localStorage.getItem('userEmail') || '');
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState<boolean>(false);
+  const history = useHistory(); // Used for programmatically redirecting
 
   useEffect(() => {
     const stepStatus = localStorage.getItem('stepStatus');
-    if (stepStatus === 'verification-sent' && email) {
+    const queryParams = new URLSearchParams(window.location.search);
+    const emailFromUrl = queryParams.get('email');
+    const verified = queryParams.get('verified');
+
+    // If verified=true is in the query params and we have an email, handle it
+    if (emailFromUrl && verified === 'true') {
+      // Ensure email is the same as the query parameter
+      if (emailFromUrl !== email) {
+        setEmail(emailFromUrl); // Update email if different from localStorage
+        localStorage.setItem('userEmail', emailFromUrl); // Store email in localStorage
+      }
+      // Proceed to start polling or handle other actions
+      setPolling(true);
+      checkVerificationStatus(emailFromUrl);
+    } else if (stepStatus === 'verification-sent' && email) {
       startPolling(); // Resume polling if verification was in progress
     }
   }, [email]);
@@ -69,9 +85,35 @@ const Documentation: React.FC = () => {
     }
   };
 
+  const checkVerificationStatus = async (email: string) => {
+    try {
+      const response = await fetch(`/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setApiKey(data.api_key);
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('stepStatus');
+        setPolling(false);
+      } else if (response.status === 403) {
+        setApiKey(data.message || 'API key already generated.');
+        setPolling(false);
+      }
+    } catch (err) {
+      setError('Error checking verification status.');
+    }
+  };
+
   const copyToClipboard = () => {
     if (apiKey) {
       navigator.clipboard.writeText(apiKey);
+    }
+  };
+
+  // Redirect to the same tab when verification is done
+  const handleRedirect = () => {
+    if (email && apiKey) {
+      history.push(`/Documentation?email=${email}&verified=true`);
     }
   };
 
