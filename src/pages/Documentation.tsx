@@ -1,36 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ClipboardCopy } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // Updated import
+import { useNavigate } from 'react-router-dom'; 
 
 const Documentation: React.FC = () => {
   const [email, setEmail] = useState<string>(localStorage.getItem('userEmail') || '');
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState<boolean>(false);
-  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
-  const navigate = useNavigate(); // Use navigate instead of history
-
-  let documentationWindow: Window | null = null; // Declare a variable to track the opened documentation window
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const stepStatus = localStorage.getItem('stepStatus');
-    if (stepStatus === 'verification-sent' && email) {
-      startPolling(); // Resume polling if verification was in progress
-    }
-  }, [email]);
+    // Check if the verification process was successful
+    const verificationSuccess = localStorage.getItem('verificationSuccess');
+    if (verificationSuccess === 'true') {
+      // Focus on the current tab if the verification is successful
+      localStorage.removeItem('verificationSuccess'); // Remove after focusing
 
-  // Function to check if Documentation page is already open
-  const openDocumentationPage = () => {
-    const url = 'https://jahanzebahmed.netlify.app/Documentation';
+      // Optional: If you want to refresh or re-fetch data, you can do so here.
+      // For example, re-fetch API keys if needed.
 
-    // Check if Documentation page is already open
-    if (documentationWindow && !documentationWindow.closed) {
-      documentationWindow.focus(); // Bring the existing tab into focus
-    } else {
-      documentationWindow = window.open(url, '_blank'); // Open in a new tab if not open
+      // Since the page is already open, we can just show a success message or take further action.
+      alert("Your email has been successfully verified!");
     }
-  };
+  }, []);
 
   const generateApiKey = async () => {
     try {
@@ -58,7 +51,7 @@ const Documentation: React.FC = () => {
   const startPolling = async () => {
     setPolling(true);
     try {
-      for (let i = 0; i < 10; i++) { // Polling up to 10 times
+      for (let i = 0; i < 10; i++) {
         const response = await fetch(
           `/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`,
         );
@@ -91,21 +84,6 @@ const Documentation: React.FC = () => {
       navigator.clipboard.writeText(apiKey);
     }
   };
-
-  useEffect(() => {
-    // Check the URL for verification parameters and navigate accordingly
-    const urlParams = new URLSearchParams(window.location.search);
-    const verified = urlParams.get('verified');
-    const userEmail = urlParams.get('email');
-    if (verified === 'true' && userEmail) {
-      localStorage.setItem('userEmail', userEmail);
-      localStorage.setItem('stepStatus', 'verified');
-      // Open or focus the Documentation page
-      openDocumentationPage();
-      // Navigate back to the previous page
-      navigate(-1); // This takes the user back to the previous page (same tab)
-    }
-  }, [navigate]);
 
   return (
     <motion.div className="max-w-4xl mx-auto px-4 pt-32 pb-16">
@@ -159,5 +137,6 @@ const Documentation: React.FC = () => {
 };
 
 export default Documentation;
+
 
 
