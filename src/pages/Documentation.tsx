@@ -10,7 +10,6 @@ const Documentation: React.FC = () => {
   const [polling, setPolling] = useState<boolean>(false);
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false);
 
-  // Load initial state from localStorage
   useEffect(() => {
     const savedApiKey = localStorage.getItem('apiKey');
     const savedTimer = parseInt(localStorage.getItem('apiKeyTimer') || '0', 10);
@@ -20,7 +19,6 @@ const Documentation: React.FC = () => {
     }
   }, []);
 
-  // Timer logic
   useEffect(() => {
     if (apiKeyTimer > 0) {
       const timer = setInterval(() => {
@@ -73,14 +71,14 @@ const Documentation: React.FC = () => {
 
         if (response.ok) {
           setApiKey(data.api_key);
-          setApiKeyTimer(60); // Start the 60-second timer
+          setApiKeyTimer(60);
           localStorage.setItem('apiKey', data.api_key);
           localStorage.setItem('apiKeyTimer', '60');
           setPolling(false);
           return;
         } else if (response.status === 403) {
           setApiKey(data.message || 'API key already generated.');
-          setApiKeyTimer(60); // Start the 60-second timer
+          setApiKeyTimer(60);
           localStorage.setItem('apiKey', data.message || 'API key already generated.');
           localStorage.setItem('apiKeyTimer', '60');
           setPolling(false);
@@ -131,38 +129,12 @@ const Documentation: React.FC = () => {
         <div className="mt-4">
           <p className="text-gray-700 dark:text-gray-300">
             This chatbot uses the Qwen 3.2 model, which has 4k parameters and is custom fine-tuned for conversation adaptability. 
-          </p>
-
-          <p className="text-gray-700 dark:text-gray-300 mt-4">
-            <b>Endpoint:</b> `jahanzebahmed22.pythonanywhere.com/response`
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            <b>Headers:</b> <code>x-api-key: your-key</code>
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            <b>Request:</b> A POST request with the following input format:
-          </p>
-          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md text-sm mt-2">
-            {`{
-  "question": "Your question here"
-}`}
-          </pre>
-          <p className="text-gray-700 dark:text-gray-300">
-            <b>Response:</b> JSON containing the chatbot's reply:
-          </p>
-          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md text-sm mt-2">
-            {`{
-  "answer": "The chatbot's response"
-}`}
-          </pre>
-          <p className="text-gray-700 dark:text-gray-300 mt-4">
-            <b>Model Architecture:</b> Transformers with RoPE, SwiGLU, RMSNorm, and Attention QKV bias.
+            It is able to understand system prompts and respond contextually.
           </p>
 
           {!apiKey && !polling && (
             <motion.button
               onClick={() => setShowEmailModal(true)}
-              whileTap={{ scale: 0.95 }}
               className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg mt-4"
             >
               Generate API Key
@@ -173,12 +145,14 @@ const Documentation: React.FC = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center"
+              className="fixed inset-0 flex justify-center items-center"
             >
+              {/* Blurred Background */}
+              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md"></div>
               <motion.div
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="relative bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
               >
                 <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                   Enter your email:
@@ -189,48 +163,49 @@ const Documentation: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
-                <div className="flex justify-end space-x-2 mt-4">
-                  <motion.button
+                <div className="flex justify-end mt-4 space-x-2">
+                  <button
                     onClick={() => setShowEmailModal(false)}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg"
+                    className="bg-gray-300 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg"
                   >
                     Cancel
-                  </motion.button>
-                  <motion.button
+                  </button>
+                  <button
                     onClick={generateApiKey}
-                    whileTap={{ scale: 0.95 }}
                     className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg"
                   >
-                    Send Verification Email
-                  </motion.button>
+                    Continue
+                  </button>
                 </div>
-                {error && (
-                  <p className="text-red-600 text-sm mt-2">{error}</p>
-                )}
               </motion.div>
             </motion.div>
           )}
 
-          {apiKey && (
-            <motion.div
-              className="bg-gray-100 dark:bg-gray-700 p-4 rounded-md mt-6 flex items-center space-x-2"
-            >
-              <code className="text-gray-700 dark:text-gray-300">{apiKey}</code>
-              <button
-                onClick={copyToClipboard}
-                className="text-emerald-600 hover:text-emerald-500"
-              >
-                <ClipboardCopy />
-              </button>
-            </motion.div>
+          {polling && (
+            <p className="text-sm text-gray-500 mt-2">Waiting for verification...</p>
           )}
 
-          {polling && (
-            <p className="text-gray-700 dark:text-gray-300 mt-4">
-              Verifying your email. Please wait...
-            </p>
+          {apiKey && (
+            <div className="mt-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700 dark:text-gray-300">API Key:</span>
+                <input
+                  type="text"
+                  value={apiKey}
+                  readOnly
+                  className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md text-sm text-gray-800 dark:text-white w-64"
+                />
+                <button onClick={copyToClipboard} className="text-blue-500">
+                  <ClipboardCopy />
+                </button>
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                Your API key will expire in {apiKeyTimer} seconds.
+              </p>
+            </div>
           )}
+
+          {error && <p className="text-red-600 mt-2">{error}</p>}
         </div>
       </div>
     </motion.div>
@@ -238,4 +213,3 @@ const Documentation: React.FC = () => {
 };
 
 export default Documentation;
-
