@@ -171,12 +171,12 @@ const Documentation: React.FC = () => {
           </p>
           <p>.</p>
           <p className="text-green-700 dark:text-gray-300">
-                Click the button below to generate a one-time API key. For further information you can ask the chatbot 
+                Click the button below to generate a one-time API key. For further information you can ask the chatbot  
             <a
               href="https://jahanzebahmed.netlify.app/contact" // Link to the contact section
               className="text-blue-500 hover:underline"
             >
-              Here
+               Here
             </a>
           </p>
           
