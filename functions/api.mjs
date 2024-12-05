@@ -1,9 +1,17 @@
 export async function handler(event, context) {
-  const { httpMethod, path, queryStringParameters } = event;
+  const { httpMethod, queryStringParameters } = event;
 
   try {
-    // Handle API key generation (POST request)
-    if (httpMethod === 'POST' && path === '/generate_api') {
+    const action = queryStringParameters.action;
+
+    if (!action) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Action is required in the query string.' }),
+      };
+    }
+
+    if (httpMethod === 'POST' && action === 'generate_api') {
       const { email } = JSON.parse(event.body || '{}');
 
       if (!email) {
@@ -24,7 +32,7 @@ export async function handler(event, context) {
       if (response.ok) {
         return {
           statusCode: 200,
-          body: JSON.stringify({ message: data.message }),
+          body: JSON.stringify({ message: 'Verification email sent. Please check your inbox.' }),
         };
       }
 
@@ -34,8 +42,7 @@ export async function handler(event, context) {
       };
     }
 
-    // Handle polling of /return_api (GET request)
-    if (httpMethod === 'GET' && path === '/return_api') {
+    if (httpMethod === 'GET' && action === 'return_api') {
       const { email } = queryStringParameters;
 
       if (!email) {
@@ -45,9 +52,8 @@ export async function handler(event, context) {
         };
       }
 
-      // Polling logic
       let retries = 0;
-      const maxRetries = 10; // Adjust based on requirements
+      const maxRetries = 10;
       const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
       while (retries < maxRetries) {
@@ -64,21 +70,21 @@ export async function handler(event, context) {
         }
 
         retries += 1;
-        await delay(3000); // Poll every 3 seconds
+        await delay(3000);
       }
 
       return {
-        statusCode: 408, // Timeout
+        statusCode: 408,
         body: JSON.stringify({
           error: 'Request timed out. Please try again later.',
         }),
       };
     }
 
-    // Return a 405 response for unsupported HTTP methods
+    // Unsupported method or action
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: `Method ${httpMethod} not allowed.` }),
+      body: JSON.stringify({ error: `Method ${httpMethod} or action ${action} not allowed.` }),
     };
   } catch (error) {
     console.error('Error:', error.message);
@@ -91,3 +97,4 @@ export async function handler(event, context) {
     };
   }
 }
+
