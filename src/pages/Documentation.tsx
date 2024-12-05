@@ -65,7 +65,7 @@ const Documentation: React.FC = () => {
   try {
     let requestCount = 0; // Initialize request counter.
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 12; i++) {
       requestCount++; // Increment request counter.
       const response = await fetch(
         `/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`
