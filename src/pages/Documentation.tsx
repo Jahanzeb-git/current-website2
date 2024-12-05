@@ -121,6 +121,8 @@ const Documentation: React.FC = () => {
           This chatbot is powered by an advanced AI model tailored for Data Science-related queries. 
           You can ask it any question regarding Data Science, and it will respond with detailed answers.
         </p>
+        <p className="text-lg text-gray-600 dark:text-gray-300">
+          This is Fine tuned for handling System Prompt accurately for handling Personalised Responses and Can handle 4000 Tokens Max.</p>
       </motion.div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
@@ -131,6 +133,16 @@ const Documentation: React.FC = () => {
             This chatbot uses the Qwen 3.2 model, which has 4k parameters and is custom fine-tuned for conversation adaptability. 
             It is able to understand system prompts and respond contextually.
           </p>
+          <p className="text-gray-700 dark:text-gray-300">
+            <b>Architecture:</b> transformers with RoPE, SwiGLU, RMSNorm, and Attention QKV bias
+          </p>
+          <p className="text-gray-700 dark:text-gray-300">
+            <b>Endpoint:</b> https://jahanzebahmed22.pythonanywhere.com/response
+          </p>
+          <p className="text-gray-700 dark:text-gray-300">
+            <b>Method :</b> POST
+          </p>
+          
 
           {!apiKey && !polling && (
             <motion.button
