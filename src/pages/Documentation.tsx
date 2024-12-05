@@ -134,6 +134,7 @@ const Documentation: React.FC = () => {
             This chatbot uses the Qwen 3.2 model, which has 4k parameters and is custom fine-tuned for conversation adaptability. 
             It is able to understand system prompts and respond contextually.
           </p>
+          <p>  </p>
           <p className="text-gray-700 dark:text-gray-300">
             <b>Architecture:</b> transformers with RoPE, SwiGLU, RMSNorm, and Attention QKV bias
           </p>
@@ -142,6 +143,13 @@ const Documentation: React.FC = () => {
           </p>
           <p className="text-gray-700 dark:text-gray-300">
             <b>Method :</b> POST
+          </p>
+          <p className="text-gray-700 dark:text-gray-300">
+            <b>Header :</b> x-api-key: your-api-key
+          </p>
+          <p> </p>
+          <p className="text-green-700 dark:text-gray-300">
+            Click the button below to generate one time API key.
           </p>
           
 
