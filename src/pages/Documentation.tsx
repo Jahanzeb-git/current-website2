@@ -11,7 +11,6 @@ const Documentation: React.FC = () => {
   const [apiKeyTimer, setApiKeyTimer] = useState<number>(0);
 
   useEffect(() => {
-    // Check if API key already exists in localStorage
     const savedApiKey = localStorage.getItem('apiKey');
     if (savedApiKey) {
       setApiKey(savedApiKey);
@@ -19,13 +18,10 @@ const Documentation: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Timer for the API key expiry
     if (apiKey) {
       const timer = setInterval(() => {
         setApiKeyTimer((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
-
-      // Clear the timer when the API key expires
       return () => clearInterval(timer);
     }
   }, [apiKey]);
@@ -75,7 +71,7 @@ const Documentation: React.FC = () => {
           setPolling(false);
           return;
         } else if (response.status === 400) {
-          await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for 3 seconds
+          await new Promise((resolve) => setTimeout(resolve, 3000));
         }
       }
       setError('Verification timed out. Please try again later.');
@@ -109,7 +105,7 @@ const Documentation: React.FC = () => {
           Documentation
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
-          This chatbot is powered by an advanced AI model tailored for Data Science-related queries.
+          This chatbot is powered by an advanced AI model tailored for Data Science-related queries. 
           You can ask it any question regarding Data Science, and it will respond with detailed answers.
         </p>
       </motion.div>
@@ -118,10 +114,46 @@ const Documentation: React.FC = () => {
         <h4 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">How to Use</h4>
 
         <div className="mt-4">
+          <p className="text-gray-700 dark:text-gray-300">
+            This chatbot uses the Qwen 3.2 model, which has 4k parameters and is custom fine-tuned for conversation adaptability. 
+            It is able to understand system prompts and respond contextually.
+          </p>
+
+          <p className="mt-2 text-gray-700 dark:text-gray-300">
+            The architecture behind this model allows it to handle dynamic and evolving conversations effectively. 
+            You can integrate this AI model into your application using the following API.
+          </p>
+
+          <p className="mt-4 font-semibold text-gray-900 dark:text-white">API Endpoint</p>
+          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
+            {"jahanzebahmed22.pythonanywhere.com/response"}
+          </pre>
+
+          <p className="mt-4 font-semibold text-gray-900 dark:text-white">Headers</p>
+          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
+            {"x-api-key: [Your API Key]"}
+          </pre>
+
+          <p className="mt-4 font-semibold text-gray-900 dark:text-white">Valid Input Structure</p>
+          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
+            {`{
+  "prompt": "Your question here",
+  "system_prompt": "Optional system context",
+  "tokens": 500
+}`}
+          </pre>
+
+          <p className="mt-4 font-semibold text-gray-900 dark:text-white">Valid Output Structure</p>
+          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
+            {`{
+  "output": "The chatbot's response"
+}`}
+          </pre>
+
           {!apiKey && (
             <motion.button
               onClick={() => setShowEmailModal(true)}
-              className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+              className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg mt-4"
             >
               Generate API Key
             </motion.button>
@@ -131,23 +163,29 @@ const Documentation: React.FC = () => {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mt-4"
+              className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
             >
-              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
-                Enter your email:
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-              <button
-                onClick={generateApiKey}
-                className="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg"
+              <motion.div
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
               >
-                Continue
-              </button>
+                <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
+                  Enter your email:
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <button
+                  onClick={generateApiKey}
+                  className="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg"
+                >
+                  Continue
+                </button>
+              </motion.div>
             </motion.div>
           )}
 
@@ -181,7 +219,3 @@ const Documentation: React.FC = () => {
 };
 
 export default Documentation;
-
-
-
-
