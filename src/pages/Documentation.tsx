@@ -1,32 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ClipboardCopy } from 'lucide-react';
-import { useHistory } from 'react-router-dom'; // Added to handle redirection back to the same tab
+import { useNavigate } from 'react-router-dom'; // Updated import
 
 const Documentation: React.FC = () => {
   const [email, setEmail] = useState<string>(localStorage.getItem('userEmail') || '');
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState<boolean>(false);
-  const history = useHistory(); // Used for programmatically redirecting
+  const navigate = useNavigate(); // Use navigate instead of history
 
   useEffect(() => {
     const stepStatus = localStorage.getItem('stepStatus');
-    const queryParams = new URLSearchParams(window.location.search);
-    const emailFromUrl = queryParams.get('email');
-    const verified = queryParams.get('verified');
-
-    // If verified=true is in the query params and we have an email, handle it
-    if (emailFromUrl && verified === 'true') {
-      // Ensure email is the same as the query parameter
-      if (emailFromUrl !== email) {
-        setEmail(emailFromUrl); // Update email if different from localStorage
-        localStorage.setItem('userEmail', emailFromUrl); // Store email in localStorage
-      }
-      // Proceed to start polling or handle other actions
-      setPolling(true);
-      checkVerificationStatus(emailFromUrl);
-    } else if (stepStatus === 'verification-sent' && email) {
+    if (stepStatus === 'verification-sent' && email) {
       startPolling(); // Resume polling if verification was in progress
     }
   }, [email]);
@@ -85,37 +71,24 @@ const Documentation: React.FC = () => {
     }
   };
 
-  const checkVerificationStatus = async (email: string) => {
-    try {
-      const response = await fetch(`/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`);
-      const data = await response.json();
-
-      if (response.ok) {
-        setApiKey(data.api_key);
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('stepStatus');
-        setPolling(false);
-      } else if (response.status === 403) {
-        setApiKey(data.message || 'API key already generated.');
-        setPolling(false);
-      }
-    } catch (err) {
-      setError('Error checking verification status.');
-    }
-  };
-
   const copyToClipboard = () => {
     if (apiKey) {
       navigator.clipboard.writeText(apiKey);
     }
   };
 
-  // Redirect to the same tab when verification is done
-  const handleRedirect = () => {
-    if (email && apiKey) {
-      history.push(`/Documentation?email=${email}&verified=true`);
+  useEffect(() => {
+    // Check the URL for verification parameters and navigate accordingly
+    const urlParams = new URLSearchParams(window.location.search);
+    const verified = urlParams.get('verified');
+    const userEmail = urlParams.get('email');
+    if (verified === 'true' && userEmail) {
+      localStorage.setItem('userEmail', userEmail);
+      localStorage.setItem('stepStatus', 'verified');
+      // Navigate back to the previous page
+      navigate(-1); // This takes the user back to the previous page (same tab)
     }
-  };
+  }, [navigate]);
 
   return (
     <motion.div className="max-w-4xl mx-auto px-4 pt-32 pb-16">
@@ -128,32 +101,41 @@ const Documentation: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 rounded border border-gray-300 dark:border-gray-600"
+            className="w-full px-4 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            placeholder="Enter your email"
           />
-          <button
-            onClick={generateApiKey}
-            className="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg"
-          >
-            Continue
-          </button>
-
-          {polling && <p className="text-sm text-gray-500 mt-2">Waiting for verification...</p>}
-          {apiKey && (
-            <div className="mt-4">
-              <span className="text-sm text-gray-700 dark:text-gray-300">API Key:</span>
+        </div>
+        {error && <div className="mt-4 text-red-600 dark:text-red-400">{error}</div>}
+        {apiKey && (
+          <div className="mt-4">
+            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">Your API Key:</label>
+            <div className="flex items-center space-x-2">
               <input
                 type="text"
                 value={apiKey}
                 readOnly
-                className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md text-sm w-64"
+                className="w-full px-4 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               />
-              <button onClick={copyToClipboard} className="text-blue-500">
-                <ClipboardCopy />
+              <button
+                onClick={copyToClipboard}
+                className="text-sm text-blue-500 dark:text-blue-400"
+              >
+                <ClipboardCopy size={16} />
               </button>
             </div>
-          )}
-          {error && <p className="text-red-600 mt-2">{error}</p>}
-        </div>
+          </div>
+        )}
+        {!apiKey && !polling && (
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={generateApiKey}
+              className="px-6 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+            >
+              Generate API Key
+            </button>
+          </div>
+        )}
+        {polling && <div className="mt-4 text-blue-500">Polling for API Key...</div>}
       </div>
     </motion.div>
   );
