@@ -69,32 +69,52 @@ const Documentation: React.FC = () => {
       const response = await fetch(
         `/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`
       );
-      const data = await response.json();
 
-      if (response.ok) {
+      if (!response.ok) {
+        if (response.status === 403) {
+          const data = await response.json();
+          setApiKey(data.message || 'API key already generated.');
+          setApiKeyTimer(60);
+          localStorage.setItem('apiKey', data.message || 'API key already generated.');
+          localStorage.setItem('apiKeyTimer', '60');
+          isTimedOut = false; // Reset timeout flag because a valid response was received.
+          setPolling(false);
+          return;
+        } else if (response.status === 400) {
+          // Wait for 3 seconds before the next polling attempt.
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          continue;
+        } else {
+          // Handle unexpected errors without throwing parsing issues.
+          setError('Unexpected server response. Please try again later.');
+          setPolling(false);
+          return;
+        }
+      }
+
+      // Safely attempt to parse JSON only if the response body exists.
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (e) {
+        setError('Failed to parse server response. Please try again.');
+        setPolling(false);
+        return;
+      }
+
+      if (data.api_key) {
         setApiKey(data.api_key);
         setApiKeyTimer(60);
         localStorage.setItem('apiKey', data.api_key);
         localStorage.setItem('apiKeyTimer', '60');
-        isTimedOut = false; // Reset timeout flag because verification succeeded.
+        isTimedOut = false; // Reset timeout flag because polling succeeded.
         setPolling(false);
         return;
-      } else if (response.status === 403) {
-        setApiKey(data.message || 'API key already generated.');
-        setApiKeyTimer(60);
-        localStorage.setItem('apiKey', data.message || 'API key already generated.');
-        localStorage.setItem('apiKeyTimer', '60');
-        isTimedOut = false; // Reset timeout flag because we received a response.
-        setPolling(false);
-        return;
-      } else if (response.status === 400) {
-        // Wait for 3 seconds before the next polling attempt.
-        await new Promise((resolve) => setTimeout(resolve, 3000));
       }
     }
 
     if (isTimedOut) {
-      // Handle the timeout case.
+      // Handle timeout case after all polling attempts.
       setError('Verification timed out. Please try again later.');
     }
   } catch (err: any) {
@@ -103,6 +123,7 @@ const Documentation: React.FC = () => {
     setPolling(false); // Ensure polling state is reset.
   }
 };
+
 
 
   const copyToClipboard = () => {
