@@ -13,7 +13,7 @@ const Documentation: React.FC = () => {
   const generateApiKey = async () => {
     try {
       setError(null);
-      const response = await fetch('/.netlify/functions/api/generate_api', {
+      const response = await fetch('/.netlify/functions/api?action=generate_api', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -24,7 +24,7 @@ const Documentation: React.FC = () => {
         throw new Error(data.error || 'Failed to send verification email. Please try again.');
       }
 
-      alert(data.message); // Inform the user to check their inbox
+      alert('Verification email sent. Please check your inbox.'); // Notify user
       startPolling();
     } catch (err: any) {
       setError(err.message);
@@ -36,7 +36,7 @@ const Documentation: React.FC = () => {
     try {
       for (let i = 0; i < 10; i++) { // Polling up to 10 times
         const response = await fetch(
-          `/.netlify/functions/api/return_api?email=${encodeURIComponent(email)}`,
+          `/.netlify/functions/api?action=return_api&email=${encodeURIComponent(email)}`,
         );
         const data = await response.json();
 
@@ -156,5 +156,6 @@ const Documentation: React.FC = () => {
 };
 
 export default Documentation;
+
 
 
