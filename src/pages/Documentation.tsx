@@ -8,7 +8,10 @@ const Documentation: React.FC = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState<boolean>(false);
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const navigate = useNavigate(); // Use navigate instead of history
+
+  let documentationWindow: Window | null = null; // Declare a variable to track the opened documentation window
 
   useEffect(() => {
     const stepStatus = localStorage.getItem('stepStatus');
@@ -16,6 +19,18 @@ const Documentation: React.FC = () => {
       startPolling(); // Resume polling if verification was in progress
     }
   }, [email]);
+
+  // Function to check if Documentation page is already open
+  const openDocumentationPage = () => {
+    const url = 'https://jahanzebahmed.netlify.app/Documentation';
+
+    // Check if Documentation page is already open
+    if (documentationWindow && !documentationWindow.closed) {
+      documentationWindow.focus(); // Bring the existing tab into focus
+    } else {
+      documentationWindow = window.open(url, '_blank'); // Open in a new tab if not open
+    }
+  };
 
   const generateApiKey = async () => {
     try {
@@ -85,6 +100,8 @@ const Documentation: React.FC = () => {
     if (verified === 'true' && userEmail) {
       localStorage.setItem('userEmail', userEmail);
       localStorage.setItem('stepStatus', 'verified');
+      // Open or focus the Documentation page
+      openDocumentationPage();
       // Navigate back to the previous page
       navigate(-1); // This takes the user back to the previous page (same tab)
     }
@@ -142,3 +159,4 @@ const Documentation: React.FC = () => {
 };
 
 export default Documentation;
+
