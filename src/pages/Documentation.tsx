@@ -5,35 +5,29 @@ import { ClipboardCopy } from 'lucide-react';
 const Documentation: React.FC = () => {
   const [email, setEmail] = useState<string>(localStorage.getItem('userEmail') || '');
   const [apiKey, setApiKey] = useState<string | null>(localStorage.getItem('apiKey') || null);
-  const [apiKeyTimer, setApiKeyTimer] = useState<number>(
-    parseInt(localStorage.getItem('apiKeyTimer') || '0', 10)
-  );
+  const [apiKeyTimer, setApiKeyTimer] = useState<number>(parseInt(localStorage.getItem('apiKeyTimer') || '0', 10));
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState<boolean>(false);
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false);
 
-  // Load saved API key and timer on initial render
   useEffect(() => {
     const savedApiKey = localStorage.getItem('apiKey');
     const savedTimer = parseInt(localStorage.getItem('apiKeyTimer') || '0', 10);
-
     if (savedApiKey && savedTimer > 0) {
       setApiKey(savedApiKey);
       setApiKeyTimer(savedTimer);
     }
   }, []);
 
-  // Countdown timer for API key expiration
   useEffect(() => {
     if (apiKeyTimer > 0) {
       const timer = setInterval(() => {
         setApiKeyTimer((prev) => {
-          const updatedTimer = Math.max(prev - 1, 0);
+          const updatedTimer = prev > 0 ? prev - 1 : 0;
           localStorage.setItem('apiKeyTimer', updatedTimer.toString());
           return updatedTimer;
         });
       }, 1000);
-
       return () => clearInterval(timer);
     } else if (apiKeyTimer === 0) {
       setApiKey(null);
@@ -42,7 +36,6 @@ const Documentation: React.FC = () => {
     }
   }, [apiKeyTimer]);
 
-  // API key generation
   const generateApiKey = async () => {
     try {
       setError(null);
@@ -53,18 +46,20 @@ const Documentation: React.FC = () => {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to send verification email.');
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send verification email. Please try again.');
+      }
 
       alert('Verification email sent. Please check your inbox.');
       localStorage.setItem('userEmail', email);
+      localStorage.setItem('stepStatus', 'verification-sent');
+      setShowEmailModal(false); // Close the modal
       startPolling();
-      setShowEmailModal(false);
     } catch (err: any) {
       setError(err.message);
     }
   };
 
-  // Polling for API key
   const startPolling = async () => {
     setPolling(true);
     try {
@@ -79,24 +74,31 @@ const Documentation: React.FC = () => {
           setApiKeyTimer(60);
           localStorage.setItem('apiKey', data.api_key);
           localStorage.setItem('apiKeyTimer', '60');
-          break;
+          setPolling(false);
+          return;
+        } else if (response.status === 403) {
+          setApiKey(data.message || 'API key already generated.');
+          setApiKeyTimer(60);
+          localStorage.setItem('apiKey', data.message || 'API key already generated.');
+          localStorage.setItem('apiKeyTimer', '60');
+          setPolling(false);
+          return;
         } else if (response.status === 400) {
           await new Promise((resolve) => setTimeout(resolve, 3000));
-        } else {
-          setError(data.error || 'API key retrieval failed.');
-          break;
         }
       }
+      setError('Verification timed out. Please try again later.');
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'An error occurred during polling.');
     } finally {
       setPolling(false);
     }
   };
 
-  // Copy API key to clipboard
   const copyToClipboard = () => {
-    if (apiKey) navigator.clipboard.writeText(apiKey);
+    if (apiKey) {
+      navigator.clipboard.writeText(apiKey);
+    }
   };
 
   return (
@@ -106,97 +108,108 @@ const Documentation: React.FC = () => {
       exit={{ opacity: 0 }}
       className="max-w-4xl mx-auto px-4 pt-32 pb-16"
     >
-      <header className="text-center mb-16">
-        <motion.h1
-          className="text-5xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-        >
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="text-center mb-16"
+      >
+        <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
           Documentation
-        </motion.h1>
+        </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
-          This chatbot leverages Qwen 3.2, a fine-tuned AI model for data science-related queries.
+          This chatbot is powered by an advanced AI model tailored for Data Science-related queries. 
+          You can ask it any question regarding Data Science, and it will respond with detailed answers.
         </p>
-      </header>
+      </motion.div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-        <h4 className="text-xl font-semibold text-gray-900 dark:text-white">How to Use</h4>
-        <p className="text-gray-700 dark:text-gray-300 mt-4">
-          Generate an API key to begin using this chatbot. The key is valid for a limited time.
-        </p>
+        <h4 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">How to Use</h4>
 
-        {/* API Key Actions */}
-        {!apiKey && !polling && (
-          <button
-            onClick={() => setShowEmailModal(true)}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg mt-4"
-          >
-            Generate API Key
-          </button>
-        )}
+        <div className="mt-4">
+          <p className="text-gray-700 dark:text-gray-300">
+            This chatbot uses the Qwen 3.2 model, which has 4k parameters and is custom fine-tuned for conversation adaptability. 
+            It is able to understand system prompts and respond contextually.
+          </p>
 
-        {polling && <p className="text-sm text-gray-500 mt-2">Waiting for verification...</p>}
+          {!apiKey && !polling && (
+            <motion.button
+              onClick={() => setShowEmailModal(true)}
+              className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg mt-4"
+            >
+              Generate API Key
+            </motion.button>
+          )}
 
-        {apiKey && (
-          <div className="mt-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-700 dark:text-gray-300">API Key:</span>
-              <input
-                type="text"
-                value={apiKey}
-                readOnly
-                className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md text-sm text-gray-800 dark:text-white w-64"
-              />
-              <button onClick={copyToClipboard} className="text-blue-500">
-                <ClipboardCopy />
-              </button>
+          {showEmailModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="fixed inset-0 flex justify-center items-center"
+            >
+              {/* Blurred Background */}
+              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md"></div>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="relative bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
+              >
+                <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
+                  Enter your email:
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <div className="flex justify-end mt-4 space-x-2">
+                  <button
+                    onClick={() => setShowEmailModal(false)}
+                    className="bg-gray-300 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={generateApiKey}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {polling && (
+            <p className="text-sm text-gray-500 mt-2">Waiting for verification...</p>
+          )}
+
+          {apiKey && (
+            <div className="mt-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700 dark:text-gray-300">API Key:</span>
+                <input
+                  type="text"
+                  value={apiKey}
+                  readOnly
+                  className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md text-sm text-gray-800 dark:text-white w-64"
+                />
+                <button onClick={copyToClipboard} className="text-blue-500">
+                  <ClipboardCopy />
+                </button>
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                Your API key will expire in {apiKeyTimer} seconds.
+              </p>
             </div>
-            <p className="text-sm text-gray-500 mt-2">Expires in {apiKeyTimer} seconds.</p>
-          </div>
-        )}
+          )}
 
-        {/* Error Display */}
-        {error && <p className="text-red-600 mt-4">{error}</p>}
+          {error && <p className="text-red-600 mt-2">{error}</p>}
+        </div>
       </div>
-
-      {/* Email Modal */}
-      {showEmailModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 flex items-center justify-center"
-        >
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
-              Enter your email:
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded focus:outline-none"
-            />
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                onClick={() => setShowEmailModal(false)}
-                className="bg-gray-300 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={generateApiKey}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
     </motion.div>
   );
 };
 
 export default Documentation;
-
