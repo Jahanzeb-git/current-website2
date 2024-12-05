@@ -5,26 +5,38 @@ import { ClipboardCopy } from 'lucide-react';
 const Documentation: React.FC = () => {
   const [email, setEmail] = useState<string>(localStorage.getItem('userEmail') || '');
   const [apiKey, setApiKey] = useState<string | null>(localStorage.getItem('apiKey') || null);
+  const [apiKeyTimer, setApiKeyTimer] = useState<number>(parseInt(localStorage.getItem('apiKeyTimer') || '0', 10));
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState<boolean>(false);
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false);
-  const [apiKeyTimer, setApiKeyTimer] = useState<number>(0);
 
+  // Load initial state from localStorage
   useEffect(() => {
     const savedApiKey = localStorage.getItem('apiKey');
-    if (savedApiKey) {
+    const savedTimer = parseInt(localStorage.getItem('apiKeyTimer') || '0', 10);
+    if (savedApiKey && savedTimer > 0) {
       setApiKey(savedApiKey);
+      setApiKeyTimer(savedTimer);
     }
   }, []);
 
+  // Timer logic
   useEffect(() => {
-    if (apiKey) {
+    if (apiKeyTimer > 0) {
       const timer = setInterval(() => {
-        setApiKeyTimer((prev) => (prev > 0 ? prev - 1 : 0));
+        setApiKeyTimer((prev) => {
+          const updatedTimer = prev > 0 ? prev - 1 : 0;
+          localStorage.setItem('apiKeyTimer', updatedTimer.toString());
+          return updatedTimer;
+        });
       }, 1000);
       return () => clearInterval(timer);
+    } else if (apiKeyTimer === 0) {
+      setApiKey(null);
+      localStorage.removeItem('apiKey');
+      localStorage.removeItem('apiKeyTimer');
     }
-  }, [apiKey]);
+  }, [apiKeyTimer]);
 
   const generateApiKey = async () => {
     try {
@@ -43,6 +55,7 @@ const Documentation: React.FC = () => {
       alert('Verification email sent. Please check your inbox.');
       localStorage.setItem('userEmail', email);
       localStorage.setItem('stepStatus', 'verification-sent');
+      setShowEmailModal(false); // Close the modal
       startPolling();
     } catch (err: any) {
       setError(err.message);
@@ -60,14 +73,16 @@ const Documentation: React.FC = () => {
 
         if (response.ok) {
           setApiKey(data.api_key);
+          setApiKeyTimer(60); // Start the 60-second timer
           localStorage.setItem('apiKey', data.api_key);
-          localStorage.removeItem('userEmail');
-          localStorage.removeItem('stepStatus');
+          localStorage.setItem('apiKeyTimer', '60');
           setPolling(false);
           return;
         } else if (response.status === 403) {
           setApiKey(data.message || 'API key already generated.');
+          setApiKeyTimer(60); // Start the 60-second timer
           localStorage.setItem('apiKey', data.message || 'API key already generated.');
+          localStorage.setItem('apiKeyTimer', '60');
           setPolling(false);
           return;
         } else if (response.status === 400) {
@@ -119,38 +134,7 @@ const Documentation: React.FC = () => {
             It is able to understand system prompts and respond contextually.
           </p>
 
-          <p className="mt-2 text-gray-700 dark:text-gray-300">
-            The architecture behind this model allows it to handle dynamic and evolving conversations effectively. 
-            You can integrate this AI model into your application using the following API.
-          </p>
-
-          <p className="mt-4 font-semibold text-gray-900 dark:text-white">API Endpoint</p>
-          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
-            {"jahanzebahmed22.pythonanywhere.com/response"}
-          </pre>
-
-          <p className="mt-4 font-semibold text-gray-900 dark:text-white">Headers</p>
-          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
-            {"x-api-key: [Your API Key]"}
-          </pre>
-
-          <p className="mt-4 font-semibold text-gray-900 dark:text-white">Valid Input Structure</p>
-          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
-            {`{
-  "prompt": "Your question here",
-  "system_prompt": "Optional system context",
-  "tokens": 500
-}`}
-          </pre>
-
-          <p className="mt-4 font-semibold text-gray-900 dark:text-white">Valid Output Structure</p>
-          <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm">
-            {`{
-  "output": "The chatbot's response"
-}`}
-          </pre>
-
-          {!apiKey && (
+          {!apiKey && !polling && (
             <motion.button
               onClick={() => setShowEmailModal(true)}
               className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg mt-4"
@@ -192,6 +176,7 @@ const Documentation: React.FC = () => {
           {polling && (
             <p className="text-sm text-gray-500 mt-2">Waiting for verification...</p>
           )}
+
           {apiKey && (
             <div className="mt-4">
               <div className="flex items-center space-x-2">
@@ -211,6 +196,7 @@ const Documentation: React.FC = () => {
               </p>
             </div>
           )}
+
           {error && <p className="text-red-600 mt-2">{error}</p>}
         </div>
       </div>
