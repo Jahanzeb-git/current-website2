@@ -14,7 +14,7 @@ export async function handler(event) {
       }
 
       // Generate dynamic system prompt
-      const contextMessages = previousContext?.slice(-5) || [];
+      const contextMessages = previousContext?.slice(-1) || [];
       const contextString = contextMessages
         .map((msg) => msg.replace("You:", "user:").replace("Bot:", "you:"))
         .join(", ");
