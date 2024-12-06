@@ -21,21 +21,6 @@ const Chatbot: React.FC = () => {
     sessionStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
-  // Function to generate dynamic system prompt with context
-  const generateSystemPrompt = (): string => {
-    const contextMessages = messages.slice(-1); // Get the last 5 exchanges
-    const contextString = contextMessages
-      .map((msg) => msg.replace('You:', 'user:').replace('Bot:', 'you:'))
-      .join(', ');
-    
-    return `
-      Roleplay a person named 'Jahanzeb Ahmed', a 22-year-old Data Scientist based in Karachi, Pakistan.
-      (Previous conversational context: ${contextString || 'No context yet.'})
-      Note: Use previous conversational context to understand the user's query and provide relevant answers. 
-      Important: Always use the latest context for follow-up questions if needed.
-    `;
-  };
-
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -45,11 +30,10 @@ const Chatbot: React.FC = () => {
     setLoading(true);
 
     try {
-      const systemPrompt = generateSystemPrompt(); // Generate dynamic system prompt
       const response = await fetch('/.netlify/functions/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: sanitizedInput, system_prompt: systemPrompt }),
+        body: JSON.stringify({ message: sanitizedInput }),
       });
 
       if (!response.ok) {
