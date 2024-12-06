@@ -23,7 +23,7 @@ const Chatbot: React.FC = () => {
 
   // Function to generate dynamic system prompt with context
   const generateSystemPrompt = (): string => {
-    const contextMessages = messages.slice(-5); // Get the last 5 exchanges
+    const contextMessages = messages.slice(-1); // Get the last 5 exchanges
     const contextString = contextMessages
       .map((msg) => msg.replace('You:', 'user:').replace('Bot:', 'you:'))
       .join(', ');
