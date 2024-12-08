@@ -72,6 +72,14 @@ const Chatbot: React.FC = () => {
       handleSend();
     }
   };
+  
+  const preOptions = [
+    'Tell me about yourself',
+    'What is your education?',
+    'Your phone number?',
+    'Your projects?',
+    'Who was Adolf Hitler?'
+  ];
 
   return (
     <motion.div
@@ -132,6 +140,17 @@ const Chatbot: React.FC = () => {
             <Send />
           </button>
         </div>
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+        {preOptions.map((option, index) => (
+          <button
+            key={index}
+            onClick={() => handleSend(option)}
+            className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
+          >
+            {option}
+          </button>
+        ))}
+      </div>
         <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
           Bot can make mistakes. Check important info.
         </p>
