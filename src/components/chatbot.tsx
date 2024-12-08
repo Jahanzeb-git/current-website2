@@ -95,7 +95,7 @@ const Chatbot: React.FC = () => {
       </div>
 
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
-        Chat with my BOT
+        What can I help with?
       </h2>
       <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
         Ask me anything about Data Science.
