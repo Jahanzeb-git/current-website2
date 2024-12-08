@@ -74,9 +74,8 @@ const Chatbot: React.FC = () => {
   };
 
   const preOptions = [
-    'Tell me about yourself',
+    'Tell me about you.',
     'What is your education?',
-    'Your phone number?',
     'Your projects?',
     'Who was Adolf Hitler?'
   ];
