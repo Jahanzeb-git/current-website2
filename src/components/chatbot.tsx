@@ -21,12 +21,12 @@ const Chatbot: React.FC = () => {
     sessionStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
-  const handleSend = async (message?: string) => {
-    const sanitizedInput = message || input.trim();
-    if (!sanitizedInput) return;
+  const handleSend = async () => {
+    if (!input.trim()) return;
 
+    const sanitizedInput = input.trim();
     setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
-    if (!message) setInput('');
+    setInput('');
     setLoading(true);
 
     try {
@@ -73,14 +73,6 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const preOptions = [
-    'Tell me about yourself',
-    'What is your education?',
-    'Your phone number?',
-    'Your projects?',
-    'Who was Adolf Hitler?'
-  ];
-
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -101,19 +93,6 @@ const Chatbot: React.FC = () => {
       <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
         Ask me anything about Data Science.
       </p>
-
-      <div className="flex flex-wrap justify-center gap-2 mb-4">
-        {preOptions.map((option, index) => (
-          <button
-            key={index}
-            onClick={() => handleSend(option)}
-            className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-
       <div className="space-y-4 relative">
         <div className="h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
           {messages.length === 0 && (
