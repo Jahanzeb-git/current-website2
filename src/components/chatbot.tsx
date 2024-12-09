@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Send, BookOpen, Check, Cpu } from 'lucide-react';
+import { ArrowUpRight, BookOpen, Check, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Chatbot: React.FC = () => {
@@ -156,9 +156,10 @@ const Chatbot: React.FC = () => {
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
           />
           <button
-            className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg"
-            onClick={() => handleSend(input)}
+              className="p-3 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
+              onClick={() => handleSend(input)}
           >
+              <ArrowUpRight className="w-5 h-5 text-gray-800 dark:text-white" />
             <Send />
           </button>
         </div>
