@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, BookOpen, Check, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Chatbot: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<{ type: 'user' | 'bot'; text: string }[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,11 +22,18 @@ const Chatbot: React.FC = () => {
     sessionStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
+  useEffect(() => {
+    // Scroll to bottom whenever new messages are added
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
+
   const handleSend = async (message: string) => {
     if (!message.trim()) return;
 
     const sanitizedInput = message.trim();
-    setMessages((prevMessages) => [...prevMessages, `${sanitizedInput}`]);
+    setMessages((prevMessages) => [...prevMessages, { type: 'user', text: sanitizedInput }]);
     setInput('');
     setLoading(true);
 
@@ -44,7 +52,10 @@ const Chatbot: React.FC = () => {
       startTypingEffect(data.response || 'Sorry, there was an error.');
     } catch (error) {
       console.error('Error fetching bot response:', error);
-      setMessages((prevMessages) => [...prevMessages, 'Sorry, something went wrong.']);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { type: 'bot', text: 'Sorry, something went wrong.' },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -53,16 +64,21 @@ const Chatbot: React.FC = () => {
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
     let i = 0;
-    setMessages((prevMessages) => [...prevMessages, '']); // Prepare space for bot message
+    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: '' }]); // Prepare space for bot message
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
-        const newMessage = [...prevMessages];
-        newMessage[newMessage.length - 1] = message.slice(0, i + 1);
-        return newMessage;
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1].text = message.slice(0, i + 1) + '|';
+        return newMessages;
       });
       i += 1;
       if (i === message.length) {
         clearInterval(interval);
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          newMessages[newMessages.length - 1].text = message; // Remove cursor at the end
+          return newMessages;
+        });
         setIsTyping(false);
       }
     }, 50);
@@ -102,23 +118,14 @@ const Chatbot: React.FC = () => {
         Ask me anything about Data Science.
       </p>
       <div className="space-y-4 relative">
-        <div className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg">
-          {messages.length === 0 && (
-            <div className="absolute top-2 left-2 text-sm text-gray-900 dark:text-gray-100 italic opacity-70">
-              Powered by Qwen3.2-32B.
-            </div>
-          )}
+        <div
+          ref={chatContainerRef}
+          className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
+        >
           {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${
-                index % 2 === 0
-                  ? 'text-orange-600 opacity-80'
-                  : 'text-gray-800 dark:text-white'
-              }`}
-            >
-              {msg}
-              {index === messages.length - 1 && !isTyping && index % 2 !== 0 && (
+            <div key={index} className={`mb-2 ${msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'}`}>
+              {msg.text}
+              {msg.type === 'bot' && !loading && (
                 <div className="text-sm flex items-center space-x-1 mt-2">
                   <span className="text-gray-600 dark:text-gray-300">Powered by</span>
                   <div className="relative group">
@@ -137,9 +144,7 @@ const Chatbot: React.FC = () => {
               )}
             </div>
           ))}
-          {loading && (
-            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
-          )}
+          {loading && <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing... |</div>}
         </div>
         <div className="flex items-center space-x-3">
           <input
@@ -177,4 +182,5 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+
 
