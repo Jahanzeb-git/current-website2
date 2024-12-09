@@ -25,7 +25,7 @@ const Chatbot: React.FC = () => {
     if (!message.trim()) return;
 
     const sanitizedInput = message.trim();
-    setMessages((prevMessages) => [...prevMessages, `You: ${sanitizedInput}`]);
+    setMessages((prevMessages) => [...prevMessages, sanitizedInput]); // No "You:"
     setInput('');
     setLoading(true);
 
@@ -44,7 +44,7 @@ const Chatbot: React.FC = () => {
       startTypingEffect(data.response || 'Sorry, there was an error.');
     } catch (error) {
       console.error('Error fetching bot response:', error);
-      setMessages((prevMessages) => [...prevMessages, 'Bot: Sorry, something went wrong.']);
+      setMessages((prevMessages) => [...prevMessages, 'Sorry, something went wrong.']); // No "Bot:"
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,9 @@ const Chatbot: React.FC = () => {
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
         const newMessage = [...prevMessages];
-        newMessage[newMessage.length - 1] = `Bot: ${message.slice(0, i + 1)}`;
+        if (newMessage[newMessage.length - 1] !== message.slice(0, i)) {
+          newMessage[newMessage.length - 1] = message.slice(0, i + 1);
+        }
         return newMessage;
       });
       i += 1;
@@ -69,7 +71,7 @@ const Chatbot: React.FC = () => {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleSend(input);  // Pass the input message when the user presses enter
+      handleSend(input);
     }
   };
 
@@ -77,7 +79,7 @@ const Chatbot: React.FC = () => {
     'Tell me about you.',
     'What is your education?',
     'Your projects?',
-    'Who was Adolf Hitler?'
+    'Who was Adolf Hitler?',
   ];
 
   return (
@@ -111,16 +113,19 @@ const Chatbot: React.FC = () => {
             <div
               key={index}
               className={`mb-2 ${
-                msg.startsWith('You:')
+                index % 2 === 0 // User messages
                   ? 'text-orange-600 opacity-80'
-                  : 'text-gray-800 dark:text-white'
+                  : 'text-gray-800 dark:text-white' // Bot messages
               }`}
             >
               {msg}
+              {index === messages.length - 1 && isTyping && (
+                <span className="animate-blink">|</span> // Blinking cursor
+              )}
             </div>
           ))}
           {loading && (
-            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
+            <div className="mb-2 text-gray-800 dark:text-white">Typing...</div>
           )}
         </div>
         <div className="flex items-center space-x-3">
@@ -134,7 +139,7 @@ const Chatbot: React.FC = () => {
           />
           <button
             className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-lg"
-            onClick={() => handleSend(input)}  // Send input when button is clicked
+            onClick={() => handleSend(input)}
           >
             <Send />
           </button>
@@ -143,7 +148,7 @@ const Chatbot: React.FC = () => {
           {preOptions.map((option, index) => (
             <button
               key={index}
-              onClick={() => handleSend(option)}  // Pass the clicked option to handleSend
+              onClick={() => handleSend(option)}
               className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
             >
               {option}
@@ -159,3 +164,4 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+
