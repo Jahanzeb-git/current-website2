@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, BookOpen, Check, Cpu } from 'lucide-react';
+import { ArrowUp, BookOpen, Check, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Chatbot: React.FC = () => {
@@ -160,7 +160,7 @@ const Chatbot: React.FC = () => {
               bg-black dark:bg-white hover:opacity-50 active:opacity-100"
               onClick={() => handleSend(input)}
           >
-            <ArrowUpRight className="w-5 h-5 text-white dark:text-black" />
+            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
           </button>
         </div>
         <div className="flex flex-wrap justify-center gap-2 mb-4">
