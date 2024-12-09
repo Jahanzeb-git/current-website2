@@ -101,7 +101,7 @@ const Chatbot: React.FC = () => {
         Ask me anything about Data Science.
       </p>
       <div className="space-y-4 relative">
-        <div className="h-64 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+        <div className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg">
           {messages.length === 0 && (
             <div className="absolute top-2 left-2 text-sm text-gray-900 dark:text-gray-100 italic opacity-70">
               Powered by Qwen3.2-32B.
