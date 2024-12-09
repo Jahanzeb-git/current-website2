@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, BookOpen, RefreshCcw, Check } from 'lucide-react';
+import { Send, BookOpen, Check, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Chatbot: React.FC = () => {
-  const [messages, setMessages] = useState<{ text: string; type: 'user' | 'bot' }[]>([]);
+  const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -25,7 +25,7 @@ const Chatbot: React.FC = () => {
     if (!message.trim()) return;
 
     const sanitizedInput = message.trim();
-    setMessages((prevMessages) => [...prevMessages, { text: sanitizedInput, type: 'user' }]);
+    setMessages((prevMessages) => [...prevMessages, `${sanitizedInput}`]);
     setInput('');
     setLoading(true);
 
@@ -44,10 +44,7 @@ const Chatbot: React.FC = () => {
       startTypingEffect(data.response || 'Sorry, there was an error.');
     } catch (error) {
       console.error('Error fetching bot response:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: 'Sorry, something went wrong.', type: 'bot' },
-      ]);
+      setMessages((prevMessages) => [...prevMessages, 'Sorry, something went wrong.']);
     } finally {
       setLoading(false);
     }
@@ -56,14 +53,12 @@ const Chatbot: React.FC = () => {
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
     let i = 0;
+    setMessages((prevMessages) => [...prevMessages, '']); // Prepare space for bot message
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
-        const newMessages = [...prevMessages];
-        if (newMessages[newMessages.length - 1]?.type !== 'bot') {
-          newMessages.push({ text: '', type: 'bot' });
-        }
-        newMessages[newMessages.length - 1].text = message.slice(0, i + 1);
-        return newMessages;
+        const newMessage = [...prevMessages];
+        newMessage[newMessage.length - 1] = message.slice(0, i + 1);
+        return newMessage;
       });
       i += 1;
       if (i === message.length) {
@@ -79,7 +74,12 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const preOptions = ['Tell me about you.', 'What is your education?', 'Your projects?', 'Who was Adolf Hitler?'];
+  const preOptions = [
+    'Tell me about you.',
+    'What is your education?',
+    'Your projects?',
+    'Who was Adolf Hitler?',
+  ];
 
   return (
     <motion.div
@@ -98,7 +98,9 @@ const Chatbot: React.FC = () => {
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         What can I help with?
       </h2>
-      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">Ask me anything about Data Science.</p>
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
+        Ask me anything about Data Science.
+      </p>
       <div className="space-y-4 relative">
         <div className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg">
           {messages.length === 0 && (
@@ -110,18 +112,33 @@ const Chatbot: React.FC = () => {
             <div
               key={index}
               className={`mb-2 ${
-                msg.type === 'user'
+                index % 2 === 0
                   ? 'text-orange-600 opacity-80'
                   : 'text-gray-800 dark:text-white'
               }`}
             >
-              {msg.text}
+              {msg}
+              {index === messages.length - 1 && !isTyping && index % 2 !== 0 && (
+                <div className="text-sm flex items-center space-x-1 mt-2">
+                  <span className="text-gray-600 dark:text-gray-300">Powered by</span>
+                  <div className="relative group">
+                    <Cpu className="text-gray-600 dark:text-gray-300 w-4 h-4 cursor-pointer" />
+                    <div className="absolute left-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 w-40 hidden group-hover:block">
+                      <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
+                        <span>Qwen 3.2</span>
+                        <Check className="w-4 h-4 text-emerald-500" />
+                      </div>
+                      <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
+                        <span>GPT-4o</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
           {loading && (
-            <div className="mb-2 text-gray-800 dark:text-white">
-              Bot: <span className="typing-dots">Typing...</span>
-            </div>
+            <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing...</div>
           )}
         </div>
         <div className="flex items-center space-x-3">
@@ -155,28 +172,9 @@ const Chatbot: React.FC = () => {
           Bot can make mistakes. Check important info.
         </p>
       </div>
-      {messages.length > 0 && messages[messages.length - 1].type === 'bot' && (
-        <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 flex items-center">
-          Powered by{' '}
-          <RefreshCcw
-            className="ml-1 mr-1 cursor-pointer hover:text-gray-800 dark:hover:text-white transition"
-            onMouseEnter={() => console.log('Hovering over icon')}
-          />
-          <div className="relative group">
-            <span className="underline cursor-pointer">Qwen 3.2</span>
-            <div className="absolute left-0 mt-1 w-32 bg-white dark:bg-gray-700 shadow-lg rounded-lg p-2 hidden group-hover:block">
-              <div className="flex items-center space-x-2 text-gray-800 dark:text-white">
-                <Check className="w-4 h-4" /> Qwen 3.2
-              </div>
-              <div className="flex items-center space-x-2 text-gray-800 dark:text-white">
-                GPT-4o
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </motion.div>
   );
 };
 
 export default Chatbot;
+
