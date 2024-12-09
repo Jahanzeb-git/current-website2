@@ -156,7 +156,7 @@ const Chatbot: React.FC = () => {
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
           />
           <button
-              className="p-3 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
+              className="p-3 rounded-full flex items-center justify-center bg-white dark:bg-black hover:opacity-80 active:opacity-100"
               onClick={() => handleSend(input)}
           >
               <ArrowUpRight className="w-5 h-5 text-gray-800 dark:text-white" />
