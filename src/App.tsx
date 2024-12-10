@@ -11,6 +11,25 @@ import Documentation from './pages/Documentation'; // Import Documentation
 import Chatbot from './components/chatbot'; // Import the Chatbot component
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 
+function App() {
+  const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
+
+  const toggleDocumentation = () => {
+    setIsDocumentationOpen(!isDocumentationOpen);
+  };
+
+  return (
+    <ThemeProvider>
+      <Router>
+        <AppContent
+          isDocumentationOpen={isDocumentationOpen}
+          toggleDocumentation={toggleDocumentation}
+        />
+      </Router>
+    </ThemeProvider>
+  );
+}
+
 function AppContent({ isDocumentationOpen, toggleDocumentation }) {
   const location = useLocation();
   const { theme } = useTheme();
