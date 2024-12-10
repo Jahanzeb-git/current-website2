@@ -11,25 +11,6 @@ import Documentation from './pages/Documentation'; // Import Documentation
 import Chatbot from './components/chatbot'; // Import the Chatbot component
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 
-function App() {
-  const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
-
-  const toggleDocumentation = () => {
-    setIsDocumentationOpen(!isDocumentationOpen);
-  };
-
-  return (
-    <ThemeProvider>
-      <Router>
-        <AppContent
-          isDocumentationOpen={isDocumentationOpen}
-          toggleDocumentation={toggleDocumentation}
-        />
-      </Router>
-    </ThemeProvider>
-  );
-}
-
 function AppContent({ isDocumentationOpen, toggleDocumentation }) {
   const location = useLocation();
   const { theme } = useTheme();
@@ -57,7 +38,9 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Navbar />
+        {/* Conditionally render Navbar */}
+        {location.pathname !== '/contact' && <Navbar />}
+        
         <main className="flex-grow">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
