@@ -4,8 +4,13 @@ import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import Chatbot from '../components/chatbot';
 
 const Contact = () => {
+  const [isChatbotVisible, setIsChatbotVisible] = useState(false);
+  const handleChatbotIntersect = (isVisible) => { setIsChatbotVisible(isVisible);
+};
+  
   return (
     <motion.div
+      <Navbar hide={isChatbotVisible} />
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -119,7 +124,7 @@ const Contact = () => {
         </motion.div>
       </div>
       {/* Add the chatbot component */}
-      <Chatbot />
+      <Chatbot onIntersect={handleChatbotIntersect} />
     </motion.div>
   );
 };
