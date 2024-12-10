@@ -3,13 +3,32 @@ import { motion } from 'framer-motion';
 import { ArrowUp, BookOpen, Check, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const Chatbot: React.FC = () => {
+
+const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIntersect }) => {
   const [messages, setMessages] = useState<{ type: 'user' | 'bot'; text: string }[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => onIntersect(entry.isIntersecting),
+      { threshold: 0.5 }
+    );
+
+    if (chatbotRef.current) {
+      observer.observe(chatbotRef.current);
+    }
+
+    return () => {
+      if (chatbotRef.current) {
+        observer.unobserve(chatbotRef.current);
+      }
+    };
+  }, [onIntersect]);
 
   useEffect(() => {
     const storedMessages = sessionStorage.getItem('chatMessages');
@@ -99,6 +118,7 @@ const Chatbot: React.FC = () => {
 
   return (
     <motion.div
+      ref={chatbotRef}
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
