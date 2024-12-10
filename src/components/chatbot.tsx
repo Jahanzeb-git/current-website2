@@ -60,7 +60,6 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, loading]);
-
   const handleSend = async (message: string) => {
     if (!message.trim()) return;
 
@@ -68,30 +67,34 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     setMessages((prevMessages) => [...prevMessages, { type: 'user', text: sanitizedInput }]);
     setInput('');
     setLoading(true);
-
+	  
     try {
-      const response = await fetch('/.netlify/functions/chatbot', {
+      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/app_response', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: sanitizedInput }),
-      });
+        body: JSON.stringify({
+          prompt: sanitizedInput,
+          system_prompt: "Role play a person named 'Jahanzeb Ahmed'...",
+          tokens: 40000, // Use larger tokens if backend can handle it
+       }),
+     });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch response from the API');
-      }
+     if (!response.ok) {
+       throw new Error(`Error from API: ${response.statusText}`);
+     }
 
-      const data = await response.json();
-      startTypingEffect(data.response || 'Sorry, there was an error.');
-    } catch (error) {
-      console.error('Error fetching bot response:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { type: 'bot', text: 'Sorry, something went wrong.' },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+     const data = await response.json();
+     startTypingEffect(data.output || 'Sorry, there was an error.');
+     } catch (error) {
+       console.error('Error fetching bot response:', error);
+       setMessages((prevMessages) => [
+    	  ...prevMessages,
+          { type: 'bot', text: 'Sorry, something went wrong.' },
+       ]);
+     } finally {
+       setLoading(false);
+     }
+};
 
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
