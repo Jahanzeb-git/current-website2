@@ -4,20 +4,7 @@ import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import Chatbot from '../components/chatbot';
 
 const Contact = () => {
-    return () => {
-      if (chatbotRef.current) {
-        observer.unobserve(chatbotRef.current);
-      }
-    };
-  }, []);
-
   return (
-    <div>
-      <Navbar isOverlapping={isChatbotOverlapping} />
-      <div ref={chatbotRef}>
-        <Chatbot />
-      </div>
-    </div>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
