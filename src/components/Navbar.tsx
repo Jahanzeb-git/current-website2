@@ -4,11 +4,16 @@ import { Moon, Sun, Menu, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Navbar = () => {
+const Navbar = ({ hide }) => {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => { 
+    setIsVisible(!hide); 
+  }, [hide]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,8 +50,9 @@ const Navbar = () => {
   return (
     <>
       <motion.nav 
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{ y: 0 }}
+        animate={{ y: isVisible ? 0 : -100 }}
+        transition={{ duration: 0.3 }}
         className={navbarClasses}
       >
         <div className="max-w-4xl mx-auto flex justify-between items-center md:justify-center">
