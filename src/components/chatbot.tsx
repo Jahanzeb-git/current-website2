@@ -240,14 +240,11 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
 		          <div className="relative group">
 		            <Cpu className="text-gray-600 dark:text-gray-300 w-4 h-4 cursor-pointer" />
 		            <div className="absolute left-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 w-40 hidden group-hover:block">
-		              <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
-		                <span>Qwen 3.2</span>
-		                <Check className="w-4 h-4 text-emerald-500" />
-		              </div>
-		              <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
-                        <span>GPT-4o</span>
-                      </div>
-                    </div>
+  			    	<div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
+    					<span>{selectedModel}</span>
+    					<Check className="w-4 h-4 text-emerald-500" />
+  				</div>
+			    </div>
                   </div>
                 </div>
               )}
