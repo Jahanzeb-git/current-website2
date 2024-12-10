@@ -141,21 +141,22 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 h-full shadow-lg z-20 p-4"
+            className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
+            style={{ top: '40px', left: '20px' }}
           >
             <button
-              className="text-gray-800 dark:text-white block mb-4"
+              className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
               onClick={() => navigate('/documentation')}
             >
               Documentation
             </button>
             <div>
               <button
-                className="text-gray-800 dark:text-white block mb-4"
+                className="text-gray-800 dark:text-white font-semibold block mb-2"
                 onClick={closeMenu}
               >
                 Change Model
@@ -165,15 +166,15 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
                   className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
                   onClick={() => selectModel('Qwen 3.2')}
                 >
-                  Qwen 3.2
-                  {selectedModel === 'Qwen 3.2' && <Check className="w-4 h-4 text-emerald-500" />}
+                  <span>Qwen 3.2</span>
+                  {selectedModel === 'Qwen 3.2' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
                 </button>
                 <button
-                  className="flex items-center justify-between text-gray-800 dark:text-white"
+                  className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
                   onClick={() => selectModel('GPT-4o')}
                 >
-                  GPT-4o
-                  {selectedModel === 'GPT-4o' && <Check className="w-4 h-4 text-emerald-500" />}
+                  <span>GPT-4o</span>
+                  {selectedModel === 'GPT-4o' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
                 </button>
               </div>
             </div>
