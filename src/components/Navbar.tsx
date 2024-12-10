@@ -41,10 +41,17 @@ const Navbar = () => {
     hover: { scale: 1.05 },
     active: { scale: 1.1 }
   };
+  const Navbar = ({ isOverlapping }: { isOverlapping: boolean }) => {
+  };
 
   return (
     <>
       <motion.nav 
+        initial={{ y: 0 }}
+        animate={{ y: isOverlapping ? '-100%' : '0%' }}
+        transition={{ duration: 0.3 }}
+        className="fixed w-full top-0 z-50 px-4 py-4 bg-white dark:bg-gray-800 shadow-lg"
+      >
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className={navbarClasses}
