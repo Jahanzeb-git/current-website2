@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowUp, BookOpen, Check, Cpu, Cog } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowUp, Check, Cpu, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIntersect }) => {
@@ -8,8 +8,9 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('Qwen 3.2');
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [selectedModel, setSelectedModel] = useState<string>('Qwen 3.2');
+  const [showTerms, setShowTerms] = useState<boolean>(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
     let i = 0;
-    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: '' }]); // Prepare space for bot message
+    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: '' }]);
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
@@ -95,7 +96,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
         clearInterval(interval);
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
-          newMessages[newMessages.length - 1].text = message; // Remove cursor at the end
+          newMessages[newMessages.length - 1].text = message;
           return newMessages;
         });
         setIsTyping(false);
@@ -109,19 +110,14 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     }
   };
 
-  const toggleSettings = () => setIsSettingsOpen(!isSettingsOpen);
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  const closeMenu = () => setMenuOpen(false);
 
   const selectModel = (model: string) => {
     setSelectedModel(model);
-    setIsSettingsOpen(false);
+    closeMenu();
   };
-
-  const preOptions = [
-    'Tell me about you.',
-    'What is your education?',
-    'Your projects?',
-    'Who was Adolf Hitler?',
-  ];
 
   return (
     <motion.div
@@ -131,36 +127,84 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       transition={{ delay: 0.5 }}
       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
     >
+      {/* Settings Icon */}
       <div
         className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
-        onClick={() => navigate('/documentation')}
+        onClick={toggleMenu}
       >
-        <BookOpen />
+        <Settings />
       </div>
-      <div
-        className="absolute top-4 right-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
-        onClick={toggleSettings}
-      >
-        <Cog />
-      </div>
-      {isSettingsOpen && (
-        <div className="absolute top-16 right-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-4 w-64 z-50">
-          <h4 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">Settings</h4>
-          <div>
-            <h5 className="font-medium text-gray-600 dark:text-gray-300 mb-2">Select Model:</h5>
-            {['Qwen 3.2', 'GPT-4o'].map((model) => (
-              <div
-                key={model}
-                onClick={() => selectModel(model)}
-                className="cursor-pointer flex items-center justify-between text-gray-800 dark:text-white px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition"
+
+      {/* Sliding Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 h-full shadow-lg z-20 p-4"
+          >
+            <button
+              className="text-gray-800 dark:text-white block mb-4"
+              onClick={() => navigate('/documentation')}
+            >
+              Documentation
+            </button>
+            <div>
+              <button
+                className="text-gray-800 dark:text-white block mb-4"
+                onClick={closeMenu}
               >
-                <span>{model}</span>
-                {selectedModel === model && <Check className="w-4 h-4 text-emerald-500" />}
+                Change Model
+              </button>
+              <div className="ml-4">
+                <button
+                  className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
+                  onClick={() => selectModel('Qwen 3.2')}
+                >
+                  Qwen 3.2
+                  {selectedModel === 'Qwen 3.2' && <Check className="w-4 h-4 text-emerald-500" />}
+                </button>
+                <button
+                  className="flex items-center justify-between text-gray-800 dark:text-white"
+                  onClick={() => selectModel('GPT-4o')}
+                >
+                  GPT-4o
+                  {selectedModel === 'GPT-4o' && <Check className="w-4 h-4 text-emerald-500" />}
+                </button>
               </div>
-            ))}
-          </div>
+            </div>
+            <button
+              className="text-gray-800 dark:text-white block"
+              onClick={() => setShowTerms(true)}
+            >
+              Terms
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal for Terms */}
+      {showTerms && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md relative"
+          >
+            <button
+              className="absolute top-2 right-2 text-gray-800 dark:text-white"
+              onClick={() => setShowTerms(false)}
+            >
+              Close
+            </button>
+            <p className="text-gray-800 dark:text-white">Terms content goes here.</p>
+          </motion.div>
         </div>
       )}
+
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         What can I help with?
       </h2>
@@ -168,18 +212,30 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
         Ask me anything about Data Science.
       </p>
       <div className="space-y-4 relative">
-        <div
-          ref={chatContainerRef}
-          className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
-        >
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${
-                msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'
-              }`}
-            >
-              {msg.text}
+		<div
+		  ref={chatContainerRef}
+		  className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
+		>
+		  {messages.map((msg, index) => (
+		    <div key={index} className={`mb-2 ${msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'}`}>
+		      {msg.text}
+		      {msg.type === 'bot' && !loading && (
+		        <div className="text-sm flex items-center space-x-1 mt-2">
+		          <span className="text-gray-600 dark:text-gray-300">Powered by</span>
+		          <div className="relative group">
+		            <Cpu className="text-gray-600 dark:text-gray-300 w-4 h-4 cursor-pointer" />
+		            <div className="absolute left-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 w-40 hidden group-hover:block">
+		              <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
+		                <span>Qwen 3.2</span>
+		                <Check className="w-4 h-4 text-emerald-500" />
+		              </div>
+		              <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
+                        <span>GPT-4o</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
           {loading && <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing... |</div>}
@@ -194,9 +250,9 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
           />
           <button
-            className="p-3 rounded-full flex items-center justify-center 
-            bg-black dark:bg-white hover:opacity-50 active:opacity-100"
-            onClick={() => handleSend(input)}
+              className="p-3 rounded-full flex items-center justify-center 
+              bg-black dark:bg-white hover:opacity-50 active:opacity-100"
+              onClick={() => handleSend(input)}
           >
             <ArrowUp className="w-5 h-5 text-white dark:text-black" />
           </button>
@@ -221,4 +277,3 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
 };
 
 export default Chatbot;
-
