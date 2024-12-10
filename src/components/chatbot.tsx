@@ -153,7 +153,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative ${isBlurred ? 'backdrop-blur-sm' : ''}`}
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative ${menuOpen ? 'backdrop-blur-sm' : ''}`}
     >
       {/* Settings Icon */}
       <div
