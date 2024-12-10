@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, Cpu, Settings, Check } from 'lucide-react';
+import { ArrowUp, BookOpen, Check, Cpu, Cog } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIntersect }) => {
@@ -8,10 +8,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-  const [isModelMenuOpen, setIsModelMenuOpen] = useState<boolean>(false);
-  const [selectedModel, setSelectedModel] = useState<'Qwen 3.2' | 'GPT 4o'>('Qwen 3.2');
-
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState('Qwen 3.2');
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -32,6 +30,23 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       }
     };
   }, [onIntersect]);
+
+  useEffect(() => {
+    const storedMessages = sessionStorage.getItem('chatMessages');
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
+    }
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
 
   const handleSend = async (message: string) => {
     if (!message.trim()) return;
@@ -68,7 +83,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
     let i = 0;
-    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: '' }]);
+    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: '' }]); // Prepare space for bot message
     const interval = setInterval(() => {
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
@@ -80,7 +95,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
         clearInterval(interval);
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
-          newMessages[newMessages.length - 1].text = message;
+          newMessages[newMessages.length - 1].text = message; // Remove cursor at the end
           return newMessages;
         });
         setIsTyping(false);
@@ -88,15 +103,25 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     }, 50);
   };
 
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSend(input);
+    }
   };
 
-  const selectModel = (model: 'Qwen 3.2' | 'GPT 4o') => {
+  const toggleSettings = () => setIsSettingsOpen(!isSettingsOpen);
+
+  const selectModel = (model: string) => {
     setSelectedModel(model);
-    setIsModelMenuOpen(false);
     setIsSettingsOpen(false);
   };
+
+  const preOptions = [
+    'Tell me about you.',
+    'What is your education?',
+    'Your projects?',
+    'Who was Adolf Hitler?',
+  ];
 
   return (
     <motion.div
@@ -106,101 +131,94 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       transition={{ delay: 0.5 }}
       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
     >
-      {/* Settings Icon */}
       <div
         className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
+        onClick={() => navigate('/documentation')}
+      >
+        <BookOpen />
+      </div>
+      <div
+        className="absolute top-4 right-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
         onClick={toggleSettings}
       >
-        <Settings />
+        <Cog />
       </div>
-
-      {/* Settings Panel */}
       {isSettingsOpen && (
-        <div className="absolute top-14 left-4 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 w-64 z-50">
-          <button
-            onClick={() => navigate('/documentation')}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            Documentation
-          </button>
-          <button
-            onClick={() => setIsModelMenuOpen(!isModelMenuOpen)}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            Change Model
-          </button>
-          {isModelMenuOpen && (
-            <div className="pl-4 mt-2">
-              <button
-                onClick={() => selectModel('Qwen 3.2')}
-                className="block w-full text-left px-4 py-2 flex items-center justify-between hover:bg-gray-200 dark:hover:bg-gray-700"
+        <div className="absolute top-16 right-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-4 w-64 z-50">
+          <h4 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">Settings</h4>
+          <div>
+            <h5 className="font-medium text-gray-600 dark:text-gray-300 mb-2">Select Model:</h5>
+            {['Qwen 3.2', 'GPT-4o'].map((model) => (
+              <div
+                key={model}
+                onClick={() => selectModel(model)}
+                className="cursor-pointer flex items-center justify-between text-gray-800 dark:text-white px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition"
               >
-                Qwen 3.2 {selectedModel === 'Qwen 3.2' && <Check />}
-              </button>
-              <button
-                onClick={() => selectModel('GPT 4o')}
-                className="block w-full text-left px-4 py-2 flex items-center justify-between hover:bg-gray-200 dark:hover:bg-gray-700"
-              >
-                GPT 4o {selectedModel === 'GPT 4o' && <Check />}
-              </button>
-            </div>
-          )}
-          <button className="block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700">
-            Terms
-          </button>
+                <span>{model}</span>
+                {selectedModel === model && <Check className="w-4 h-4 text-emerald-500" />}
+              </div>
+            ))}
+          </div>
         </div>
       )}
-
-      {/* Chatbot UI */}
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         What can I help with?
       </h2>
-      <div ref={chatContainerRef} className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-2 ${msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'}`}
-          >
-            {msg.text}
-            {msg.type === 'bot' && !loading && (
-              <div className="text-sm flex items-center space-x-1 mt-2">
-                <span className="text-gray-600 dark:text-gray-300">Powered by</span>
-                <div className="relative group">
-                  <Cpu className="text-gray-600 dark:text-gray-300 w-4 h-4 cursor-pointer" />
-                  <div className="absolute left-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 w-40 hidden group-hover:block">
-                    <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
-                      <span>Qwen 3.2</span>
-                      {selectedModel === 'Qwen 3.2' && <Check />}
-                    </div>
-                    <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
-                      <span>GPT-4o</span>
-                      {selectedModel === 'GPT 4o' && <Check />}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <div className="flex items-center space-x-3">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-grow p-3 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white"
-        />
-        <button
-          onClick={() => handleSend(input)}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg"
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
+        Ask me anything about Data Science.
+      </p>
+      <div className="space-y-4 relative">
+        <div
+          ref={chatContainerRef}
+          className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
         >
-          Send
-        </button>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`mb-2 ${
+                msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'
+              }`}
+            >
+              {msg.text}
+            </div>
+          ))}
+          {loading && <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing... |</div>}
+        </div>
+        <div className="flex items-center space-x-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message..."
+            className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+          />
+          <button
+            className="p-3 rounded-full flex items-center justify-center 
+            bg-black dark:bg-white hover:opacity-50 active:opacity-100"
+            onClick={() => handleSend(input)}
+          >
+            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
+          </button>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          {preOptions.map((option, index) => (
+            <button
+              key={index}
+              onClick={() => handleSend(option)}
+              className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
+          Bot can make mistakes. Check important info.
+        </p>
       </div>
     </motion.div>
   );
 };
 
 export default Chatbot;
+
