@@ -75,7 +75,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
         body: JSON.stringify({
           prompt: sanitizedInput,
           system_prompt: "Role play a person named 'Jahanzeb Ahmed'...",
-          tokens: 40000, // Use larger tokens if backend can handle it
+          tokens: 200, // Use larger tokens if backend can handle it
        }),
      });
 
