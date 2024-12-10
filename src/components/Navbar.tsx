@@ -43,6 +43,7 @@ const Navbar = () => {
   };
 
   return (
+    <>
       <motion.nav 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -142,6 +143,7 @@ const Navbar = () => {
               </motion.button>
             </div>
             
+            {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-4">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -172,6 +174,7 @@ const Navbar = () => {
         </div>
       </motion.nav>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
