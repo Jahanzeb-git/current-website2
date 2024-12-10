@@ -142,7 +142,6 @@ const Navbar = () => {
               </motion.button>
             </div>
             
-            {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-4">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -173,7 +172,6 @@ const Navbar = () => {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
