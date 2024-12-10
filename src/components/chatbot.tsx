@@ -14,6 +14,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+	
+  const preOptions = ["What is Data Science?", "Explain Machine Learning", "Tell me about AI", "What is Python?"];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
