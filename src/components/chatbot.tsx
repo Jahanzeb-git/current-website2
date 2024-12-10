@@ -11,9 +11,16 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>('Qwen 3.2');
   const [showTerms, setShowTerms] = useState<boolean>(false);
+  const [isBlurred, setIsBlurred] = useState<boolean>(false); 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (chatbotRef.current && !chatbotRef.current.contains(event.target as Node)) {
+      setMenuOpen(false); 
+    }
+  };
 	
   const preOptions = ["What is Data Science?", "Explain Machine Learning", "Tell me about AI", "What is Python?"];
 
@@ -121,7 +128,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     closeMenu();
   };
 	
-  const [isBlurred, setIsBlurred] = useState<boolean>(false); 
+  
   useEffect(() => {
   	if (menuOpen) {
     		setIsBlurred(true);  // Enable blur when the menu is open
