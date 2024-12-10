@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import Chatbot from '../components/chatbot';
+import Navbar from '../components/Navbar';
 
 const Contact = () => {
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
