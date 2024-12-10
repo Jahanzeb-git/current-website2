@@ -120,6 +120,21 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     setSelectedModel(model);
     closeMenu();
   };
+	
+  const [isBlurred, setIsBlurred] = useState<boolean>(false); 
+  useEffect(() => {
+  	if (menuOpen) {
+    		setIsBlurred(true);  // Enable blur when the menu is open
+    		document.addEventListener('click', handleClickOutside);  // Close menu on outside click
+  	} else {
+    		setIsBlurred(false);  // Disable blur when the menu is closed
+    		document.removeEventListener('click', handleClickOutside);
+    	}
+
+  	return () => {
+    		document.removeEventListener('click', handleClickOutside);  // Clean up event listener
+ 	};
+  }, [menuOpen]);
 
   return (
     <motion.div
