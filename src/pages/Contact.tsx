@@ -2,9 +2,38 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import Chatbot from '../components/chatbot';
+import Navbar from '../components/Navbar';
 
 const Contact = () => {
+  const [isChatbotOverlapping, setIsChatbotOverlapping] = useState(false);
+  const chatbotRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsChatbotOverlapping(!entry.isIntersecting); // If not in view, it's overlapping
+      },
+      { root: null, threshold: 0.1 }
+    );
+
+    if (chatbotRef.current) {
+      observer.observe(chatbotRef.current);
+    }
+
+    return () => {
+      if (chatbotRef.current) {
+        observer.unobserve(chatbotRef.current);
+      }
+    };
+  }, []);
+
   return (
+    <div>
+      <Navbar isOverlapping={isChatbotOverlapping} />
+      <div ref={chatbotRef}>
+        <Chatbot />
+      </div>
+    </div>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
