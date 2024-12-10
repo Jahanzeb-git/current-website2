@@ -160,6 +160,13 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
             className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
             style={{ top: '40px', left: '20px' }}
           >
+	    {/* Close Icon */}
+            <button
+    		className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
+    		onClick={closeMenu}
+  	    >
+    	        ✕
+  	    </button>
             <button
               className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
               onClick={() => navigate('/documentation')}
