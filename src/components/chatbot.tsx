@@ -225,10 +225,10 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
             <div className="text-gray-800 dark:text-white text-sm space-y-4">
               <h2 className="text-lg font-bold text-center">Terms of Use</h2>
               <p>
-                 This chatbot is created using Huggingface Inference API and is
+                 This chatbot is created for Educational and Personal Usage and is
                  displayed on the Contact page of my personal portfolio to showcase my
                  skills and education. Users can interact with it to learn about my
-                 profile or access the API for free by generating an API key from the
+                 profile or access the API for free to use in their application by generating an API key from the
                  Documentation page.
               </p>
               <p>
@@ -245,7 +245,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
                  service, you agree to the terms outlined here.
               </p>
               <p className="text-center">
-                 <strong>Contact:</strong> For support, visit the contact form or email [jahanzebahmed.mail@gmail.com].
+                 <strong>Contact:</strong> For support, visit the contact form or email jahanzebahmed.mail@gmail.com.
               </p>
            </div>
           </motion.div>
