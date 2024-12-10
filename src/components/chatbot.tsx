@@ -15,6 +15,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const [dots, setDots] = useState('');
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -67,6 +68,19 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     setMessages((prevMessages) => [...prevMessages, { type: 'user', text: sanitizedInput }]);
     setInput('');
     setLoading(true);
+
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      interval = setInterval(() => {
+        setDots((prev) => (prev.length < 3 ? prev + '.' : ''));
+      }, 500); // Adjust speed of dots
+    } else {
+      setDots('');
+    }
+
+    return () => clearInterval(interval);
+  }, [loading]);
 	  
     try {
       const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/app_response', {
@@ -285,7 +299,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
               )}
             </div>
           ))}
-          {loading && <div className="mb-2 text-gray-800 dark:text-white">Bot: Typing... |</div>}
+          {loading && <div className="mb-2 text-gray-800 dark:text-white">Thinking{dots}|</div>}
         </div>
         <div className="flex items-center space-x-3">
           <input
