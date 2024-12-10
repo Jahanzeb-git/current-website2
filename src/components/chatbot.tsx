@@ -17,10 +17,13 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const navigate = useNavigate();
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (chatbotRef.current && !chatbotRef.current.contains(event.target as Node)) {
-      setMenuOpen(false); 
+    if (
+      chatbotRef.current && !chatbotRef.current.contains(event.target as Node) &&
+      menuRef.current && !menuRef.current.contains(event.target as Node)
+    ) {
+      setMenuOpen(false); // Close menu if click is outside chatbot or menu
     }
-  };
+  }; 
 	
   const preOptions = ["What is Data Science?", "Explain Machine Learning", "Tell me about AI", "What is Python?"];
 
@@ -57,6 +60,20 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, loading]);
+
+  useEffect(() => {
+  	if (menuOpen) {
+    		setIsBlurred(true);  // Enable blur when the menu is open
+    		document.addEventListener('click', handleClickOutside);  // Close menu on outside click
+  	} else {
+    		setIsBlurred(false);  // Disable blur when the menu is closed
+    		document.removeEventListener('click', handleClickOutside);
+    	}
+
+  	return () => {
+    		document.removeEventListener('click', handleClickOutside);  // Clean up event listener
+ 	};
+  }, [menuOpen]);
 
   const handleSend = async (message: string) => {
     if (!message.trim()) return;
@@ -128,20 +145,6 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     closeMenu();
   };
 	
-  
-  useEffect(() => {
-  	if (menuOpen) {
-    		setIsBlurred(true);  // Enable blur when the menu is open
-    		document.addEventListener('click', handleClickOutside);  // Close menu on outside click
-  	} else {
-    		setIsBlurred(false);  // Disable blur when the menu is closed
-    		document.removeEventListener('click', handleClickOutside);
-    	}
-
-  	return () => {
-    		document.removeEventListener('click', handleClickOutside);  // Clean up event listener
- 	};
-  }, [menuOpen]);
 
   return (
     <motion.div
@@ -149,7 +152,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative"
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative ${isBlurred ? 'backdrop-blur-sm' : ''}`}
     >
       {/* Settings Icon */}
       <div
@@ -201,7 +204,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
               </div>
             </div>
             <button
-              className="text-gray-800 dark:text-white block"
+              className="text-gray-800 dark:text-white font-semibold block mb-2"
               onClick={() => setShowTerms(true)}
             >
               Terms
