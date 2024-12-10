@@ -11,7 +11,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>('Qwen 3.2');
   const [showTerms, setShowTerms] = useState<boolean>(false);
-  const [isBlurred, setIsBlurred] = useState<boolean>(false); 
+  const [isBlurred, setIsBlurred] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);  
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -149,6 +150,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   return (
     <motion.div
       ref={chatbotRef}
+      ref={menuRef}
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
