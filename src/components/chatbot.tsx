@@ -11,7 +11,6 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>('Qwen 3.2');
   const [showTerms, setShowTerms] = useState<boolean>(false);
-  const [isBlurred, setIsBlurred] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);  
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
@@ -61,20 +60,6 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, loading]);
-
-  useEffect(() => {
-  	if (menuOpen) {
-    		setIsBlurred(true);  // Enable blur when the menu is open
-    		document.addEventListener('click', handleClickOutside);  // Close menu on outside click
-  	} else {
-    		setIsBlurred(false);  // Disable blur when the menu is closed
-    		document.removeEventListener('click', handleClickOutside);
-    	}
-
-  	return () => {
-    		document.removeEventListener('click', handleClickOutside);  // Clean up event listener
- 	};
-  }, [menuOpen]);
 
   const handleSend = async (message: string) => {
     if (!message.trim()) return;
