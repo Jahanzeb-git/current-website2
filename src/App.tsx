@@ -9,6 +9,7 @@ import Notes from './pages/Notes';
 import Contact from './pages/Contact';
 import Documentation from './pages/Documentation'; // Import Documentation
 import Chatbot from './components/chatbot'; // Import the Chatbot component
+import ImageGeneration from './components/ImageGeneration'; 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 function App() {
@@ -69,6 +70,7 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
               <Route path="/contact" element={<Contact />} />
               <Route path="/chatbot" element={<Chatbot />} /> {/* Add Chatbot route */}
               <Route path="/documentation" element={<Documentation />} /> {/* Add Documentation route */}
+              <Route path="/imagegeneration" element={<ImageGeneration />} />
             </Routes>
           </AnimatePresence>
         </main>
