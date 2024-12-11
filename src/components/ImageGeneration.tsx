@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Message } from '../types/chat';
-import { ImageCollage } from './ImageCollage';
-import { ProcessingMessages } from './ProcessingMessages';
+import { ImageCollage } from '../components/ImageCollage';
+import { ProcessingMessages } from '../components/ProcessingMessages';
 
 interface ImageGenerationProps {
   messages: Message[];
