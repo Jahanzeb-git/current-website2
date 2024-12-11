@@ -177,11 +177,11 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
               Documentation
             </button>
 	    <button
-                className="text-gray-800 dark:text-white font-semibold block mb-2"
-                onClick={closeMenu}
-              >
-                Try Image Generation
-              </button>
+              className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
+              onClick={() => navigate('/ImageGeneration')}
+            >
+              Try Image Generation
+            </button>
             <div>
               <button
                 className="text-gray-800 dark:text-white font-semibold block mb-2"
