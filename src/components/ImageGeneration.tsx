@@ -8,6 +8,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const [input, setInput] = useState<string>('');
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>('Stable Diffusion');
+  const [messages, setMessages] = useState<string[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);  
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
@@ -65,6 +66,27 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
     closeMenu();
   };
 
+  const generateImage = async () => {
+    setMessages((prev) => [...prev, 'Generating image...']);
+    try {
+      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: input })
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setImages((prev) => [result.image, ...prev]);
+      } else {
+        throw new Error('Image generation failed');
+      }
+    } catch (error) {
+      setMessages((prev) => [...prev, 'Image generation failed.']);
+    } finally {
+      setMessages((prev) => [...prev, 'Generation complete.']);
+    }
+  };
+
   return (
     <motion.div
       ref={imageGeneratorRef}
@@ -93,20 +115,20 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
             style={{ top: '40px', left: '20px' }}
           >
-	    {/* Close Icon */}
+            {/* Close Icon */}
             <button
-    		className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
-    		onClick={closeMenu}
-  	    >
-    	        ✕
-  	    </button>
+              className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
+              onClick={closeMenu}
+            >
+              ✕
+            </button>
             <button
               className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
               onClick={() => navigate('/documentation')}
             >
               Documentation
             </button>
-	    <button
+            <button
               className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
               onClick={() => navigate('/image-generation')}
             >
@@ -147,16 +169,28 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
         Create stunning visuals using your imagination.
       </p>
       <div className="space-y-4 relative">
-	<div
-	  ref={imageContainerRef}
-	  className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
-	>
-	  {images.map((img, index) => (
-	    <div key={index} className="mb-2">
-	      <img src={img} alt={`Generated ${index}`} className="w-full rounded-lg" />
-	    </div>
-	  ))}
-	</div>
+        <div
+          ref={imageContainerRef}
+          className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
+        >
+          {images.map((img, index) => (
+            <div key={index} className="mb-2">
+              <img src={img} alt={`Generated ${index}`} className="w-full rounded-lg" />
+            </div>
+          ))}
+        </div>
+        {messages.length > 0 && (
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            className="text-gray-600 dark:text-gray-300 text-center"
+          >
+            {messages.map((msg, index) => (
+              <p key={index}>{msg}</p>
+            ))}
+          </motion.div>
+        )}
         <div className="flex items-center space-x-3">
           <input
             type="text"
@@ -166,9 +200,9 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
           />
           <button
-              className="p-3 rounded-full flex items-center justify-center 
+            className="p-3 rounded-full flex items-center justify-center 
               bg-black dark:bg-white hover:opacity-50 active:opacity-100"
-              onClick={() => {}}
+            onClick={generateImage}
           >
             <ArrowUp className="w-5 h-5 text-white dark:text-black" />
           </button>
@@ -179,6 +213,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
 };
 
 export default ImageGenerator;
+
 
 
 
