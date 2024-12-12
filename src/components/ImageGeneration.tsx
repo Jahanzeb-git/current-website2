@@ -22,6 +22,13 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
       setMenuOpen(false); // Close menu if click is outside image generator or menu
     }
   }; 
+  const detailedPrompts = {
+  	"A Realistic Cat": "A highly detailed and realistic depiction of a cat with fur texture and lifelike eyes.",
+  	"An Astronaut on Moon": "An astronaut standing on the surface of the moon with Earth visible in the background.",
+  	"A Beautiful Girl": "A portrait of a beautiful girl with intricate details in her hair and eyes.",
+  	"Handsome Men": "A detailed portrait of a handsome man with a sharp jawline and expressive eyes."
+	};
+
 	
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -215,6 +222,17 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             <ArrowUp className="w-5 h-5 text-white dark:text-black" />
           </button>
         </div>
+	<div className="flex flex-wrap justify-center gap-2 mb-4">
+  		{Object.keys(detailedPrompts).map((tag, index) => (
+    			<button
+      				key={index}
+      				onClick={() => setInput(detailedPrompts[tag])}
+      				className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
+    			>
+      				{tag}
+    			</button>
+  		))}
+	</div>
       </div>
     </motion.div>
   );
