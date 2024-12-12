@@ -9,7 +9,6 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>('Stable Diffusion');
   const [messages, setMessages] = useState<string[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);  
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
@@ -135,7 +134,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   useEffect(() => {
   	const interval = setInterval(() => {
     		setCurrentMessageIndex(prevIndex => (prevIndex + 1) % loadingMessages.length);
- 	}, 5000); // 10-second intervals
+ 	}, 10000); // 10-second intervals
 
   	return () => clearInterval(interval);
   }, []);
@@ -151,7 +150,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   };
 
   const generateImage = async () => {
-  setIsGenerating(true);
+  setMessages((prev) => [...prev, 'Generating image...']);
   
   try {
     const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
@@ -177,7 +176,6 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
     setMessages((prev) => [...prev, `Image generation failed: ${error.message}`]);
   } finally {
     setMessages((prev) => [...prev, 'Generation complete.']);
-    setIsGenerating(false);
   }
 };
 
@@ -225,9 +223,9 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             </button>
             <button
               className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
-              onClick={() => navigate('/contact')}
+              onClick={() => navigate('/image-generation')}
             >
-              Try Chatbot
+              Try Image Generation
             </button>
             <div>
               <button
@@ -272,35 +270,17 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             </div>
           ))}
         </div>
-	      
-        {isGenerating && (
-  		<div className="flex items-center space-x-3 justify-center">
-    			<div className="loader"></div>
-    			<motion.div
-      				key={currentMessageIndex}
-      				initial={{ opacity: 0 }}
-      				animate={{ opacity: 1 }}
-      				exit={{ opacity: 0 }}
-      				transition={{ duration: 0.5 }} // Smooth transition effect
-      				className="text-gray-600 dark:text-gray-300 text-center"
-    			>
-      				{loadingMessages[currentMessageIndex]}
-    			</motion.div>
-  		</div>
-	)}
-	{messages.length > 0 && (
+        <div className="flex items-center space-x-3 justify-center">
   		<motion.div
-    			initial={{ y: -20, opacity: 0 }}
-    			animate={{ y: 0, opacity: 1 }}
-    			exit={{ y: -20, opacity: 0 }}
-    			transition={{ duration: 0.5 }} // Smooth transition
-    			className="text-gray-600 dark:text-gray-300 text-center space-y-2"
+    			key={currentMessageIndex}
+    			initial={{ opacity: 0 }}
+    			animate={{ opacity: 1 }}
+    			exit={{ opacity: 0 }}
+    			className="text-gray-600 dark:text-gray-300 text-center"
   		>
-    			{messages.map((msg, index) => (
-      				<p key={index}>{msg}</p>
-    			))}
+    			{loadingMessages[currentMessageIndex]}
   		</motion.div>
-	)}
+	</div>
         <div className="flex items-center space-x-3">
           <input
             type="text"
@@ -308,17 +288,14 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             onChange={(e) => setInput(e.target.value)}
             placeholder="Describe your image..."
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-	    disabled={isGenerating}
           />
           <button
-  		className={`p-3 rounded-full flex items-center justify-center 
-    			bg-black dark:bg-white hover:opacity-50 active:opacity-100 
-    			${isGenerating ? 'opacity-30 cursor-not-allowed' : ''}`}
-  		onClick={generateImage}
-  		disabled={isGenerating}
-	>
-  		<ArrowUp className="w-5 h-5 text-white dark:text-black" />
-	</button>
+            className="p-3 rounded-full flex items-center justify-center 
+              bg-black dark:bg-white hover:opacity-50 active:opacity-100"
+            onClick={generateImage}
+          >
+            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
+          </button>
         </div>
 	<div className="flex flex-wrap justify-center gap-2 mb-4">
   		{Object.keys(detailedPrompts).map((tag, index) => (
