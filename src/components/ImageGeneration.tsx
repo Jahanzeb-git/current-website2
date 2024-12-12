@@ -233,6 +233,9 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
     			</button>
   		))}
 	</div>
+	<div className="text-center text-gray-600 dark:text-gray-300 mb-4">
+  		AI Generated Image. Check for Mistakes.
+	</div>
       </div>
     </motion.div>
   );
