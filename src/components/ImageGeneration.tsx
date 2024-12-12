@@ -67,26 +67,35 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   };
 
   const generateImage = async () => {
-    setMessages((prev) => [...prev, 'Generating image...']);
-    try {
-      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input })
-      });
-      if (response.ok) {
-        const result = await response.json();
-        const base64Image = `data:image/png;base64,${result.output}`;
-        setImages((prev) => [base64Image, ...prev]);
-      } else {
-        throw new Error('Image generation failed');
-      }
-    } catch (error) {
-      setMessages((prev) => [...prev, 'Image generation failed.']);
-    } finally {
-      setMessages((prev) => [...prev, 'Generation complete.']);
+  setMessages((prev) => [...prev, 'Generating image...']);
+  
+  try {
+    const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: input })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  };
+    
+    const result = await response.json();
+    if (!result.output) {
+      throw new Error('Invalid response format: Missing output');
+    }
+    
+    const base64Image = `data:image/png;base64,${result.output}`;
+    setImages((prev) => [base64Image, ...prev]);
+    
+  } catch (error) {
+    console.error('Image generation failed:', error);
+    setMessages((prev) => [...prev, `Image generation failed: ${error.message}`]);
+  } finally {
+    setMessages((prev) => [...prev, 'Generation complete.']);
+  }
+};
+
 
   return (
     <motion.div
