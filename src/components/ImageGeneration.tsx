@@ -151,7 +151,6 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   };
 
   const generateImage = async () => {
-  setMessages((prev) => [...prev, 'Generating image...']);
   setIsGenerating(true);
   
   try {
@@ -178,6 +177,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
     setMessages((prev) => [...prev, `Image generation failed: ${error.message}`]);
   } finally {
     setMessages((prev) => [...prev, 'Generation complete.']);
+    setIsGenerating(false);
   }
 };
 
@@ -308,14 +308,17 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             onChange={(e) => setInput(e.target.value)}
             placeholder="Describe your image..."
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+	    disabled={isGenerating}
           />
           <button
-            className="p-3 rounded-full flex items-center justify-center 
-              bg-black dark:bg-white hover:opacity-50 active:opacity-100"
-            onClick={generateImage}
-          >
-            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
-          </button>
+  		className={`p-3 rounded-full flex items-center justify-center 
+    			bg-black dark:bg-white hover:opacity-50 active:opacity-100 
+    			${isGenerating ? 'opacity-30 cursor-not-allowed' : ''}`}
+  		onClick={generateImage}
+  		disabled={isGenerating}
+	>
+  		<ArrowUp className="w-5 h-5 text-white dark:text-black" />
+	</button>
         </div>
 	<div className="flex flex-wrap justify-center gap-2 mb-4">
   		{Object.keys(detailedPrompts).map((tag, index) => (
