@@ -13,6 +13,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -29,7 +30,73 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   	"Handsome Men": "A detailed portrait of a handsome man with a sharp jawline and expressive eyes."
 	};
 
-	
+  const loadingMessages = [
+  	"Understanding prompt...",
+  	"Making dynamics...",
+  	"Edge correcting...",
+  	"Improving colors...",
+  	"Adding depth...",
+  	"Blurring background...",
+  	"Enhancing sharpness...",
+  	"Generating textures...",
+  	"Combining elements...",
+  	"Adjusting lighting...",
+  	"Rendering shadows...",
+  	"Fixing distortions...",
+  	"Optimizing details...",
+  	"Refining composition...",
+  	"Adding contrast...",
+  	"Applying styles...",
+  	"Customizing gradients...",
+  	"Scaling image...",
+  	"Shaping curves...",
+  	"Creating layers...",
+  	"Balancing highlights...",
+  	"Adding filters...",
+  	"Cloning objects...",
+  	"Combining layers...",
+  	"Synchronizing colors...",
+  	"Adjusting tones...",
+  	"Applying effects...",
+  	"Rendering background...",
+  	"Smoothing edges...",
+  	"Generating reflections...",
+  	"Mapping coordinates...",
+  	"Rendering shapes...",
+  	"Optimizing textures...",
+  	"Adding borders...",
+  	"Creating gradients...",
+  	"Applying effects...",
+  	"Synchronizing shades...",
+  	"Rendering complex structures...",
+ 	 "Adding shadows...",
+  	"Combining overlays...",
+  	"Fixing alignment...",
+  	"Generating gradients...",
+  	"Enhancing features...",
+  	"Refining details...",
+  	"Integrating elements...",
+  	"Balancing contrast...",
+  	"Generating variations...",
+  	"Applying transformations...",
+  	"Rendering intricate designs...",
+  	"Adding patterns...",
+  	"Optimizing composition...",
+  	"Blending layers...",
+  	"Creating unique styles...",
+  	"Scaling objects...",
+  	"Shaping edges...",
+  	"Generating previews...",
+  	"Applying advanced corrections...",
+  	"Customizing visuals...",
+  	"Rendering dynamic visuals...",
+  	"Fixing imperfections...",
+  	"Adding reflections...",
+  	"Creating interactive elements...",
+  	"Smoothing textures...",
+  	"Combining visual elements..."
+	];
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => onIntersect(entry.isIntersecting),
@@ -63,6 +130,15 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
       imageContainerRef.current.scrollTop = imageContainerRef.current.scrollHeight;
     }
   }, [images]);
+
+  useEffect(() => {
+  	const interval = setInterval(() => {
+    		setCurrentMessageIndex(prevIndex => (prevIndex + 1) % loadingMessages.length);
+ 	}, 10000); // 10-second intervals
+
+  	return () => clearInterval(interval);
+  }, []);
+
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
@@ -194,18 +270,17 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             </div>
           ))}
         </div>
-        {messages.length > 0 && (
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            className="text-gray-600 dark:text-gray-300 text-center"
-          >
-            {messages.map((msg, index) => (
-              <p key={index}>{msg}</p>
-            ))}
-          </motion.div>
-        )}
+        <div className="flex items-center space-x-3 justify-center">
+  		<motion.div
+    			key={currentMessageIndex}
+    			initial={{ opacity: 0 }}
+    			animate={{ opacity: 1 }}
+    			exit={{ opacity: 0 }}
+    			className="text-gray-600 dark:text-gray-300 text-center"
+  		>
+    			{loadingMessages[currentMessageIndex]}
+  		</motion.div>
+	</div>
         <div className="flex items-center space-x-3">
           <input
             type="text"
