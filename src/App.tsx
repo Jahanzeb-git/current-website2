@@ -8,8 +8,8 @@ import About from './pages/About';
 import Notes from './pages/Notes';
 import Contact from './pages/Contact';
 import Documentation from './pages/Documentation'; // Import Documentation
+import ImageGeneration from './pages/ImgGen';
 import Chatbot from './components/chatbot'; // Import the Chatbot component
-import ImageGeneration from './components/ImageGeneration';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 function App() {
