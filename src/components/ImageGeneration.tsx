@@ -9,12 +9,6 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>('Stable Diffusion');
   const [messages, setMessages] = useState<string[]>([]);
-  const [tags] = useState([
-    { label: 'A Realistic Cat', prompt: 'A highly detailed realistic depiction of a cat with natural fur and expression' },
-    { label: 'Astronaut on Moon', prompt: 'A high-resolution image of an astronaut on the moon' },
-    { label: 'Beautiful Girl', prompt: 'A stunning, photorealistic portrait of a beautiful girl' },
-    { label: 'Handsome Man', prompt: 'A sharp, realistic depiction of a handsome man in a modern setting' }
-  ]);
   const menuRef = useRef<HTMLDivElement>(null);  
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
@@ -73,50 +67,35 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   };
 
   const generateImage = async () => {
-    setMessages((prev) => [...prev, 'Generating image...']);
+  setMessages((prev) => [...prev, 'Generating image...']);
+  
+  try {
+    const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: input })
+    });
     
-    const attentiveMessages = ['Understanding prompt...', 'Making edges...', 'Enhancing details...', 'Generating Image...'];
-    let index = 0;
-    
-    try {
-      const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      if (!result.output) {
-        throw new Error('Invalid response format: Missing output');
-      }
-      
-      const base64Image = `data:image/png;base64,${result.output}`;
-      setImages((prev) => [base64Image, ...prev]);
-      
-      // Clear attentive messages
-      setMessages((prev) => [...prev, 'Generation complete.']);
-      
-    } catch (error) {
-      console.error('Image generation failed:', error);
-      setMessages((prev) => [...prev, `Image generation failed: ${error.message}`]);
-    } finally {
-      setMessages((prev) => [...prev, 'Generation complete.']);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    // Display attentive messages one by one
-    const messageInterval = setInterval(() => {
-      if (index < attentiveMessages.length) {
-        setMessages((prev) => [...prev, attentiveMessages[index]]);
-        index += 1;
-      } else {
-        clearInterval(messageInterval);
-      }
-    }, 10000); // 10 seconds interval
-  };
+    const result = await response.json();
+    if (!result.output) {
+      throw new Error('Invalid response format: Missing output');
+    }
+    
+    const base64Image = `data:image/png;base64,${result.output}`;
+    setImages((prev) => [base64Image, ...prev]);
+    
+  } catch (error) {
+    console.error('Image generation failed:', error);
+    setMessages((prev) => [...prev, `Image generation failed: ${error.message}`]);
+  } finally {
+    setMessages((prev) => [...prev, 'Generation complete.']);
+  }
+};
+
 
   return (
     <motion.div
@@ -200,7 +179,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
       <div className="space-y-4 relative">
         <div
           ref={imageContainerRef}
-          className="h-80 overflow-y-auto bg-transparent p-4 rounded-lg"
+          className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
         >
           {images.map((img, index) => (
             <div key={index} className="mb-2">
@@ -208,7 +187,6 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             </div>
           ))}
         </div>
-        
         {messages.length > 0 && (
           <motion.div
             initial={{ y: -20, opacity: 0 }}
@@ -221,21 +199,20 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             ))}
           </motion.div>
         )}
-
         <div className="flex items-center space-x-3">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && generateImage()}
             placeholder="Describe your image..."
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
           />
           <button
-            className="p-3 rounded-full flex items-center justify-center bg-indigo-500 text-white hover:bg-indigo-600 focus:outline-none"
+            className="p-3 rounded-full flex items-center justify-center 
+              bg-black dark:bg-white hover:opacity-50 active:opacity-100"
             onClick={generateImage}
           >
-            <ArrowUp className="w-5 h-5" />
+            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
           </button>
         </div>
       </div>
