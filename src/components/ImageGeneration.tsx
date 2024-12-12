@@ -76,7 +76,8 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
       });
       if (response.ok) {
         const result = await response.json();
-        setImages((prev) => [result.image, ...prev]);
+        const base64Image = `data:image/png;base64,${result.output}`;
+        setImages((prev) => [base64Image, ...prev]);
       } else {
         throw new Error('Image generation failed');
       }
@@ -165,9 +166,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
         Generate Images
       </h2>
-      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-        Create stunning visuals using your imagination.
-      </p>
+
       <div className="space-y-4 relative">
         <div
           ref={imageContainerRef}
@@ -213,6 +212,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
 };
 
 export default ImageGenerator;
+
 
 
 
