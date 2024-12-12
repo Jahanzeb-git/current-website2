@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Settings } from 'lucide-react'; // Replace with actual icon import
 
 const ImageGeneration = () => {
   const [input, setInput] = useState("");
   const [images, setImages] = useState([]); // Stores generated images
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false); // Menu state
+  const [processingMessageIndex, setProcessingMessageIndex] = useState(0);
 
   // Mock collage placeholder (replace with actual collage images)
   const placeholderCollage = [
@@ -14,6 +18,17 @@ const ImageGeneration = () => {
     "https://via.placeholder.com/150",
   ];
 
+  const processingMessages = [
+    "Analyzing prompt...",
+    "Adding structure...",
+    "Refining details...",
+    "Finalizing image...",
+  ];
+
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  const closeMenu = () => setMenuOpen(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -21,7 +36,13 @@ const ImageGeneration = () => {
     setIsLoading(true);
     setError(null);
 
+    let messageInterval;
     try {
+      // Start processing messages animation
+      messageInterval = setInterval(() => {
+        setProcessingMessageIndex((prev) => (prev + 1) % processingMessages.length);
+      }, 1000);
+
       const response = await fetch("/generate-image", {
         method: "POST",
         headers: {
@@ -41,6 +62,7 @@ const ImageGeneration = () => {
     } catch (err) {
       setError("Something went wrong while generating the image. Please try again.");
     } finally {
+      clearInterval(messageInterval);
       setIsLoading(false);
     }
   };
@@ -48,6 +70,48 @@ const ImageGeneration = () => {
   return (
     <div className="flex flex-col items-center w-full h-full bg-gray-100 dark:bg-gray-900 p-4">
       <div className="max-w-3xl w-full">
+        {/* Settings Icon */}
+        <div
+          className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
+          onClick={toggleMenu}
+        >
+          <Settings />
+        </div>
+
+        {/* Sliding Menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
+              style={{ top: "40px", left: "20px" }}
+            >
+              {/* Close Icon */}
+              <button
+                className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
+                onClick={closeMenu}
+              >
+                ✕
+              </button>
+              <button
+                className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
+                onClick={closeMenu}
+              >
+                Try Chatbot
+              </button>
+              <button
+                className="text-gray-800 dark:text-white font-semibold block mb-2"
+                onClick={() => setShowTerms(true)}
+              >
+                Terms
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Heading and Description */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Image Generation</h1>
@@ -59,7 +123,7 @@ const ImageGeneration = () => {
         {/* Chat Area */}
         <div className="relative bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-4 h-96">
           {images.length === 0 ? (
-            <div className="flex flex-wrap justify-center items-center h-full p-4">
+            <div className="flex flex-wrap justify-center items-center h-full p-4 animate-pulse">
               {placeholderCollage.map((src, index) => (
                 <img
                   key={index}
@@ -72,20 +136,33 @@ const ImageGeneration = () => {
           ) : (
             <div className="flex flex-col-reverse h-full overflow-y-auto p-4">
               {images.map((image, index) => (
-                <div key={index} className="mb-4">
+                <div key={index} className="relative mb-4">
                   <img
                     src={image}
                     alt={`Generated ${index + 1}`}
                     className="w-full rounded-lg shadow"
                   />
+                  <div
+                    className="absolute bottom-2 right-2 bg-gray-800 text-white text-xs py-1 px-2 rounded-lg cursor-pointer hover:bg-gray-600"
+                    onClick={() => {
+                      const a = document.createElement('a');
+                      a.href = image;
+                      a.download = `image-${index + 1}.png`;
+                      a.click();
+                    }}
+                  >
+                    Download Image
+                  </div>
                 </div>
               ))}
             </div>
           )}
 
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75">
-              <p className="text-gray-700 dark:text-gray-300">Generating your image...</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 bg-opacity-75">
+              <p className="text-gray-700 dark:text-gray-300">
+                {processingMessages[processingMessageIndex]}
+              </p>
             </div>
           )}
         </div>
@@ -112,7 +189,12 @@ const ImageGeneration = () => {
         <div className="mb-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">Quick prompts:</p>
           <div className="flex flex-wrap gap-2 mt-2">
-            {["Sunset", "Portrait", "Fantasy World", "Modern Art"].map((tag, index) => (
+            {[
+              "Sunset",
+              "Portrait",
+              "Fantasy World",
+              "Modern Art",
+            ].map((tag, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full cursor-pointer text-sm"
@@ -126,7 +208,9 @@ const ImageGeneration = () => {
 
         {/* Disclaimer */}
         <div className="text-sm text-gray-600 dark:text-gray-400">
-          <p>Note: The AI may not always produce perfect results. If something seems off, try rephrasing your prompt for better output.</p>
+          <p>
+            Note: The AI may not always produce perfect results. If something seems off, try rephrasing your prompt for better output.
+          </p>
         </div>
       </div>
     </div>
@@ -134,4 +218,5 @@ const ImageGeneration = () => {
 };
 
 export default ImageGeneration;
+
 
