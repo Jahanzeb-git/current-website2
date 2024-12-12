@@ -97,128 +97,139 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
 };
 
 
-  return (
-    <motion.div
-      ref={imageGeneratorRef}
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.5 }}
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative ${menuOpen ? 'backdrop-blur-sm' : ''}`}
+return (
+  <motion.div
+    ref={imageGeneratorRef}
+    initial={{ y: 20, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ delay: 0.5 }}
+    className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative ${menuOpen ? 'backdrop-blur-sm' : ''}`}
+  >
+    {/* Settings Icon */}
+    <div
+      className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
+      onClick={toggleMenu}
     >
-      {/* Settings Icon */}
-      <div
-        className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
-        onClick={toggleMenu}
-      >
-        <Settings />
-      </div>
+      <Settings />
+    </div>
 
-      {/* Sliding Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            ref={menuRef}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
-            style={{ top: '40px', left: '20px' }}
+    {/* Sliding Menu */}
+    <AnimatePresence>
+      {menuOpen && (
+        <motion.div
+          ref={menuRef}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          className="absolute top-0 left-0 bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
+          style={{ top: '40px', left: '20px' }}
+        >
+          {/* Close Icon */}
+          <button
+            className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
+            onClick={closeMenu}
           >
-            {/* Close Icon */}
+            ✕
+          </button>
+          <button
+            className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
+            onClick={() => navigate('/documentation')}
+          >
+            Documentation
+          </button>
+          <button
+            className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
+            onClick={() => navigate('/image-generation')}
+          >
+            Try Image Generation
+          </button>
+          <div>
             <button
-              className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
+              className="text-gray-800 dark:text-white font-semibold block mb-2"
               onClick={closeMenu}
             >
-              ✕
+              Change Model
             </button>
-            <button
-              className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
-              onClick={() => navigate('/documentation')}
-            >
-              Documentation
-            </button>
-            <button
-              className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
-              onClick={() => navigate('/image-generation')}
-            >
-              Try Image Generation
-            </button>
-            <div>
+            <div className="ml-4">
               <button
-                className="text-gray-800 dark:text-white font-semibold block mb-2"
-                onClick={closeMenu}
+                className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
+                onClick={() => selectModel('Stable Diffusion')}
               >
-                Change Model
+                <span>Stable Diffusion</span>
+                {selectedModel === 'Stable Diffusion' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
               </button>
-              <div className="ml-4">
-                <button
-                  className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
-                  onClick={() => selectModel('Stable Diffusion')}
-                >
-                  <span>Stable Diffusion</span>
-                  {selectedModel === 'Stable Diffusion' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
-                </button>
-                <button
-                  className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
-                  onClick={() => selectModel('DALL-E')}
-                >
-                  <span>DALL-E</span>
-                  {selectedModel === 'DALL-E' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
-                </button>
-              </div>
+              <button
+                className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
+                onClick={() => selectModel('DALL-E')}
+              >
+                <span>DALL-E</span>
+                {selectedModel === 'DALL-E' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
+              </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
 
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
-        Generate Images
-      </h2>
+    <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
+      Generate Images
+    </h2>
 
-      <div className="space-y-4 relative">
-        <div
-          ref={imageContainerRef}
-          className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
-        >
-          {images.map((img, index) => (
-            <div key={index} className="mb-2">
-              <img src={img} alt={`Generated ${index}`} className="w-full rounded-lg" />
-            </div>
-          ))}
-        </div>
-        {messages.length > 0 && (
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            className="text-gray-600 dark:text-gray-300 text-center"
-          >
-            {messages.map((msg, index) => (
-              <p key={index}>{msg}</p>
-            ))}
-          </motion.div>
-        )}
-        <div className="flex items-center space-x-3">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Describe your image..."
-            className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-          />
-          <button
-            className="p-3 rounded-full flex items-center justify-center 
-              bg-black dark:bg-white hover:opacity-50 active:opacity-100"
-            onClick={generateImage}
-          >
-            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
-          </button>
-        </div>
+    <div className="space-y-4 relative">
+      <div ref={imageContainerRef} className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg">
+        {images.map((img, index) => (
+          <div key={index} className="mb-2">
+            <img src={img} alt={`Generated ${index}`} className="w-full rounded-lg" />
+          </div>
+        ))}
       </div>
-    </motion.div>
-  );
-};
+      {messages.length > 0 && (
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          className="text-gray-600 dark:text-gray-300 text-center"
+        >
+          {messages.map((msg, index) => (
+            <p key={index}>{msg}</p>
+          ))}
+        </motion.div>
+      )}
+      <div className="flex items-center space-x-3">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Describe your image..."
+          className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+        />
+        <button
+          className="p-3 rounded-full flex items-center justify-center bg-black dark:bg-white hover:opacity-50 active:opacity-100"
+          onClick={generateImage}
+        >
+          <ArrowUp className="w-5 h-5 text-white dark:text-black" />
+        </button>
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-2 mb-4">
+        {Object.keys(detailedPrompts).map((tag, index) => (
+          <button
+            key={index}
+            onClick={() => setInput(detailedPrompts[tag])}
+            className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      <div className="text-center text-gray-600 dark:text-gray-300 mb-4">
+        AI Generated Image. Check for Mistakes.
+      </div>
+    </div>
+  </motion.div>
+);
 
 export default ImageGenerator;
 
