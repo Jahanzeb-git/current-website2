@@ -15,6 +15,8 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const latestImageRef = useRef<HTMLDivElement>(null);
+
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -139,6 +141,13 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
 
   	return () => clearInterval(interval);
   }, []);
+	
+	
+  useEffect(() => {
+  	if (latestImageRef.current) {
+    		latestImageRef.current.scrollIntoView({ behavior: 'smooth' });
+  	}
+  }, [images]);
 
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
@@ -267,7 +276,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
           className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
         >
           {images.map((img, index) => (
-            <div key={index} className="mb-2">
+            <div key={index} ref={index === 0 ? latestImageRef : null}  className="mb-2">
               <img src={img} alt={`Generated ${index}`} className="w-full rounded-lg" />
             </div>
           ))}
