@@ -9,6 +9,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>('Stable Diffusion');
   const [messages, setMessages] = useState<string[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);  
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
@@ -134,7 +135,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   useEffect(() => {
   	const interval = setInterval(() => {
     		setCurrentMessageIndex(prevIndex => (prevIndex + 1) % loadingMessages.length);
- 	}, 10000); // 10-second intervals
+ 	}, 5000); // 10-second intervals
 
   	return () => clearInterval(interval);
   }, []);
@@ -151,6 +152,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
 
   const generateImage = async () => {
   setMessages((prev) => [...prev, 'Generating image...']);
+  setIsGenerating(true);
   
   try {
     const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
@@ -223,9 +225,9 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             </button>
             <button
               className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
-              onClick={() => navigate('/image-generation')}
+              onClick={() => navigate('/contact')}
             >
-              Try Image Generation
+              Try Chatbot
             </button>
             <div>
               <button
@@ -270,17 +272,35 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
             </div>
           ))}
         </div>
-        <div className="flex items-center space-x-3 justify-center">
+	      
+        {isGenerating && (
+  		<div className="flex items-center space-x-3 justify-center">
+    			<div className="loader"></div>
+    			<motion.div
+      				key={currentMessageIndex}
+      				initial={{ opacity: 0 }}
+      				animate={{ opacity: 1 }}
+      				exit={{ opacity: 0 }}
+      				transition={{ duration: 0.5 }} // Smooth transition effect
+      				className="text-gray-600 dark:text-gray-300 text-center"
+    			>
+      				{loadingMessages[currentMessageIndex]}
+    			</motion.div>
+  		</div>
+	)}
+	{messages.length > 0 && (
   		<motion.div
-    			key={currentMessageIndex}
-    			initial={{ opacity: 0 }}
-    			animate={{ opacity: 1 }}
-    			exit={{ opacity: 0 }}
-    			className="text-gray-600 dark:text-gray-300 text-center"
+    			initial={{ y: -20, opacity: 0 }}
+    			animate={{ y: 0, opacity: 1 }}
+    			exit={{ y: -20, opacity: 0 }}
+    			transition={{ duration: 0.5 }} // Smooth transition
+    			className="text-gray-600 dark:text-gray-300 text-center space-y-2"
   		>
-    			{loadingMessages[currentMessageIndex]}
+    			{messages.map((msg, index) => (
+      				<p key={index}>{msg}</p>
+    			))}
   		</motion.div>
-	</div>
+	)}
         <div className="flex items-center space-x-3">
           <input
             type="text"
