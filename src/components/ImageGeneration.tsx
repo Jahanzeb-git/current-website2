@@ -10,6 +10,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const [selectedModel, setSelectedModel] = useState<string>('Stable Diffusion');
   const [messages, setMessages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<string>('Flux.1'); // Default model Flux.1
   const menuRef = useRef<HTMLDivElement>(null);  
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
@@ -258,7 +259,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
                   className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
                   onClick={() => selectModel('Flux.1 Pro')}
                 >
-                  <span>Flux.1 Pro</span>
+                  <span>Flux-1.1 Pro</span>
                   {selectedModel === 'Flux.1 Pro' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
                 </button>
               </div>
