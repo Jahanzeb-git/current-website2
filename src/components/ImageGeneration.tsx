@@ -7,7 +7,6 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const [images, setImages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [selectedModel, setSelectedModel] = useState<string>('Stable Diffusion');
   const [messages, setMessages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string>('Flux.1'); // Default model Flux.1
