@@ -372,33 +372,32 @@ const handleDownload = (src: string) => { const link = document.createElement('a
   		AI Generated Image. Check for Mistakes.
 	</div>
       </div>
-     {/* Image Modal */}
-     {isModalOpen && selectedImage && (
+     const ImageModal: React.FC<{ src: string; onClose: () => void }> = ({ src, onClose }) => (
   	<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="relative bg-white rounded-lg p-4 max-w-[90%] max-h-[90%]">
-          {/* Close Button with dynamic background-aware color */}
-            <button 
-        	onClick={handleCloseModal} 
-        	className="absolute top-2 right-2 p-2 rounded-full"
-        	style={{
-          	    color: selectedImage ? 'white' : 'black',
-          	    backgroundColor: 'rgba(0,0,0,0.5)',
-        	}}
-      	    >
-        	✕
-      	    </button>
-      	    {/* Image with proper aspect ratio and dimensions */}
-      	    <motion.img 
-        	src={selectedImage} 
-        	alt="Popup Image" 
-        	className="rounded-lg max-w-full max-h-full object-contain"
-        	initial={{ opacity: 0, scale: 0.8 }} 
-        	animate={{ opacity: 1, scale: 1 }} 
-        	exit={{ opacity: 0, scale: 0.8 }} 
-      	    />
-    	  </div>
-        </div>
-      )}
+    	    <div className="relative bg-white rounded-lg shadow-lg p-6 max-w-[90%] max-h-[90%] overflow-auto">
+      	    {/* Close Button with dynamic background-aware color */}
+      	       <button 
+        	  onClick={onClose} 
+        	  className="absolute top-2 right-2 p-2 rounded-full focus:outline-none"
+        	  style={{
+         		 color: 'white',
+         		 backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        	  }}
+      		>
+        	    ✕
+      		</button>
+     		{/* Image with proper aspect ratio and dimensions */}
+     		<motion.img 
+        		src={src} 
+        		alt="Popup Image" 
+        		className="rounded-lg w-full h-full object-cover"
+        		initial={{ opacity: 0, scale: 0.9 }} 
+       			animate={{ opacity: 1, scale: 1 }} 
+        		exit={{ opacity: 0, scale: 0.9 }} 
+      		/>
+    	     </div>
+          </div>
+	);
     </motion.div>
   );
 };
