@@ -11,6 +11,8 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   const [messages, setMessages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string>('Flux.1'); // Default model Flux.1
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);  
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageGeneratorRef = useRef<HTMLDivElement>(null);
@@ -191,7 +193,10 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
     setIsGenerating(false);
   }
 };
-
+const handleImageClick = (src: string) => { setSelectedImage(src); setIsModalOpen(true); }; 
+const handleCloseModal = () => { setIsModalOpen(false); setSelectedImage(null); };
+const handleDownload = (src: string) => { const link = document.createElement('a'); link.href = src; link.download = 'generated-image.png'; document.body.appendChild(link); link.click(); document.body.removeChild(link); };
+	
 
   return (
     <motion.div
@@ -278,11 +283,33 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
           className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
         >
           {images.map((img, index) => (
-            <div key={index} ref={index === 0 ? latestImageRef : null}  className="mb-2">
-              <img src={img} alt={`Generated ${index}`} className="w-full rounded-lg" />
-            </div>
+            <div 
+  		key={index} 
+  		ref={index === 0 ? latestImageRef : null} 
+  		className="relative mb-2" 
+  		onClick={() => handleImageClick(img)}
+	    >
+  	    	<img 
+    			src={img} 
+    			alt={`Generated ${index}`} 
+    			className="w-full rounded-lg" 
+  	    	/>
+  	   	<div 
+    			className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+  		>
+    			<button
+      				onClick={(e) => {
+        				e.stopPropagation();
+       		 			handleDownload(img);
+      				}}
+      				className="bg-white text-black py-2 px-4 rounded-full"
+    			>
+      				Download Image
+    			</button>
+  		</div>
+	     </div>
           ))}
-        </div>
+        </div> 
 	      
         {isGenerating && (
   		<div className="flex items-center space-x-3 justify-center">
@@ -346,6 +373,24 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   		AI Generated Image. Check for Mistakes.
 	</div>
       </div>
+      {/* Image Modal */}
+      {isModalOpen && selectedImage && (
+  	<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    	   <div className="relative bg-white rounded-lg p-4">
+      		<button onClick={handleCloseModal} className="absolute top-2 right-2 text-gray-700 hover:text-black">
+        		✕
+      		</button>
+      		<motion.img 
+        		src={selectedImage} 
+        		alt="Popup Image" 
+        		className="rounded-lg" 
+        		initial={{ opacity: 0, scale: 0.8 }} 
+        		animate={{ opacity: 1, scale: 1 }} 
+        		exit={{ opacity: 0, scale: 0.8 }} 
+      		/>
+          </div>
+  	</div>
+      )}
     </motion.div>
   );
 };
