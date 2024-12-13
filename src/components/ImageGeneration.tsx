@@ -372,23 +372,26 @@ const handleDownload = (src: string) => { const link = document.createElement('a
   		AI Generated Image. Check for Mistakes.
 	</div>
       </div>
-      {/* Image Modal */}
-      {isModalOpen && selectedImage && (
-  	<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    	   <div className="relative bg-white rounded-lg p-4">
-      		<button onClick={handleCloseModal} className="absolute top-2 right-2 text-gray-700 hover:text-black">
-        		✕
-      		</button>
-      		<motion.img 
-        		src={selectedImage} 
-        		alt="Popup Image" 
-        		className="rounded-lg" 
-        		initial={{ opacity: 0, scale: 0.8 }} 
-        		animate={{ opacity: 1, scale: 1 }} 
-        		exit={{ opacity: 0, scale: 0.8 }} 
-      		/>
-          </div>
-  	</div>
+     {/* Image Modal */}
+     {isModalOpen && selectedImage && (
+       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+         <div className="relative bg-white rounded-lg p-4 max-w-[90%] max-h-[80%]">
+           <button 
+             onClick={handleCloseModal} 
+             className="absolute top-2 right-2 text-gray-700 hover:text-black text-2xl"
+           >
+             ✕
+           </button>
+           <motion.img 
+        	src={selectedImage} 
+        	alt="Popup Image" 
+        	className="rounded-lg max-w-full max-h-full object-contain"
+        	initial={{ opacity: 0, scale: 0.8 }} 
+        	animate={{ opacity: 1, scale: 1 }} 
+        	exit={{ opacity: 0, scale: 0.8 }} 
+      	   />
+         </div>
+       </div>
       )}
     </motion.div>
   );
