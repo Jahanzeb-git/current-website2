@@ -30,7 +30,7 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
   	"A Realistic Cat": "A highly detailed and realistic depiction of a cat with fur texture and lifelike eyes.",
   	"An Astronaut on Moon": "An astronaut standing on the surface of the moon with Earth visible in the background.",
   	"A Beautiful Girl": "A portrait of a beautiful girl with intricate details in her hair and eyes.",
-  	"Handsome Men": "A detailed portrait of a handsome man with a sharp jawline and expressive eyes."
+  	"Handsome Men": "A strikingly handsome and realistic man with strong, masculine features, including a sharp jawline and expressive eyes, gazing directly into the camera. The portrait shot captures impressive realism with highly detailed textures and lifelike skin tones. The composition evokes the cinematic quality of a Hasselblad camera, with exceptional color resolution and a professional-grade depth of field. The man is depicted with a confident and magnetic presence, creating a captivating and visually stunning portrayal."
 	};
 
   const loadingMessages = [
