@@ -161,12 +161,13 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
 
   const generateImage = async () => {
   setIsGenerating(true);
+  const modelId = selectedModel === 'Flux.1 Pro' ? 1 : 0;
   
   try {
     const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/image_generation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: input })
+      body: JSON.stringify({ prompt: input, model: modelId}) // Include Model in Request..
     });
     
     if (!response.ok) {
@@ -248,17 +249,17 @@ const ImageGenerator: React.FC<{ onIntersect: (isVisible: boolean) => void }> = 
               <div className="ml-4">
                 <button
                   className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
-                  onClick={() => selectModel('Stable Diffusion')}
+                  onClick={() => selectModel('Flux.1')}
                 >
-                  <span>Stable Diffusion</span>
-                  {selectedModel === 'Stable Diffusion' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
+                  <span>Flux.1</span>
+                  {selectedModel === 'Flux.1' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
                 </button>
                 <button
                   className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
-                  onClick={() => selectModel('DALL-E')}
+                  onClick={() => selectModel('Flux.1 Pro')}
                 >
-                  <span>DALL-E</span>
-                  {selectedModel === 'DALL-E' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
+                  <span>Flux.1 Pro</span>
+                  {selectedModel === 'Flux.1 Pro' && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
                 </button>
               </div>
             </div>
