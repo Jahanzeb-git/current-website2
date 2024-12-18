@@ -11,6 +11,7 @@ import Documentation from './pages/Documentation'; // Import Documentation
 import ImageGeneration from './pages/ImgGen';
 import Chatbot from './components/chatbot'; // Import the Chatbot component
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import ProjectDetail from './pages/ProjectDetail';
 
 function App() {
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
@@ -71,6 +72,7 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
               <Route path="/chatbot" element={<Chatbot />} /> {/* Add Chatbot route */}
               <Route path="/image-generation" element={<ImageGeneration />} />
               <Route path="/documentation" element={<Documentation />} /> {/* Add Documentation route */}
+              <Route path="/projects/:id" element={<ProjectDetail />} />
             </Routes>
           </AnimatePresence>
         </main>
