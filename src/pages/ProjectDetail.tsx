@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Rocket,
 } from 'lucide-react';
+import DetailPopup from '../components/DetailPopup';
 
 const technologies = [
   { name: 'Python', category: 'Language' },
@@ -30,12 +31,65 @@ const metrics = [
   { label: 'API Uptime', value: '99.9%' },
 ];
 
+const approachContent = {
+  'Data Collection': {
+    description: 'Our comprehensive data collection process involves gathering and validating real estate data from multiple authoritative sources to ensure the highest quality input for our prediction model.',
+    details: [
+      'Integration with Multiple Listing Service (MLS) databases for real-time property listings',
+      'Public records and tax assessor data collection for historical property information',
+      'Demographic and neighborhood data aggregation from census and local sources',
+      'Economic indicators and market trends from financial institutions'
+    ],
+    benefits: [
+      'Comprehensive dataset covering all relevant property aspects',
+      'Real-time data updates for accurate predictions',
+      'High-quality, validated data sources',
+      'Rich historical context for trend analysis'
+    ]
+  },
+  'Model Development': {
+    description: 'Our sophisticated model development approach combines cutting-edge machine learning techniques with domain expertise to create a robust and accurate prediction system.',
+    details: [
+      'Implementation of ensemble learning combining multiple algorithms',
+      'Deep neural networks for complex pattern recognition',
+      'Gradient boosting for feature importance and prediction refinement',
+      'Regular model retraining with new data'
+    ],
+    benefits: [
+      'High accuracy in diverse market conditions',
+      'Ability to capture complex market relationships',
+      'Continuous improvement through learning',
+      'Robust performance across different property types'
+    ]
+  },
+  'Validation': {
+    description: 'Our rigorous validation process ensures the model maintains high accuracy and reliability across different market conditions and property types.',
+    details: [
+      'Cross-validation using historical transaction data',
+      'Real-world testing with active property listings',
+      'Performance benchmarking against human experts',
+      'Continuous monitoring and evaluation'
+    ],
+    benefits: [
+      'Verified accuracy across different scenarios',
+      'Reliable performance in real-world conditions',
+      'Transparent validation metrics',
+      'Early detection of model drift'
+    ]
+  }
+};
+
 const ProjectDetail = () => {
+  const [selectedApproach, setSelectedApproach] = useState<string | null>(null);
   const [headerRef, headerInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [approachRef, approachInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [featuresRef, featuresInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [techRef, techInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [resultsRef, resultsInView] = useInView({ triggerOnce: true, threshold: 0.2 });
+
+const handleApproachClick = (title: string) => {
+    setSelectedApproach(title);
+  };
 
   return (
     <motion.div
@@ -159,7 +213,8 @@ const ProjectDetail = () => {
               initial={{ x: -20, opacity: 0 }}
               animate={approachInView ? { x: 0, opacity: 1 } : {}}
               transition={{ delay: index * 0.2 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
+              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => handleApproachClick(step.title)}
             >
               <div className="text-emerald-600 dark:text-emerald-400 mb-4">
                 {step.icon}
@@ -273,6 +328,16 @@ const ProjectDetail = () => {
           </li>
         </ul>
       </motion.div>
+      <DetailPopup
+        isOpen={selectedApproach !== null}
+        onClose={() => setSelectedApproach(null)}
+        title={selectedApproach || ''}
+        content={selectedApproach ? approachContent[selectedApproach as keyof typeof approachContent] : {
+          description: '',
+          details: [],
+          benefits: []
+        }}
+      />
     </motion.div>
   );
 };
