@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useInView } rfrom 'react-intersection-observer';
+import { useInView } from 'react-intersection-observer';
 import {
   Code2,
   ExternalLink,
