@@ -5,10 +5,10 @@ import { BookOpen, Code, Database, Brain, ExternalLink } from 'lucide-react';
 const notes = [
   {
     icon: <BookOpen className="w-6 h-6" />,
-    title: 'Deep Learning Fundamentals',
-    description: 'A comprehensive guide to neural networks and deep learning architectures.',
-    date: '2024-02-15',
-    mediumUrl: 'https://medium.com/@yourusername/deep-learning-fundamentals',
+    title: 'Logistic Regression In Depth',
+    description: 'This comprehensive guide takes you through the essentials of logistic regression, covering binary and multi-class classification techniques. Learn about critical performance metrics and explore practical examples of how logistic regression is applied in real-world scenarios.',
+    date: '2024-10-30',
+    mediumUrl: 'https://medium.com/@jahanzebahmed.mail/unlocking-the-power-of-logistic-regression-a-journey-through-binary-and-multi-class-classification-a1c2d52f9cf2',
   },
   {
     icon: <Code className="w-6 h-6" />,
