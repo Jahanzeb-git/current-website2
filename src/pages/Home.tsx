@@ -13,6 +13,7 @@ import ToolsAndTitles from '../components/ToolsAndTitles';
 
 const completedProjects = [
   {
+    id: 'ai-powered-data-science', // Unique ID
     title: 'AI-Powered Data Science',
     description:
       'Advanced data analysis platform using machine learning algorithms for predictive analytics.',
@@ -22,6 +23,7 @@ const completedProjects = [
     sourceUrl: 'https://github.com',
   },
   {
+    id: 'neural-network-visualizer', // Unique ID
     title: 'Neural Network Visualizer',
     description:
       'Interactive visualization tool for understanding neural network architectures and data flow.',
