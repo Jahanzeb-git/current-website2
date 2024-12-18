@@ -94,21 +94,21 @@ const Contact = () => {
               </h2>
               <div className="space-y-4">
                 <a
-                  href="mailto:contact@example.com"
+                  href="mailto:jahanzebahmed.mail@gmail.com"
                   className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                   <Mail className="w-5 h-5" />
-                  <span>contact@example.com</span>
+                  <span>jahanzebahmed.mail@gmail.com</span>
                 </a>
                 <a
-                  href="#"
+                  href="https://github.com/Jahanzeb-git"
                   className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                   <Github className="w-5 h-5" />
                   <span>GitHub</span>
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/in/2024-jahanzebahmed/"
                   className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                   <Linkedin className="w-5 h-5" />
