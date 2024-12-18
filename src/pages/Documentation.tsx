@@ -197,7 +197,7 @@ const Documentation: React.FC = () => {
               className="fixed inset-0 flex justify-center items-center"
             >
               {/* Blurred Background */}
-              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md"></div>
+              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"></div>
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
