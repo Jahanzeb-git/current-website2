@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import {
   Code2,
@@ -12,7 +12,6 @@ import {
   Brain,
   AlertCircle,
   Rocket,
-  X,
 } from 'lucide-react';
 
 const technologies = [
@@ -31,86 +30,12 @@ const metrics = [
   { label: 'API Uptime', value: '99.9%' },
 ];
 
-const approachContent = {
-  dataCollection: {
-    title: "Data Collection Process",
-    content: (
-      <div className="space-y-6">
-        <section>
-          <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Data Sources</h3>
-          <ul className="list-disc pl-6 space-y-2 text-gray-600 dark:text-gray-300">
-            <li>Multiple Listing Service (MLS) databases</li>
-            <li>Public property records and tax assessments</li>
-            <li>Geographic and demographic data from census</li>
-            <li>Economic indicators from federal reserve</li>
-            <li>Local market trends and statistics</li>
-          </ul>
-        </section>
-        {/* ... Rest of data collection content ... */}
-      </div>
-    )
-  },
-  modelDevelopment: {
-    title: "Model Development Details",
-    content: (
-      <div className="space-y-6">
-        <section>
-          <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Model Architecture</h3>
-          <ul className="list-disc pl-6 space-y-2 text-gray-600 dark:text-gray-300">
-            <li>Ensemble of gradient boosting and neural networks</li>
-            <li>Custom feature extraction layers</li>
-            <li>Attention mechanisms for location importance</li>
-            <li>Time-series components for market trends</li>
-          </ul>
-        </section>
-        {/* ... Rest of model development content ... */}
-      </div>
-    )
-  },
-  validation: {
-    title: "Validation Methodology",
-    content: (
-      <div className="space-y-6">
-        <section>
-          <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Testing Framework</h3>
-          <ul className="list-disc pl-6 space-y-2 text-gray-600 dark:text-gray-300">
-            <li>K-fold cross-validation</li>
-            <li>Out-of-time validation</li>
-            <li>Geographic segmentation tests</li>
-            <li>Price range specific validation</li>
-          </ul>
-        </section>
-        {/* ... Rest of validation content ... */}
-      </div>
-    )
-  }
-};
-
 const ProjectDetail = () => {
-  const [selectedApproach, setSelectedApproach] = useState<keyof typeof approachContent | null>(null);
   const [headerRef, headerInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [approachRef, approachInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [featuresRef, featuresInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [techRef, techInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [resultsRef, resultsInView] = useInView({ triggerOnce: true, threshold: 0.2 });
-
-  const ApproachCard = ({ icon, title, description, onClick }) => (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg cursor-pointer"
-      onClick={onClick}
-    >
-      <div className="text-emerald-600 dark:text-emerald-400 mb-4">
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
-        {title}
-      </h3>
-      <p className="text-gray-600 dark:text-gray-300">
-        {description}
-      </p>
-    </motion.div>
-  );
 
   return (
     <motion.div
@@ -154,6 +79,53 @@ const ProjectDetail = () => {
             </motion.a>
           </div>
         </div>
+
+        {/* Problem & Objective */}
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          <motion.div
+            className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg"
+            initial={{ x: -20, opacity: 0 }}
+            animate={headerInView ? { x: 0, opacity: 1 } : {}}
+            transition={{ delay: 0.2 }}
+          >
+            <AlertCircle className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mb-4" />
+            <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Problem Statement</h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              Real estate agents struggled with accurate property valuation, leading to pricing inefficiencies and longer market times. Traditional methods were time-consuming and often inaccurate.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg"
+            initial={{ x: 20, opacity: 0 }}
+            animate={headerInView ? { x: 0, opacity: 1 } : {}}
+            transition={{ delay: 0.3 }}
+          >
+            <Rocket className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mb-4" />
+            <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Objective</h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              Develop an ML-powered solution that provides instant, accurate property valuations within a 95% confidence interval, considering multiple market factors.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Key Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+          {metrics.map((metric, index) => (
+            <motion.div
+              key={index}
+              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg text-center"
+              initial={{ y: 20, opacity: 0 }}
+              animate={headerInView ? { y: 0, opacity: 1 } : {}}
+              transition={{ delay: index * 0.1 }}
+            >
+              <h3 className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+                {metric.value}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300">{metric.label}</p>
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Approach Section */}
@@ -165,28 +137,72 @@ const ProjectDetail = () => {
       >
         <h2 className="text-3xl font-bold mb-8 text-gray-800 dark:text-white">Approach</h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <ApproachCard
-            icon={<Database className="w-8 h-8" />}
-            title="Data Collection"
-            description="Gathered historical property data from multiple sources including MLS listings and public records."
-            onClick={() => setSelectedApproach('dataCollection')}
-          />
-          <ApproachCard
-            icon={<Brain className="w-8 h-8" />}
-            title="Model Development"
-            description="Implemented ensemble learning combining gradient boosting and neural networks."
-            onClick={() => setSelectedApproach('modelDevelopment')}
-          />
-          <ApproachCard
-            icon={<LineChart className="w-8 h-8" />}
-            title="Validation"
-            description="Rigorous testing and validation using cross-validation and real-world data."
-            onClick={() => setSelectedApproach('validation')}
-          />
+          {[
+            {
+              icon: <Database className="w-8 h-8" />,
+              title: 'Data Collection',
+              description: 'Gathered historical property data from multiple sources including MLS listings and public records.',
+            },
+            {
+              icon: <Brain className="w-8 h-8" />,
+              title: 'Model Development',
+              description: 'Implemented ensemble learning combining gradient boosting and neural networks.',
+            },
+            {
+              icon: <LineChart className="w-8 h-8" />,
+              title: 'Validation',
+              description: 'Rigorous testing and validation using cross-validation and real-world data.',
+            },
+          ].map((step, index) => (
+            <motion.div
+              key={index}
+              initial={{ x: -20, opacity: 0 }}
+              animate={approachInView ? { x: 0, opacity: 1 } : {}}
+              transition={{ delay: index * 0.2 }}
+              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
+            >
+              <div className="text-emerald-600 dark:text-emerald-400 mb-4">
+                {step.icon}
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
+                {step.title}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                {step.description}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </motion.div>
 
-      {/* Results Section with GIF */}
+      {/* Technologies Section */}
+      <motion.div
+        ref={techRef}
+        className="mb-16"
+        initial={{ y: 50, opacity: 0 }}
+        animate={techInView ? { y: 0, opacity: 1 } : {}}
+      >
+        <h2 className="text-3xl font-bold mb-8 text-gray-800 dark:text-white">Technologies Used</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {technologies.map((tech, index) => (
+            <motion.div
+              key={index}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={techInView ? { scale: 1, opacity: 1 } : {}}
+              transition={{ delay: index * 0.1 }}
+              className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg flex items-center"
+            >
+              <Code2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-3" />
+              <div>
+                <h3 className="font-bold text-gray-800 dark:text-white">{tech.name}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{tech.category}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Results Section */}
       <motion.div
         ref={resultsRef}
         className="mb-16"
@@ -199,67 +215,64 @@ const ProjectDetail = () => {
             <div>
               <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Performance Metrics</h3>
               <ul className="space-y-4">
-                {metrics.map((metric, index) => (
-                  <li key={index} className="flex items-center text-gray-600 dark:text-gray-300">
-                    <ArrowRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
-                    {metric.label}: {metric.value}
-                  </li>
-                ))}
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <ArrowRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  95% prediction accuracy within ±5% margin
+                </li>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <ArrowRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  Reduced valuation time from hours to seconds
+                </li>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <ArrowRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  20% improvement in pricing accuracy
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Business Impact</h3>
+              <ul className="space-y-4">
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <ArrowRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  30% reduction in time-to-sale
+                </li>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <ArrowRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  Increased client satisfaction by 40%
+                </li>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <ArrowRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  Adopted by 100+ real estate agencies
+                </li>
               </ul>
             </div>
           </div>
         </div>
-        
-        {/* GIF Visualization */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-8 rounded-xl overflow-hidden shadow-lg"
-        >
-          <img
-            src="https://assets.website-files.com/5e6c01bb5212506d6c119069/5e6c01bb52125431f911909b_90.gif"
-            alt="Real Estate Price Prediction Visualization"
-            className="w-full h-auto"
-          />
-        </motion.div>
       </motion.div>
 
-      {/* Approach Popup */}
-      <AnimatePresence>
-        {selectedApproach && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedApproach(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-4xl max-h-[80vh] overflow-hidden"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                  {approachContent[selectedApproach].title}
-                </h2>
-                <button
-                  onClick={() => setSelectedApproach(null)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                >
-                  <X className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                </button>
-              </div>
-              <div className="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
-                {approachContent[selectedApproach].content}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Next Steps */}
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={resultsInView ? { y: 0, opacity: 1 } : {}}
+        transition={{ delay: 0.2 }}
+        className="bg-emerald-50 dark:bg-emerald-900/30 p-8 rounded-xl shadow-lg"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Next Steps</h2>
+        <ul className="space-y-4">
+          <li className="flex items-center text-gray-600 dark:text-gray-300">
+            <Layers className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+            Expand model to include rental price predictions
+          </li>
+          <li className="flex items-center text-gray-600 dark:text-gray-300">
+            <Layers className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+            Integrate with more data sources for enhanced accuracy
+          </li>
+          <li className="flex items-center text-gray-600 dark:text-gray-300">
+            <Layers className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+            Develop mobile application for on-the-go valuations
+          </li>
+        </ul>
+      </motion.div>
     </motion.div>
   );
 };
