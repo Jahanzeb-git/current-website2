@@ -12,6 +12,9 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
+import { fetchWeather } from '../functions/openweather'; 
+
+const Home: React.FC = () => { const [weather, setWeather] = useState(null);
 
 const skills = [
   {
@@ -87,6 +90,20 @@ const About = () => {
     threshold: 0.1,
   });
 
+  useEffect(() => {
+  async function fetchWeatherData() {
+    try {
+      const weatherData = await fetchWeather('Karachi, Pakistan');
+      setWeather(weatherData);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }
+  }
+
+  fetchWeatherData();
+}, []);
+
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -108,7 +125,7 @@ const About = () => {
           </h1>
           <div className="flex items-center mb-4 text-gray-600 dark:text-gray-300">
             <MapPin className="w-5 h-5 mr-2" />
-            <span>Working remotely from 13° Karachi, Pakistan</span>
+            {weather ? ( <span>Working remotely from {weather.main.temp}°C, Karachi, Pakistan</span> ) : ( <span>Loading...</span> )}
           </div>
           <div className="mb-6">
             <motion.div
