@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
 
-const About = () => {
+ {/* const About = () => {
   const [weather, setWeather] = useState(null);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const About = () => {
     }
 
     fetchWeatherData();
-  }, []);
+  }, []); */}
 
   
 const skills = [
@@ -136,7 +136,7 @@ const About = () => {
             <MapPin className="w-5 h-5 mr-2" />
             {weather ? (
               <span>
-                Working remotely from {weather.main.temp}°C, Karachi, Pakistan
+                Working remotely from 13°C, Karachi, Pakistan
               </span>
             ) : (
               <span>Loading...</span>
