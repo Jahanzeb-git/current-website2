@@ -13,20 +13,22 @@ import {
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
 
- {/* const About = () => {
+const About = () => {
   const [weather, setWeather] = useState(null);
 
   useEffect(() => {
     async function fetchWeatherData() {
       try {
-        const response = await fetch('/.netlify/functions/openweather', {
+        const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/weather', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ city: 'Karachi, Pakistan' }),
         });
+
         if (!response.ok) {
           throw new Error('Failed to fetch weather data');
         }
+
         const weatherData = await response.json();
         setWeather(weatherData);
       } catch (error) {
@@ -35,7 +37,7 @@ import profileImage from '../Assets/images/Me.png';
     }
 
     fetchWeatherData();
-  }, []); */}
+  }, []);
 
   
 const skills = [
@@ -136,7 +138,7 @@ const About = () => {
             <MapPin className="w-5 h-5 mr-2" />
             {weather ? (
               <span>
-                Working remotely from {weather.main.temp}°C, Karachi, Pakistan
+                Working remotely from {Math.round(weather.main.feels_like)}° Karachi, Pakistan
               </span>
             ) : (
               <span>Loading...</span>
