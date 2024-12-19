@@ -14,7 +14,31 @@ import {
 import profileImage from '../Assets/images/Me.png';
 import { fetchWeather } from '../functions/openweather'; 
 
-//const [weather, setWeather] = useState(null);
+const About = () => {
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    async function fetchWeatherData() {
+      try {
+        const response = await fetch('/.netlify/functions/openweather', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city: 'Karachi, Pakistan' }),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch weather data');
+        }
+        const weatherData = await response.json();
+        setWeather(weatherData);
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    }
+
+    fetchWeatherData();
+  }, []);
+
+  
 const skills = [
   {
     icon: <Brain className="w-8 h-8" />,
@@ -124,7 +148,13 @@ const About = () => {
           </h1>
           <div className="flex items-center mb-4 text-gray-600 dark:text-gray-300">
             <MapPin className="w-5 h-5 mr-2" />
-            {/*{weather ? ( <span>Working remotely from {weather.main.temp}°C, Karachi, Pakistan</span> ) : ( <span>Loading...</span> )}*/}
+            {weather ? (
+              <span>
+                Working remotely from {weather.main.temp}°C, Karachi, Pakistan
+              </span>
+            ) : (
+              <span>Loading...</span>
+            )}
           </div>
           <div className="mb-6">
             <motion.div
