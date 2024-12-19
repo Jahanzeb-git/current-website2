@@ -21,13 +21,13 @@ const Footer = () => {
     <footer className="w-full py-6 px-4 transition-colors duration-700">
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
         <div className="flex items-center space-x-2">
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+          <p className="text-sm text-gray-900 dark:text-gray-300">
             © 2024 Jahanzeb Ahmed
           </p>
           <span className="text-gray-400">•</span>
           <button
             onClick={() => setShowColophon(true)}
-            className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+            className="text-sm text-emerald-900 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
           >
             Colophon
           </button>
