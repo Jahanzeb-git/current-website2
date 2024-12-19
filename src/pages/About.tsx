@@ -12,9 +12,9 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
-import { fetchWeather } from '../functions/openweather'; 
+//import { fetchWeather } from '../functions/openweather'; 
 
-const [weather, setWeather] = useState(null);
+//const [weather, setWeather] = useState(null);
 const skills = [
   {
     icon: <Brain className="w-8 h-8" />,
@@ -100,7 +100,7 @@ const About = () => {
   }
 
   fetchWeatherData();
-}, []);
+  }, []);
 
   
   return (
@@ -124,7 +124,7 @@ const About = () => {
           </h1>
           <div className="flex items-center mb-4 text-gray-600 dark:text-gray-300">
             <MapPin className="w-5 h-5 mr-2" />
-            {weather ? ( <span>Working remotely from {weather.main.temp}°C, Karachi, Pakistan</span> ) : ( <span>Loading...</span> )}
+            {/*{weather ? ( <span>Working remotely from {weather.main.temp}°C, Karachi, Pakistan</span> ) : ( <span>Loading...</span> )}*/}
           </div>
           <div className="mb-6">
             <motion.div
