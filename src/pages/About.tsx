@@ -14,8 +14,7 @@ import {
 import profileImage from '../Assets/images/Me.png';
 import { fetchWeather } from '../functions/openweather'; 
 
-const About: React.FC = () => { const [weather, setWeather] = useState(null);
-
+const [weather, setWeather] = useState(null);
 const skills = [
   {
     icon: <Brain className="w-8 h-8" />,
