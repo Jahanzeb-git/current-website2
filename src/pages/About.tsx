@@ -136,7 +136,7 @@ const About = () => {
             <MapPin className="w-5 h-5 mr-2" />
             {weather ? (
               <span>
-                Working remotely from 13°C, Karachi, Pakistan
+                Working remotely from {weather.main.temp}°C, Karachi, Pakistan
               </span>
             ) : (
               <span>Loading...</span>
