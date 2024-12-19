@@ -12,7 +12,6 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
-import { fetchWeather } from '../functions/openweather'; 
 
 const About = () => {
   const [weather, setWeather] = useState(null);
@@ -112,19 +111,6 @@ const About = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
-
-  useEffect(() => {
-  async function fetchWeatherData() {
-    try {
-      const weatherData = await fetchWeather('Karachi, Pakistan');
-      setWeather(weatherData);
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-    }
-  }
-
-  fetchWeatherData();
-  }, []);
 
   
   return (
