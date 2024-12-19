@@ -12,7 +12,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
-//import { fetchWeather } from '../functions/openweather'; 
+import { fetchWeather } from '../functions/openweather'; 
 
 //const [weather, setWeather] = useState(null);
 const skills = [
