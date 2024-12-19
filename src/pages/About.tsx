@@ -14,7 +14,7 @@ import {
 import profileImage from '../Assets/images/Me.png';
 import { fetchWeather } from '../functions/openweather'; 
 
-const Home: React.FC = () => { const [weather, setWeather] = useState(null);
+const About: React.FC = () => { const [weather, setWeather] = useState(null);
 
 const skills = [
   {
@@ -430,4 +430,5 @@ const CertificationCard = ({ imgSrc, title, text }) => (
     </div>
   </motion.div>
 );
+                              
 export default About;
