@@ -113,7 +113,6 @@ const About = () => {
     fetchWeatherData();
   }, []);
 
-  
   return (
     <motion.div
       initial={{ opacity: 0 }}
