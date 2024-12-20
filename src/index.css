@@ -57,5 +57,9 @@
 body {
   font-family: 'Nunito', sans-serif;
   font-weight: 500; /* Bold weight */
-  font-size: 20px;
+}
+p {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 500; /* Bold weight */
+  font-size: 1rem; /* Adjust this value for paragraphs */
 }
