@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import {
@@ -12,32 +12,6 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
-
-const About = () => {
-  const [weather, setWeather] = useState(null);
-
-  useEffect(() => {
-    async function fetchWeatherData() {
-      try {
-        const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/weather', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ city: 'Karachi, Pakistan' }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch weather data');
-        }
-
-        const weatherData = await response.json();
-        setWeather(weatherData);
-      } catch (error) {
-        console.error('Error fetching weather data:', error);
-      }
-    }
-
-    fetchWeatherData();
-  }, []);
 
   
 const skills = [
@@ -88,6 +62,7 @@ const milestones = [
 const About = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [weather, setWeather] = useState(null);
 
   const [headerRef, headerInView] = useInView({
     triggerOnce: true,
@@ -113,6 +88,30 @@ const About = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
+
+  
+  useEffect(() => {
+    async function fetchWeatherData() {
+      try {
+        const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/weather', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city: 'Karachi, Pakistan' }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch weather data');
+        }
+
+        const weatherData = await response.json();
+        setWeather(weatherData);
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    }
+
+    fetchWeatherData();
+  }, []);
 
   
   return (
