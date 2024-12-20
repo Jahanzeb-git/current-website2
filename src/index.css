@@ -53,3 +53,8 @@
   object-fit: contain;
   border: none; /* Removes any default borders */
 }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 500; /* Bold weight */
+}
