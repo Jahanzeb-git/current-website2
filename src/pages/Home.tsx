@@ -116,7 +116,7 @@ const Home = () => {
         <h2 className="text-xl md:text-2xl font-semibold text-gray-600 dark:text-gray-300 mb-4">
           Data Scientist & AI Enthusiast
         </h2>
-        <p className="text-base md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        <p style={{ fontSize: '22px' }} className="text-base md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
           Welcome to my portfolio! I turn complex data into clear, practical
           solutions. With a passion for machine learning and data analysis, I
           help businesses grow and innovate by making data work for them.
