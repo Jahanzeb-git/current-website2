@@ -86,7 +86,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
      }
 	    
      const data = await response.json();
-     startTypingEffect(data.output || 'Sorry, there was an error.');
+     const markdownResponse = <ReactMarkdown>{data.output || 'Sorry, there was an error.'}</ReactMarkdown>;
+     startTypingEffect(markdownResponse);
      } catch (error) {
        console.error('Error fetching bot response:', error);
        setMessages((prevMessages) => [
@@ -99,28 +100,36 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
 };
 
 	
-  const startTypingEffect = (message: string) => {
-    setIsTyping(true);
-    let i = 0;
-    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: '' }]);
-    const interval = setInterval(() => {
+ const startTypingEffect = (message) => {
+  setIsTyping(true);
+  let i = 0;
+
+  setMessages((prevMessages) => [
+    ...prevMessages,
+    { type: 'bot', text: '' }
+  ]);
+
+  const interval = setInterval(() => {
+    setMessages((prevMessages) => {
+      const newMessages = [...prevMessages];
+      newMessages[newMessages.length - 1].text = message.slice(0, i + 1) + '|';
+      return newMessages;
+    });
+
+    i += 1;
+
+    if (i === message.length) {
+      clearInterval(interval);
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
-        newMessages[newMessages.length - 1].text = message.slice(0, i + 1) + '|';
+        newMessages[newMessages.length - 1].text = message;
         return newMessages;
       });
-      i += 1;
-      if (i === message.length) {
-        clearInterval(interval);
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          newMessages[newMessages.length - 1].text = message;
-          return newMessages;
-        });
-        setIsTyping(false);
-      }
-    }, 50);
-  };
+      setIsTyping(false);
+    }
+  }, 50);
+};
+
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
