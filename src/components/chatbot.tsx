@@ -334,13 +334,13 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
           >
           <button
-              className="p-3 rounded-full flex items-center justify-center 
-              bg-black dark:bg-white hover:opacity-50 active:opacity-100"
-              onClick={() => handleSend(input)}
-            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
-          </button>
+  		className="p-3 rounded-full flex items-center justify-center 
+  		bg-black dark:bg-white hover:opacity-50 active:opacity-100"
+  		onClick={() => handleSend(input)}
+	  >
+  		<ArrowUp className="w-5 h-5 text-white dark:text-black" />
+	  </button>
         </div>
-	{/* Conditional SyntaxHighlighter */}
       	{language && (
            <SyntaxHighlighter
           	language={language}
