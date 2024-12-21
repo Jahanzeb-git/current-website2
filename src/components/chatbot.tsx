@@ -18,6 +18,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const [language, setLanguage] = useState<string | null>(null);
+
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -67,6 +69,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     if (!message.trim()) return;
 
     const sanitizedInput = message.trim();
+    const language = getUserRequestedLanguage(sanitizedInput);
+    setLanguage(language);
     setMessages((prevMessages) => [...prevMessages, { type: 'user', text: sanitizedInput }]);
     setInput('');
     setLoading(true);
@@ -160,7 +164,6 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   return null; // Return null if no language is found
 };
 
-const language = getUserRequestedLanguage(input);
 	
 
   return (
@@ -334,19 +337,19 @@ const language = getUserRequestedLanguage(input);
               className="p-3 rounded-full flex items-center justify-center 
               bg-black dark:bg-white hover:opacity-50 active:opacity-100"
               onClick={() => handleSend(input)}
-		  
-	  {language && (
-             <SyntaxHighlighter
-             	language={language}
-          	style={solarizedlight}
-         	 customStyle={{ marginTop: '10px' }}
-             >
-           	{input}
-             </SyntaxHighlighter>
-      	   )}
             <ArrowUp className="w-5 h-5 text-white dark:text-black" />
           </button>
         </div>
+	{/* Conditional SyntaxHighlighter */}
+      	{language && (
+           <SyntaxHighlighter
+          	language={language}
+          	style={solarizedlight}
+          	customStyle={{ marginTop: '10px' }}
+           >
+          	{input}
+           </SyntaxHighlighter>
+      	)}
         <div className="flex flex-wrap justify-center gap-2 mb-4">
           {preOptions.map((option, index) => (
             <button
