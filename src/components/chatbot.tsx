@@ -86,7 +86,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
      }
 	    
      const data = await response.json();
-     startTypingEffect(data.output || 'Sorry, there was an error.');
+     const markdownResponse = <ReactMarkdown>{data.output || 'Sorry, there was an error.'}</ReactMarkdown>;
+     startTypingEffect(markdownResponse);
      } catch (error) {
        console.error('Error fetching bot response:', error);
        setMessages((prevMessages) => [
@@ -96,13 +97,9 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
      } finally {
        setLoading(false);
      }
-
-     // Convert API response to Markdown-rendered string
-     const renderedMarkdown = (
-        <ReactMarkdown>{response}</ReactMarkdown>
-     );
 };
 
+	
   const startTypingEffect = (message: string) => {
     setIsTyping(true);
     let i = 0;
