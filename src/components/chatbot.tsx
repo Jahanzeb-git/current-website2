@@ -100,9 +100,10 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
 };
 
 	
- const startTypingEffect = (message) => {
+  const startTypingEffect = (message) => {
   setIsTyping(true);
   let i = 0;
+  const textMessage = typeof message === 'string' ? message : String(message);
 
   setMessages((prevMessages) => [
     ...prevMessages,
@@ -112,17 +113,17 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
   const interval = setInterval(() => {
     setMessages((prevMessages) => {
       const newMessages = [...prevMessages];
-      newMessages[newMessages.length - 1].text = message.slice(0, i + 1) + '|';
+      newMessages[newMessages.length - 1].text = textMessage.slice(0, i + 1) + '|';
       return newMessages;
     });
 
     i += 1;
 
-    if (i === message.length) {
+    if (i === textMessage.length) {
       clearInterval(interval);
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
-        newMessages[newMessages.length - 1].text = message;
+        newMessages[newMessages.length - 1].text = textMessage;
         return newMessages;
       });
       setIsTyping(false);
