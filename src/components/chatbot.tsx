@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUp, Check, Cpu, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIntersect }) => {
   const [messages, setMessages] = useState<{ type: 'user' | 'bot'; text: string }[]>([]);
@@ -111,7 +112,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
         clearInterval(interval);
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
-          newMessages[newMessages.length - 1].text = message;
+          newMessages[newMessages.length - 1].text = <ReactMarkdown>{message}</ReactMarkdown>;
           return newMessages;
         });
         setIsTyping(false);
