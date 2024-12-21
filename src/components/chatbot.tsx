@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUp, Check, Cpu, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { solarizedlight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIntersect }) => {
   const [messages, setMessages] = useState<{ type: 'user' | 'bot'; text: string }[]>([]);
@@ -144,6 +146,21 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
     setSelectedModel(model);
     closeMenu();
   };
+
+  const getUserRequestedLanguage = (input) => {
+  const languages = ['python', 'c++', 'javascript', 'java', 'ruby', 'php', 'bash']; // Supported languages
+  const inputLower = input.toLowerCase();
+
+  for (let language of languages) {
+    if (inputLower.includes(language)) {
+      return language;
+    }
+  }
+
+  return null; // Return null if no language is found
+};
+
+const language = getUserRequestedLanguage(input);
 	
 
   return (
@@ -312,12 +329,21 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-          />
+          >
           <button
               className="p-3 rounded-full flex items-center justify-center 
               bg-black dark:bg-white hover:opacity-50 active:opacity-100"
               onClick={() => handleSend(input)}
-          >
+		  
+	  {language && (
+             <SyntaxHighlighter
+             	language={language}
+          	style={solarizedlight}
+         	 customStyle={{ marginTop: '10px' }}
+             >
+           	{input}
+             </SyntaxHighlighter>
+      	   )}
             <ArrowUp className="w-5 h-5 text-white dark:text-black" />
           </button>
         </div>
