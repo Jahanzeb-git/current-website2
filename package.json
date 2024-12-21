@@ -21,11 +21,11 @@
     "react-katex": "^3.0.0",
     "katex": "^0.16.8",
     "react-markdown": "^8.0.7",
-    "react-syntax-highlighter",
-    "prism-react-renderer",
-    "@emotion/react",
-    "@emotion/styled",
-    "prismjs"
+    "react-syntax-highlighter": "^15.4.5",
+    "prism-react-renderer": "^1.3.5",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "prismjs": "^1.27.0"
     }
   },
   "devDependencies": {
