@@ -122,7 +122,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
         newMessages[newMessages.length - 1].text = message;
-        return <ReactMarkdown>newMessages</ReactMarkdown>;
+        return newMessages;
       });
       setIsTyping(false);
     }
@@ -285,7 +285,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
 		>
 		  {messages.map((msg, index) => (
 		    <div key={index} className={`mb-2 ${msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'}`}>
-		      {msg.text}
+		      {msg.type === 'bot' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
 		      {msg.type === 'bot' && !loading && (
 		        <div className="text-sm flex items-center space-x-1 mt-2">
 		          <span className="text-gray-600 dark:text-gray-300">Powered by</span>
