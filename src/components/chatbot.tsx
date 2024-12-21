@@ -86,8 +86,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
      }
 	    
      const data = await response.json();
-     const markdownResponse = {data.output || 'Sorry, there was an error.'};
-     startTypingEffect(markdownResponse);
+     startTypingEffect(data.output || 'Sorry, there was an error.');
      } catch (error) {
        console.error('Error fetching bot response:', error);
        setMessages((prevMessages) => [
