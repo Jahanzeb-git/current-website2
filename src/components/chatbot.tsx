@@ -121,8 +121,8 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       clearInterval(interval);
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
-        newMessages[newMessages.length - 1].text = <ReactMarkdown>message</ReactMarkdown>;
-        return newMessages;
+        newMessages[newMessages.length - 1].text = message;
+        return <ReactMarkdown>newMessages</ReactMarkdown>;
       });
       setIsTyping(false);
     }
