@@ -79,11 +79,12 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
           tokens: 1000, // Use larger tokens if backend can handle it
        }),
      });
-
+ 	
+	    
      if (!response.ok) {
        throw new Error(`Error from API: ${response.statusText}`);
      }
-
+	    
      const data = await response.json();
      startTypingEffect(data.output || 'Sorry, there was an error.');
      } catch (error) {
@@ -95,6 +96,11 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
      } finally {
        setLoading(false);
      }
+
+     // Convert API response to Markdown-rendered string
+     const renderedMarkdown = (
+        <ReactMarkdown>{response}</ReactMarkdown>
+     );
 };
 
   const startTypingEffect = (message: string) => {
@@ -112,7 +118,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
         clearInterval(interval);
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
-          newMessages[newMessages.length - 1].text = <ReactMarkdown>{message}</ReactMarkdown>;
+          newMessages[newMessages.length - 1].text = message;
           return newMessages;
         });
         setIsTyping(false);
