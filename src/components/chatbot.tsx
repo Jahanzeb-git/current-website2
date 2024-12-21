@@ -359,6 +359,7 @@ const Chatbot: React.FC<{ onIntersect: (isVisible: boolean) => void }> = ({ onIn
       </p>
     </div>
   </motion.div>
+ );
 );
-
+	
 export default Chatbot;
