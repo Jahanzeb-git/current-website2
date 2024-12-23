@@ -204,9 +204,6 @@ const Home = () => {
       {/* Data Science Approach */}
       <DataScienceApproach />
 
-      {/* Book one to one session */}
-      <Assessment />
-
       {/* Testimonials */}
       <Testimonials />
     </motion.div>
