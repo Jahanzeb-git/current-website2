@@ -13,6 +13,7 @@ import Chatbot from './components/chatbot'; // Import the Chatbot component
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import ProjectDetail from './pages/ProjectDetail';
 import ProjectDetail2 from './pages/ProjectDetail2';
+import projectnavigation from './component/projectnavigation';
 
 function App() {
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
@@ -75,6 +76,8 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
               <Route path="/documentation" element={<Documentation />} /> {/* Add Documentation route */}
               <Route path="/projects/:ai-powered-data-science" element={<ProjectDetail />} />
               <Route path="/projects/:neural-network-visualizer" element={<ProjectDetail2 />} />
+              <Route path="/projects/:id" element={<projectnavigate />} />
+              <Route path="/not-found" element={<div>404 - Page Not Found</div>} />
             </Routes>
           </AnimatePresence>
         </main>
