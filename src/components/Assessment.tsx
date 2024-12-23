@@ -44,11 +44,11 @@ const Assessment = () => {
           <div
             key={id}
             onClick={() => setSelectedMeetingType(title as 'Skill assessment' | 'Consultancy')}
-            className={`relative cursor-pointer rounded-xl p-6 transition-all duration-300 ${
+            className={`relative cursor-pointer rounded-xl p-6 transition-all duration-300 transform hover:scale-[1.02] ${
               selectedMeetingType === title
                 ? theme === 'dark'
-                  ? 'bg-blue-900 border-2 border-blue-500'
-                  : 'bg-blue-50 border-2 border-blue-500'
+                  ? 'bg-blue-900 border-2 border-blue-500 shadow-lg shadow-blue-500/20'
+                  : 'bg-blue-50 border-2 border-blue-500 shadow-lg shadow-blue-500/20'
                 : theme === 'dark'
                 ? 'bg-gray-800 border-2 border-transparent hover:border-blue-400'
                 : 'bg-white border-2 border-transparent hover:border-blue-300'
@@ -76,7 +76,13 @@ const Assessment = () => {
                   {description}
                 </p>
                 <span className={`text-sm font-medium ${
-                  theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                  selectedMeetingType === title
+                    ? theme === 'dark'
+                      ? 'text-blue-300'
+                      : 'text-blue-600'
+                    : theme === 'dark'
+                    ? 'text-gray-400'
+                    : 'text-gray-500'
                 }`}>
                   Duration: {duration}
                 </span>
@@ -84,7 +90,7 @@ const Assessment = () => {
             </div>
             {selectedMeetingType === title && (
               <div className="absolute -top-2 -right-2">
-                <div className="bg-blue-500 text-white p-1 rounded-full">
+                <div className="bg-blue-500 text-white p-1 rounded-full shadow-lg">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
@@ -95,7 +101,9 @@ const Assessment = () => {
         ))}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div className={`rounded-xl shadow-lg overflow-hidden ${
+        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+      }`}>
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className={`text-xl font-semibold ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -110,4 +118,3 @@ const Assessment = () => {
 };
 
 export default Assessment;
-
