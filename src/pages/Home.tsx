@@ -201,8 +201,8 @@ const Home = () => {
       {/*Tools and Technologies section*/}
       <ToolsAndTitles/>
 
-      {/* Data Science Approach */}
-      <DataScienceApproach />
+      {/*Assessment section*/}
+      <Assessment />
 
       {/* Testimonials */}
       <Testimonials />
