@@ -139,7 +139,7 @@ const ToolsAndTechnologies = () => {
   }, [searchTerm, proficiencyFilter]);
 
   return (
-    <section className="mb-20 max-w-4xl mx-auto px-4">
+    <section className="mb-20 max-w-7xl mx-auto px-4">   // max-w-4xl
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-0">
           Tools & Technologies
