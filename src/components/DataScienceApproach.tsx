@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Brain, 
   LineChart, 
@@ -14,6 +14,7 @@ import { useTheme } from '../context/ThemeContext';
 const DataScienceApproach = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { theme } = useTheme();
+  const stepsRef = React.useRef([]);
 
   const steps = [
     {
@@ -54,6 +55,30 @@ const DataScienceApproach = () => {
     }
   ];
 
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.5 // Trigger when at least 50% of the section is in view
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const stepIndex = stepsRef.current.indexOf(entry.target);
+            setActiveStep(stepIndex);
+          }
+        });
+      },
+      observerOptions
+    );
+
+    stepsRef.current.forEach(step => observer.observe(step));
+
+    return () => {
+      stepsRef.current.forEach(step => observer.unobserve(step));
+    };
+  }, []);
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="text-center mb-12">
@@ -80,11 +105,11 @@ const DataScienceApproach = () => {
       <div className="space-y-12">
         {steps.map((step, index) => (
           <div 
+            ref={el => stepsRef.current[index] = el}
             key={index}
             className={`flex gap-6 transition-all duration-300 transform
               ${activeStep === index ? 'scale-105' : 'scale-100'}
               hover:scale-105 cursor-pointer`}
-            onMouseEnter={() => setActiveStep(index)}
           >
             <div className="flex-shrink-0 w-16">
               <div
@@ -136,5 +161,6 @@ const DataScienceApproach = () => {
 };
 
 export default DataScienceApproach;
+
 
 
