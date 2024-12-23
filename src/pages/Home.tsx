@@ -25,7 +25,7 @@ const completedProjects = [
     sourceUrl: 'https://github.com',
   },
   {
-    id: 'neural-network-visualizer', // Unique ID
+    id2: 'neural-network-visualizer', // Unique ID
     title: 'Neural Network Visualizer',
     description:
       'Interactive visualization tool for understanding neural network architectures and data flow.',
