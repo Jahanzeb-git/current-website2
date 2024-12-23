@@ -73,8 +73,8 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
               <Route path="/chatbot" element={<Chatbot />} /> {/* Add Chatbot route */}
               <Route path="/image-generation" element={<ImageGeneration />} />
               <Route path="/documentation" element={<Documentation />} /> {/* Add Documentation route */}
-              <Route path="/projects/:id" element={<ProjectDetail />} />
-              <Route path="/projects/:id2" element={<ProjectDetail2 />} />
+              <Route path="/projects/:ai-powered-data-science" element={<ProjectDetail />} />
+              <Route path="/projects/:neural-network-visualizer" element={<ProjectDetail2 />} />
             </Routes>
           </AnimatePresence>
         </main>
