@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Brain, 
-  LineChart, 
-  Database, 
-  Search, 
-  GitBranch, 
-  Code2, 
+import {
+  Brain,
+  LineChart,
+  Database,
+  Search,
+  GitBranch,
+  Code2,
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
@@ -14,7 +14,7 @@ import { useTheme } from '../context/ThemeContext';
 const DataScienceApproach = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { theme } = useTheme();
-  const stepsRef = React.useRef([]);
+  const stepsRef = React.useRef<(HTMLDivElement | null)[]>([]);
 
   const steps = [
     {
@@ -57,25 +57,29 @@ const DataScienceApproach = () => {
 
   useEffect(() => {
     const observerOptions = {
-      threshold: 0.5 // Trigger when at least 50% of the section is in view
+      threshold: 0.5, // Trigger when 50% of the section is in view
+      rootMargin: '0px'
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const stepIndex = stepsRef.current.indexOf(entry.target);
-            setActiveStep(stepIndex);
-          }
-        });
-      },
-      observerOptions
-    );
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const stepIndex = stepsRef.current.indexOf(entry.target as HTMLDivElement);
+          setActiveStep(stepIndex);
+        }
+      });
+    }, observerOptions);
 
-    stepsRef.current.forEach(step => observer.observe(step));
+    // Observe each step ref
+    stepsRef.current.forEach((step) => {
+      if (step) observer.observe(step);
+    });
 
     return () => {
-      stepsRef.current.forEach(step => observer.unobserve(step));
+      // Cleanup observer
+      stepsRef.current.forEach((step) => {
+        if (step) observer.unobserve(step);
+      });
     };
   }, []);
 
@@ -104,8 +108,8 @@ const DataScienceApproach = () => {
 
       <div className="space-y-12">
         {steps.map((step, index) => (
-          <div 
-            ref={el => stepsRef.current[index] = el}
+          <div
+            ref={(el) => (stepsRef.current[index] = el)}
             key={index}
             className={`flex gap-6 transition-all duration-300 transform
               ${activeStep === index ? 'scale-105' : 'scale-100'}
@@ -133,7 +137,7 @@ const DataScienceApproach = () => {
                 <div className={`w-1 h-20 mx-auto mt-2 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`} />
               )}
             </div>
-            
+
             <div className="flex-grow">
               <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 {step.title}
@@ -161,6 +165,7 @@ const DataScienceApproach = () => {
 };
 
 export default DataScienceApproach;
+
 
 
 
