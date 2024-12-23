@@ -75,6 +75,7 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
               <Route path="/image-generation" element={<ImageGeneration />} />
               <Route path="/documentation" element={<Documentation />} /> {/* Add Documentation route */}
               <Route path="/projects/ai-powered-data-science" element={<ProjectDetail />} />
+              <Route path="/projects/neural-network-visualizer" element={<ProjectDetail2 />} />
               <Route path="/not-found" element={<div>404 - Page Not Found</div>} />
             </Routes>
           </AnimatePresence>
