@@ -9,10 +9,6 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
-import { 
-  Alert,
-  AlertDescription
-} from "@/components/ui/alert"
 
 const DataScienceApproach = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -22,37 +18,37 @@ const DataScienceApproach = () => {
       icon: Brain,
       title: "Problem Understanding",
       description: "Deep dive into business context and requirements. Define clear objectives and success metrics. Understand stakeholder needs and constraints.",
-      details: "• Stakeholder interviews\n• Problem framing\n• Success criteria definition"
+      details: "\u2022 Stakeholder interviews\n\u2022 Problem framing\n\u2022 Success criteria definition"
     },
     {
       icon: Database,
       title: "Data Collection & Cleaning",
       description: "Gather relevant data sources, assess data quality, and perform thorough cleaning. Handle missing values, outliers, and ensure data integrity.",
-      details: "• Data source identification\n• Quality assessment\n• Data preprocessing"
+      details: "\u2022 Data source identification\n\u2022 Quality assessment\n\u2022 Data preprocessing"
     },
     {
       icon: Search,
       title: "Exploratory Data Analysis",
       description: "Uncover patterns, relationships, and insights through visualization and statistical analysis. Generate and validate hypotheses.",
-      details: "• Statistical analysis\n• Data visualization\n• Pattern recognition"
+      details: "\u2022 Statistical analysis\n\u2022 Data visualization\n\u2022 Pattern recognition"
     },
     {
       icon: GitBranch,
       title: "Feature Engineering",
       description: "Create meaningful features, transform variables, and select the most relevant attributes for modeling.",
-      details: "• Feature creation\n• Dimensionality reduction\n• Feature selection"
+      details: "\u2022 Feature creation\n\u2022 Dimensionality reduction\n\u2022 Feature selection"
     },
     {
       icon: Code2,
       title: "Model Development",
       description: "Select and implement appropriate machine learning algorithms. Tune parameters and validate model performance.",
-      details: "• Algorithm selection\n• Model training\n• Hyperparameter tuning"
+      details: "\u2022 Algorithm selection\n\u2022 Model training\n\u2022 Hyperparameter tuning"
     },
     {
       icon: RefreshCw,
       title: "Iteration & Deployment",
       description: "Refine models based on feedback, prepare for deployment, and establish monitoring systems.",
-      details: "• Model refinement\n• Performance monitoring\n• Deployment strategy"
+      details: "\u2022 Model refinement\n\u2022 Performance monitoring\n\u2022 Deployment strategy"
     }
   ];
 
@@ -64,14 +60,13 @@ const DataScienceApproach = () => {
           Data science is a mix of curiosity, creativity, and systematic problem-solving. 
           Every project is unique, but here's my general approach to tackling data science challenges.
         </p>
-        
-        <Alert className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Note: Data Science is inherently experimental. While this framework provides structure,
-            each project may require different approaches and iterations.
-          </AlertDescription>
-        </Alert>
+
+        <div className="flex items-start p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 shadow-sm mb-6">
+          <AlertCircle className="h-5 w-5 text-gray-700 mr-3" />
+          <p className="text-sm">
+            Note: Data Science is inherently experimental. While this framework provides structure, each project may require different approaches and iterations.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-12">
@@ -115,3 +110,4 @@ const DataScienceApproach = () => {
 };
 
 export default DataScienceApproach;
+
