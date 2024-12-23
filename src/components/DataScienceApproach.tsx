@@ -9,9 +9,11 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 const DataScienceApproach = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const { theme } = useTheme();
 
   const steps = [
     {
@@ -55,14 +57,20 @@ const DataScienceApproach = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-4">My Approach to Data Science</h2>
-        <p className="text-lg text-gray-600 mb-8">
+        <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          My Approach to Data Science
+        </h2>
+        <p className={`text-lg mb-8 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
           Data science is a mix of curiosity, creativity, and systematic problem-solving. 
           Every project is unique, but here's my general approach to tackling data science challenges.
         </p>
 
-        <div className="flex items-start p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 shadow-sm mb-6">
-          <AlertCircle className="h-5 w-5 text-gray-700 mr-3" />
+        <div
+          className={`flex items-start p-4 border rounded-lg shadow-sm mb-6 ${
+            theme === 'dark' ? 'border-gray-700 bg-gray-800 text-gray-300' : 'border-gray-300 bg-gray-50 text-gray-800'
+          }`}
+        >
+          <AlertCircle className={`h-5 w-5 mr-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`} />
           <p className="text-sm">
             Note: Data Science is inherently experimental. While this framework provides structure, each project may require different approaches and iterations.
           </p>
@@ -79,26 +87,44 @@ const DataScienceApproach = () => {
             onMouseEnter={() => setActiveStep(index)}
           >
             <div className="flex-shrink-0 w-16">
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center
-                ${activeStep === index ? 'bg-blue-500' : 'bg-gray-200'}
-                transition-colors duration-300`}>
-                <step.icon 
-                  className={`w-8 h-8 
-                    ${activeStep === index ? 'text-white' : 'text-gray-600'}`}
+              <div
+                className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                  activeStep === index
+                    ? theme === 'dark'
+                      ? 'bg-blue-400'
+                      : 'bg-blue-500'
+                    : theme === 'dark'
+                    ? 'bg-gray-700'
+                    : 'bg-gray-200'
+                }`}
+              >
+                <step.icon
+                  className={`w-8 h-8 ${
+                    activeStep === index ? 'text-white' : theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}
                 />
               </div>
               {index < steps.length - 1 && (
-                <div className="w-1 h-20 bg-gray-200 mx-auto mt-2" />
+                <div className={`w-1 h-20 mx-auto mt-2 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`} />
               )}
             </div>
             
             <div className="flex-grow">
-              <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-              <p className="text-gray-600 mb-3">{step.description}</p>
-              <div className={`bg-gray-50 p-4 rounded-lg transition-all duration-300
-                ${activeStep === index ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+              <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {step.title}
+              </h3>
+              <p className={`mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{step.description}</p>
+              <div
+                className={`p-4 rounded-lg transition-all duration-300 ${
+                  activeStep === index
+                    ? theme === 'dark'
+                      ? 'bg-gray-800 text-gray-300'
+                      : 'bg-gray-50 text-gray-700'
+                    : 'opacity-0 max-h-0 overflow-hidden'
+                }`}
+              >
                 {step.details.split('\n').map((detail, i) => (
-                  <p key={i} className="mb-1 text-gray-700">{detail}</p>
+                  <p key={i} className="mb-1">{detail}</p>
                 ))}
               </div>
             </div>
@@ -110,4 +136,5 @@ const DataScienceApproach = () => {
 };
 
 export default DataScienceApproach;
+
 
