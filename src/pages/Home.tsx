@@ -10,6 +10,7 @@ import nural from '../Assets/images/nural.jpg';
 import quantum from '../Assets/images/quantum.png';
 import sustainable from '../Assets/images/sustainable.jpeg';
 import ToolsAndTitles from '../components/ToolsAndTitles';
+import DataScienceApproach from '../components/DataScienceApproach';
 
 const completedProjects = [
   {
@@ -199,11 +200,8 @@ const Home = () => {
       {/*Tools and Technologies section*/}
       <ToolsAndTitles/>
 
-      {/* Expandable Text */}
-      <ExpandableText
-        title={expandableTextData.title}
-        body={expandableTextData.body}
-      />
+      {/* Data Science Approach */}
+      <DataScienceApproach />
 
       {/* Testimonials */}
       <Testimonials />
