@@ -304,13 +304,13 @@ const About = () => {
         whileHover={{ scale: 1.02 }}
       >
         <img
-          src="https://images.unsplash.com/photo-1590273466070-40c466b4432d?auto=format&fit=crop&q=80"
-          alt="Torc Mountain, Kerry"
+          src="https://images.unsplash.com/photo-1608020932658-d0e19a69580b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Badshahi , Kerry"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-8">
           <h3 className="text-2xl font-bold text-white">
-            Torc Mountain, Kerry
+            Faisal Mosque, Pakistan
           </h3>
         </div>
       </motion.div>
