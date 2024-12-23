@@ -28,7 +28,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             alt={project.title}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-700 ease-in-out will-change-transform group-hover:scale-110"
           />
         </div>
         <div className="p-6">
