@@ -20,19 +20,23 @@ const Assessment = () => {
       </div>
 
       <div className="space-y-6">
-        <div className="relative">
-          <div 
-            className={`flex items-center gap-2 cursor-pointer transition-all duration-300 ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+        <div className="relative flex space-x-4">
+          <div
+            className={`flex items-center gap-2 cursor-pointer transition-all duration-300 p-2 rounded ${
+              selectedMeetingType === 'Skill assessment' 
+                ? theme === 'dark' ? 'bg-blue-500 text-white' : 'bg-blue-100 text-gray-900' 
+                : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
             }`}
             onClick={() => handleMeetingTypeChange('Skill assessment')}
           >
             <Book className="w-6 h-6" />
             <span>Skill assessment</span>
           </div>
-          <div 
-            className={`flex items-center gap-2 cursor-pointer transition-all duration-300 ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+          <div
+            className={`flex items-center gap-2 cursor-pointer transition-all duration-300 p-2 rounded ${
+              selectedMeetingType === 'Consultancy' 
+                ? theme === 'dark' ? 'bg-blue-500 text-white' : 'bg-blue-100 text-gray-900' 
+                : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
             }`}
             onClick={() => handleMeetingTypeChange('Consultancy')}
           >
@@ -74,3 +78,4 @@ const Assessment = () => {
 };
 
 export default Assessment;
+
