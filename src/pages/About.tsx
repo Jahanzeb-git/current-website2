@@ -310,7 +310,7 @@ const About = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-8">
           <h3 className="text-2xl font-bold text-white flex items-center">
-            <span className="mr-2">&#x1F4CD;</span> Faisal Mosque, Pakistan
+            <MapPin className="mr-2 w-5 h-5 text-white" /> Faisal Mosque, Pakistan
           </h3>
         </div>
 
