@@ -11,6 +11,7 @@ import quantum from '../Assets/images/quantum.png';
 import sustainable from '../Assets/images/sustainable.jpeg';
 import ToolsAndTitles from '../components/ToolsAndTitles';
 import DataScienceApproach from '../components/DataScienceApproach';
+import Assessment from '../components/Assessment';
 
 const completedProjects = [
   {
@@ -202,6 +203,9 @@ const Home = () => {
 
       {/* Data Science Approach */}
       <DataScienceApproach />
+
+      {/* Book one to one session */}
+      <Assessment />
 
       {/* Testimonials */}
       <Testimonials />
