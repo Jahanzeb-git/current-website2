@@ -132,10 +132,10 @@ const About = () => {
           <h1 className="text-6xl md:text-9xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
             Hello.
           </h1>
-          <h2 className="text-3xl md:text-5xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
+          <h2 className="animate-fade-up duration-500 text-3xl md:text-5xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
             <MapPin className="w-5 h-5 mr-2" />
             {weather ? (
-              <span className="animate-pulse">
+              <span>
                 Working remotely from {Math.round(weather.main.feels_like)}° Karachi, Pakistan
               </span>
             ) : (
