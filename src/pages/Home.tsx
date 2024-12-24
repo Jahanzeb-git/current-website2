@@ -120,7 +120,7 @@ const Home = () => {
           </h1>
         </StarDecoration>
 
-        <p className="mt-16 text-lg md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium">
+        <p className="text-lg md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium">
           Welcome to my portfolio! I turn complex data into clear, practical
           solutions. With a passion for machine learning and data analysis, I
           help businesses grow and innovate by making data work for them.
