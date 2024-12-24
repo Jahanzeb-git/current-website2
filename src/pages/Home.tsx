@@ -7,6 +7,7 @@ import ExpandableText from '../components/ExpandableText';
 import { useTheme } from '../context/ThemeContext';
 import Ai from '../Assets/images/Ai.jpg';
 import nural from '../Assets/images/nural.jpg';
+import StarDecoration from '../components/StarDecoration';
 import quantum from '../Assets/images/quantum.png';
 import sustainable from '../Assets/images/sustainable.jpeg';
 import ToolsAndTitles from '../components/ToolsAndTitles';
@@ -112,10 +113,12 @@ const Home = () => {
         transition={{ delay: 0.2 }}
         className="text-center mb-16"
       >
-        <h1 className="text-7xl md:text-8xl font-extrabold mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
-          I'am Jahánzeb. <br />
-          <span className="block">Ai Enthusiást.</span>
-        </h1>
+        <StarDecoration>
+          <h1 className="text-7xl md:text-8xl font-extrabold mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
+            I'am Jahánzeb. <br />
+            <span className="block">Ai Enthusiást.</span>
+          </h1>
+        </StarDecoration>
 
         <p className="text-lg md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium">
           Welcome to my portfolio! I turn complex data into clear, practical
