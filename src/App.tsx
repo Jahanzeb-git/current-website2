@@ -7,7 +7,6 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Notes from './pages/Notes';
 import Contact from './pages/Contact';
-import lightimg from './Assets/images/light.jpg';
 import Documentation from './pages/Documentation'; // Import Documentation
 import ImageGeneration from './pages/ImgGen';
 import Chatbot from './components/chatbot'; // Import the Chatbot component
@@ -40,6 +39,7 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
   const { theme } = useTheme();
 
   // Define background images for light/dark mode
+  const lightImage = "url('https://img.freepik.com/free-vector/vibrant-summer-ombre-background-vector_53876-105765.jpg?t=st=1735055263~exp=1735058863~hmac=d6288d685ae6e6bbef8dc756649bb8a9b2f316e4a1101eda72c3997f502b3193&w=740')";
   const darkImage = "url('https://images.unsplash.com/photo-1647346425804-34383b95644b?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')";
 
   return (
@@ -49,7 +49,7 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
         className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${
           theme === 'light' ? 'opacity-100' : 'opacity-0'
         }`}
-        style={{ backgroundImage: lightimg }}
+        style={{ backgroundImage: lightImage }}
       />
       {/* Dark mode background */}
       <div
