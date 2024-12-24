@@ -115,10 +115,10 @@ const Home = () => {
         <h1 className="text-7xl md:text-8xl font-extrabold mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
           I am Jahanzeb
         </h1>
-        <h2 className="text-xl md:text-2xl font-semibold text-gray-600 dark:text-gray-300 mb-4">
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-600 dark:text-gray-300 mb-6">
           Data Scientist & AI Enthusiast
         </h2>
-        <p className="text-base md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-lg md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium">
           Welcome to my portfolio! I turn complex data into clear, practical
           solutions. With a passion for machine learning and data analysis, I
           help businesses grow and innovate by making data work for them.
