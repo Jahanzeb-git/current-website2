@@ -130,9 +130,9 @@ const About = () => {
       >
         <div className="md:w-1/2">
           <h1 className="text-6xl md:text-9xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
-            Hi, I'm Jahanzeb
+            Hello.
           </h1>
-         <h3 className="flex items-center mb-4 text-gray-600 dark:text-gray-300">
+         <h2 className="flex items-center mb-4 text-gray-600 dark:text-gray-300">
           <MapPin className="w-5 h-5 mr-2" />
           {weather ? (
             <span>
@@ -141,7 +141,7 @@ const About = () => {
           ) : (
               <span>Loading...</span>
           )}
-        </h3>
+        </h2>
           <div className="mb-6">
             <motion.div
               className={`text-gray-600 dark:text-gray-300 ${
