@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Notes from './pages/Notes';
 import Contact from './pages/Contact';
-import lightimg from '../Assets/images/light.jpg';
+import lightimg from './Assets/images/light.jpg';
 import Documentation from './pages/Documentation'; // Import Documentation
 import ImageGeneration from './pages/ImgGen';
 import Chatbot from './components/chatbot'; // Import the Chatbot component
