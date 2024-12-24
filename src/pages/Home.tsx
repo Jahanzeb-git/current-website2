@@ -114,9 +114,9 @@ const Home = () => {
         className="text-center mb-16"
       >
         <StarDecoration>
-          <h1 className="text-7xl md:text-8xl font-extrabold mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
-            I'm Jahánzeb. <br />
-            <span className="block">Ai Enthusiást.</span>
+          <h1 className="text-7xl md:text-8xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-[#38B2AC] dark:from-[#023A39] dark:to-[#2AA29B] text-transparent bg-clip-text">
+              I'm Jahánzeb. <br />
+              <span className="block">Ai Enthusiást.</span>
           </h1>
         </StarDecoration>
 
