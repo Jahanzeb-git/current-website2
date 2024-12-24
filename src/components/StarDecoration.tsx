@@ -8,12 +8,12 @@ interface StarDecorationProps {
 
 const StarDecoration: React.FC<StarDecorationProps> = ({ children }) => {
   return (
-    <div className="relative inline-block">
+    <div className="mt-16 relative inline-block">
       {/* Top right star */}
       <motion.img
         src={starIcon}
         alt=""
-        className="mt-16 absolute -top-8 -right-12 w-12 h-12"
+        className="absolute -top-8 -right-12 w-12 h-12"
         initial={{ rotate: 0, scale: 0 }}
         animate={{ rotate: 360, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
