@@ -13,7 +13,7 @@ const StarDecoration: React.FC<StarDecorationProps> = ({ children }) => {
       <motion.img
         src={starIcon}
         alt=""
-        className="absolute -top-8 -right-12 w-8 h-8"
+        className="absolute -top-8 -right-12 w-12 h-12"
         initial={{ rotate: 0, scale: 0 }}
         animate={{ rotate: 360, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
@@ -23,13 +23,16 @@ const StarDecoration: React.FC<StarDecorationProps> = ({ children }) => {
       <motion.img
         src={starIcon}
         alt=""
-        className="absolute -bottom-4 -left-12 w-6 h-6"
+        className="absolute -bottom-4 -left-12 w-10 h-10"
         initial={{ rotate: 0, scale: 0 }}
         animate={{ rotate: -360, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
       />
-
-      {children}
+      
+      {/* Padding below the second star */}
+      <div className="pt-10"> {/* Adjust the padding as needed */}
+        {children}
+      </div>
     </div>
   );
 };
