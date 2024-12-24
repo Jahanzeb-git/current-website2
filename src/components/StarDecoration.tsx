@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import starIcon from '../Assets/images/star.svg';
 
 interface StarDecorationProps {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ const StarDecoration: React.FC<StarDecorationProps> = ({ children }) => {
     <div className="relative inline-block">
       {/* Top right star */}
       <motion.img
-        src="/Assets/images/star-1.svg"
+        src={starIcon}
         alt=""
         className="absolute -top-8 -right-12 w-8 h-8"
         initial={{ rotate: 0, scale: 0 }}
@@ -20,7 +21,7 @@ const StarDecoration: React.FC<StarDecorationProps> = ({ children }) => {
       
       {/* Bottom left star */}
       <motion.img
-        src="/Assets/images/star-1.svg"
+        src={starIcon}
         alt=""
         className="absolute -bottom-4 -left-12 w-6 h-6"
         initial={{ rotate: 0, scale: 0 }}
