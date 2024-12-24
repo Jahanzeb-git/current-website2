@@ -12,7 +12,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
-import expedu from '../components/Experienceandeducation';
+import { EducationSection, ExperienceSection } from '../components/Experienceandeducation';
 
   
 const skills = [
@@ -316,7 +316,12 @@ const About = () => {
         </div>
 
       </motion.div>
-      {/* Existing sections... */}
+  
+      {/* Education Section */}
+      <EducationSection ref={educationRef} inView={educationInView} />
+
+      {/* Experience Section */}
+      <ExperienceSection ref={experienceRef} inView={experienceInView} />
 
       {/* New Sections */}
       <CertificationSection
