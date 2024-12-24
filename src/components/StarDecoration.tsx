@@ -29,10 +29,6 @@ const StarDecoration: React.FC<StarDecorationProps> = ({ children }) => {
         transition={{ duration: 0.6, delay: 0.4 }}
       />
       
-      {/* Padding below the second star */}
-      <div className="pt-10"> {/* Adjust the padding as needed */}
-        {children}
-      </div>
     </div>
   );
 };
