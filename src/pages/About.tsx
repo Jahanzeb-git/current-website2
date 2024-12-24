@@ -129,19 +129,19 @@ const About = () => {
         transition={{ duration: 0.6 }}
       >
         <div className="md:w-1/2">
-          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
+          <h1 className="text-6xl md:text-9xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
             Hi, I'm Jahanzeb
           </h1>
-          <div className="flex items-center mb-4 text-gray-600 dark:text-gray-300">
-            <MapPin className="w-5 h-5 mr-2" />
-            {weather ? (
-              <span>
-                Working remotely from {Math.round(weather.main.feels_like)}° Karachi, Pakistan
-              </span>
-            ) : (
+         <h3 className="flex items-center mb-4 text-gray-600 dark:text-gray-300">
+          <MapPin className="w-5 h-5 mr-2" />
+          {weather ? (
+            <span>
+              Working remotely from {Math.round(weather.main.feels_like)}° Karachi, Pakistan
+            </span>
+          ) : (
               <span>Loading...</span>
-            )}
-          </div>
+          )}
+        </h3>
           <div className="mb-6">
             <motion.div
               className={`text-gray-600 dark:text-gray-300 ${
