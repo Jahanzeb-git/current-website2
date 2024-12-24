@@ -63,3 +63,17 @@ p {
   font-weight: 500; /* Bold weight */
   font-size: 1rem; /* Adjust this value for paragraphs */
 }
+
+/* Add this to your global.css or index.css */
+@font-face {
+  font-family: 'Acorn';
+  src: url('/fonts/Acorn-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Create utility classes for the Acorn font */
+.font-acorn {
+  font-family: 'Acorn', sans-serif;
+}
