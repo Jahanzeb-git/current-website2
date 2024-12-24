@@ -56,7 +56,7 @@ const Navbar = ({ hide }) => {
         className={navbarClasses}
       >
         <div className="max-w-4xl mx-auto flex justify-between items-center md:justify-center">
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-full px-6 py-2 shadow-lg">
+          <div className="bg-white/40 dark:bg-gray-800/40 backdrop-blur-lg rounded-full px-6 py-2 shadow-lg">
             <div className="hidden md:flex items-center space-x-8">
               <NavLink
                 to="/"
