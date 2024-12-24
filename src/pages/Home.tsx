@@ -115,7 +115,7 @@ const Home = () => {
       >
         <StarDecoration>
           <h1 className="mt-16 text-7xl md:text-8xl font-extrabold mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
-            I'am Jahánzeb. <br />
+            I'm Jahánzeb. <br />
             <span className="block">Ai Enthusiást.</span>
           </h1>
         </StarDecoration>
