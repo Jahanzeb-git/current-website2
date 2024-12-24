@@ -12,6 +12,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
+import expedu from '../components/Experienceandeducation';
 
   
 const skills = [
@@ -318,8 +319,6 @@ const About = () => {
       {/* Existing sections... */}
 
       {/* New Sections */}
-      <EducationSection ref={educationRef} inView={educationInView} />
-      <ExperienceSection ref={experienceRef} inView={experienceInView} />
       <CertificationSection
         ref={certificationRef}
         inView={certificationInView}
@@ -346,57 +345,9 @@ const About = () => {
     </motion.div>
   );
 };
-const EducationSection = React.forwardRef((props, ref) => (
-  <motion.div
-    ref={ref}
-    className="mt-16 mb-16"
-    initial={{ y: 50, opacity: 0 }}
-    animate={props.inView ? { y: 0, opacity: 1 } : {}}
-    transition={{ duration: 0.6 }}
-  >
-    <h2 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white">
-      Education
-    </h2>
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-      <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-        Masters of Science in Finencial Engineering
-      </h3>
-      <p className="text-gray-600 dark:text-gray-300">Worldquant University</p>
-      <p className="text-gray-600 dark:text-gray-300">2022 - 2024</p>
-    </div>
-  </motion.div>
-));
 
-const ExperienceSection = React.forwardRef((props, ref) => (
-  <motion.div
-    ref={ref}
-    className="mb-16"
-    initial={{ y: 50, opacity: 0 }}
-    animate={props.inView ? { y: 0, opacity: 1 } : {}}
-    transition={{ duration: 0.6 }}
-  >
-    <h2 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white">
-      Experience
-    </h2>
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-      <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-        Senior Data Scientist
-      </h3>
-      <p className="text-gray-600 dark:text-gray-300">
-        Tech Innovation Labs, 2020 - Present
-      </p>
-      <ul className="list-disc pl-5 text-gray-600 dark:text-gray-300">
-        <li>Led a team of data scientists to develop predictive models.</li>
-        <li>
-          Implemented data-driven strategies to improve business outcomes.
-        </li>
-        <li>
-          Collaborated with cross-functional teams to integrate AI solutions.
-        </li>
-      </ul>
-    </div>
-  </motion.div>
-));
+{/* Experience and Education section*/}
+<expedu />
 
 const CertificationSection = React.forwardRef((props, ref) => (
   <motion.div
