@@ -90,16 +90,23 @@ const Footer = () => {
                         {item.description}
                       </p>
                     </div>
-                    {/* Separator */}
-                    <span className="text-gray-400 dark:text-gray-500">|</span>
-
-                    {/* New paragraph */}
-                    <p className="text-sm text-gray-800 dark:text-gray-300">
-                      Acorn Semibold for Headlines, Nunito Regular for body copy,
-                      Illustrations and cheeky little flourishes.
-                    </p>
                   </motion.div>
                 ))}
+                {/* Add the new paragraph outside the map */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center space-x-3"
+                >
+                  {/* Separator */}
+                  <span className="text-gray-400 dark:text-gray-500">|</span>
+
+                  {/* New paragraph */}
+                  <p className="text-sm text-gray-800 dark:text-gray-300">
+                    Acorn Semibold for Headlines, Nunito Regular for body copy, Illustrations
+                    and cheeky little flourishes.
+                  </p>
+                </motion.div>
               </div>
             </motion.div>
           </motion.div>
