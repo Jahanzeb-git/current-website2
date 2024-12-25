@@ -8,7 +8,7 @@ interface StarDecorationProps {
 
 const StarDecoration: React.FC<StarDecorationProps> = ({ children }) => {
   return (
-    <div className="mt-16 relative inline-block">
+    <div className="mt-10 relative inline-block">
       {/* Top right star */}
       <motion.img
         src={starIcon}
