@@ -25,7 +25,7 @@ const Contact = () => {
           className="text-center mb-16"
         >
           <h1 className="text-6xl md:text-9xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
-            Get in Touch
+            Get in Touch.
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Let's discuss how we can work together on your next data science project.
