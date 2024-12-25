@@ -15,7 +15,7 @@
 /* Base styles */
 @layer base {
   body {
-    @apply font-nunito font-large;
+    @apply font-nunito font-medium text-lg;
   }
 
   h1, h2, h3, h4, h5, h6 {
