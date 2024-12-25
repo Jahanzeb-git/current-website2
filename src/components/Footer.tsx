@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Github, Linkedin, MessageSquare, Code, Cloud, Figma } from 'lucide-react';
+import { Github, Linkedin, MessageSquare, Code, Cloud, Palette } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Footer = () => {
@@ -12,7 +12,7 @@ const Footer = () => {
   ];
 
   const colophonInfo = [
-    { icon: <figma className="w-5 h-5" />, label: 'Figma', description: 'For Design' },
+    { icon: <Palette className="w-5 h-5" />, label: 'Figma', description: 'For Design' },
     { icon: <Code className="w-5 h-5" />, label: 'React + Vite', description: 'For code' },
     { icon: <Github className="w-5 h-5" />, label: 'GitHub', description: 'For versions' },
     { icon: <Cloud className="w-5 h-5" />, label: 'Netlify', description: 'For deployment' },
