@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
 import { EducationSection, ExperienceSection } from '../components/Experienceandeducation';
-import Certification1 from '../Assets/images/Certification1.png';
+import Certification1 from '../Assets/images/Certificate1.png';
 
 
   
