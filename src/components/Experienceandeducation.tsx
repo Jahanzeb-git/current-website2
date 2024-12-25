@@ -5,23 +5,23 @@ import { Calendar, Building2, GraduationCap, Award, ArrowUpRight } from 'lucide-
 const EducationSection = React.forwardRef((props, ref) => {
   const education = [
     {
-      degree: "Masters of Science in Financial Engineering",
-      institution: "Worldquant University",
-      period: "2022 - 2024",
+      degree: "Bachelor of Science in Computer Science",
+      institution: "Hamdard University of Pakistan",
+      period: "2022 - present",
       achievements: [
-        "Specialized in quantitative finance and algorithmic trading",
-        "Research focus on ML applications in market prediction",
-        "GPA: 3.8/4.0"
+        "Major in Computer Science",
+        "Minor in AI",
+        "Learned to create modern Software solutions"
       ]
     },
     {
-      degree: "Bachelor of Science in Computer Science",
-      institution: "Example University",
-      period: "2018 - 2022",
+      degree: "High School Intermediate",
+      institution: "Degree College of Science and Technology",
+      period: "2020 - 2022",
       achievements: [
-        "Major in Data Science and AI",
-        "Minor in Mathematics",
-        "Dean's List: All semesters"
+        "Major in Engineering",
+        "Minor in General Science",
+        "Learned Implementation of Engineering Modals"
       ]
     }
   ];
@@ -125,7 +125,7 @@ const EducationSection = React.forwardRef((props, ref) => {
 const ExperienceSection = React.forwardRef((props, ref) => {
   const experiences = [
     {
-      role: "Senior Data Scientist",
+      role: "Data Scientist",
       company: "Tech Innovation Labs",
       period: "2020 - Present",
       location: "Remote",
@@ -139,7 +139,7 @@ const ExperienceSection = React.forwardRef((props, ref) => {
       skills: ["Python", "TensorFlow", "AWS", "Docker", "MLOps"]
     },
     {
-      role: "Data Scientist",
+      role: "Data Analysis",
       company: "Data Analytics Co",
       period: "2018 - 2020",
       location: "Hybrid",
@@ -148,7 +148,7 @@ const ExperienceSection = React.forwardRef((props, ref) => {
         "Developed predictive models with 92% accuracy",
         "Optimized data processing reducing costs by 35%",
         "Created automated reporting dashboards",
-        "Mentored junior data scientists"
+        "Mentored junior Analysts"
       ],
       skills: ["Python", "SQL", "Tableau", "Scikit-learn", "Git"]
     }
