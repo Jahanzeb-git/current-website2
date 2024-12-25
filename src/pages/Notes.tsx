@@ -48,7 +48,7 @@ const Notes = () => {
         className="text-center mb-16"
       >
         <h1 className="text-6xl md:text-9xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
-          Research Notes
+          Notes.
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
           Exploring ideas and sharing insights in data science and machine learning.
