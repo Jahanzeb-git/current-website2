@@ -1,217 +1,171 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Building2, GraduationCap, Award, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { Building2, GraduationCap, Calendar, BookOpen, Briefcase, ArrowRight } from 'lucide-react';
 
-const EducationSection = React.forwardRef((props, ref) => {
+const TimelineItem = ({ data, isLeft, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay }}
+    className={`flex w-full ${isLeft ? 'justify-start' : 'justify-end'} mb-8`}
+  >
+    <div className={`w-5/12 ${!isLeft && 'order-1'}`}>
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700"
+      >
+        <div className="flex items-center gap-2 mb-4">
+          {data.type === 'education' ? (
+            <GraduationCap className="w-6 h-6 text-emerald-500" />
+          ) : (
+            <Briefcase className="w-6 h-6 text-emerald-500" />
+          )}
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white">{data.title}</h3>
+        </div>
+        
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-2">
+          <Building2 className="w-4 h-4" />
+          <span>{data.institution}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-4">
+          <Calendar className="w-4 h-4" />
+          <span>{data.period}</span>
+        </div>
+
+        {data.details.map((detail, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 + (index * 0.1) }}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-2"
+          >
+            <ArrowRight className="w-4 h-4 text-emerald-500" />
+            <span>{detail}</span>
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+  </motion.div>
+);
+
+const TimelineLine = () => (
+  <motion.div
+    initial={{ height: 0 }}
+    whileInView={{ height: '100%' }}
+    viewport={{ once: true }}
+    transition={{ duration: 1 }}
+    className="absolute left-1/2 transform -translate-x-1/2 w-0.5 bg-gradient-to-b from-emerald-500 to-emerald-300 h-full"
+  />
+);
+
+export const EducationSection = () => {
   const education = [
     {
-      degree: "Masters of Science in Financial Engineering",
-      institution: "Worldquant University",
-      period: "2022 - 2024",
-      achievements: [
-        "Specialized in quantitative finance and algorithmic trading",
-        "Research focus on ML applications in market prediction",
-        "GPA: 3.8/4.0"
+      type: 'education',
+      title: 'Bachelor of Science Computer Science',
+      institution: 'Hamdard University of Pakistan',
+      period: '2022 - Present',
+      details: [
+        'Major in Computer Science',
+        'Minor in Artificial Intelligence',
+        'Focus on modern software development'
       ]
     },
     {
-      degree: "Bachelor of Science in Computer Science",
-      institution: "Example University",
-      period: "2018 - 2022",
-      achievements: [
-        "Major in Data Science and AI",
-        "Minor in Mathematics",
-        "Dean's List: All semesters"
+      type: 'education',
+      title: 'High School Intermediate',
+      institution: 'High School',
+      period: '2020 - 2022',
+      details: [
+        'Major in Engineering',
+        'Strong foundation in mathematics',
+        'Technical skills development'
       ]
     }
   ];
 
   return (
     <motion.div
-      ref={ref}
-      className="mt-16 mb-16"
-      initial={{ y: 50, opacity: 0 }}
-      animate={props.inView ? { y: 0, opacity: 1 } : {}}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="flex items-center gap-3 mb-8">
-        <GraduationCap className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
-          Education
-        </h2>
-      </div>
-      
-      <div className="space-y-8">
-        {education.map((edu, index) => (
-          <motion.div
-            key={index}
-            initial={{ x: -20, opacity: 0 }}
-            animate={props.inView ? { x: 0, opacity: 1 } : {}}
-            transition={{ delay: index * 0.2 }}
-            className="relative"
-          >
-            <div className="relative bg-white dark:bg-gray-800 p-6 pl-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700">
-              <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-emerald-600 rounded-full border-4 border-white dark:border-gray-900" />
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                    {edu.degree}
-                  </h3>
-                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mt-2">
-                    <Building2 className="w-4 h-4" />
-                    <span>{edu.institution}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mt-1">
-                    <Calendar className="w-4 h-4" />
-                    <span>{edu.period}</span>
-                  </div>
-                </div>
-                
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-sm font-medium hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors"
-                >
-                  View Details
-                  <ArrowUpRight className="w-4 h-4" />
-                </motion.button>
-              </div>
-              
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="mt-4 space-y-2"
-              >
-                {edu.achievements.map((achievement, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <Award className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                    <span className="text-gray-600 dark:text-gray-300">{achievement}</span>
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  );
-});
-
-const ExperienceSection = React.forwardRef((props, ref) => {
-  const experiences = [
-    {
-      role: "Senior Data Scientist",
-      company: "Tech Innovation Labs",
-      period: "2020 - Present",
-      location: "Remote",
-      type: "Full-time",
-      achievements: [
-        "Led development of ML models improving customer retention by 45%",
-        "Managed a team of 5 data scientists across 3 time zones",
-        "Implemented automated ML pipeline reducing deployment time by 60%",
-        "Collaborated with product teams to integrate AI solutions"
-      ],
-      skills: ["Python", "TensorFlow", "AWS", "Docker", "MLOps"]
-    },
-    {
-      role: "Data Scientist",
-      company: "Data Analytics Co",
-      period: "2018 - 2020",
-      location: "Hybrid",
-      type: "Full-time",
-      achievements: [
-        "Developed predictive models with 92% accuracy",
-        "Optimized data processing reducing costs by 35%",
-        "Created automated reporting dashboards",
-        "Mentored junior data scientists"
-      ],
-      skills: ["Python", "SQL", "Tableau", "Scikit-learn", "Git"]
-    }
-  ];
-
-  return (
-    <motion.div
-      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       className="mb-16"
-      initial={{ y: 50, opacity: 0 }}
-      animate={props.inView ? { y: 0, opacity: 1 } : {}}
-      transition={{ duration: 0.6 }}
     >
-      <div className="flex items-center gap-3 mb-8">
-        <Building2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
-          Experience
-        </h2>
+      <div className="flex items-center gap-3 mb-12">
+        <BookOpen className="w-8 h-8 text-emerald-500" />
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Education</h2>
       </div>
 
-      <div className="space-y-8">
-        {experiences.map((exp, index) => (
-          <motion.div
+      <div className="relative">
+        <TimelineLine />
+        {education.map((item, index) => (
+          <TimelineItem
             key={index}
-            initial={{ x: -20, opacity: 0 }}
-            animate={props.inView ? { x: 0, opacity: 1 } : {}}
-            transition={{ delay: index * 0.2 }}
-            className="relative"
-          >
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700">
-              <div className="absolute -left-3 top-6 w-6 h-6 bg-emerald-600 rounded-full border-4 border-white dark:border-gray-900" />
-              
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                      {exp.role}
-                    </h3>
-                    <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-sm">
-                      {exp.type}
-                    </span>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-4 mt-2 text-gray-600 dark:text-gray-300">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4" />
-                      <span>{exp.company}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>{exp.period}</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 space-y-2">
-                    {exp.achievements.map((achievement, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ x: -10, opacity: 0 }}
-                        animate={props.inView ? { x: 0, opacity: 1 } : {}}
-                        transition={{ delay: 0.3 + (i * 0.1) }}
-                        className="flex items-start gap-2"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 mt-2 flex-shrink-0" />
-                        <span className="text-gray-600 dark:text-gray-300">{achievement}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {exp.skills.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+            data={item}
+            isLeft={index % 2 === 0}
+            delay={index * 0.2}
+          />
         ))}
       </div>
     </motion.div>
   );
-});
+};
 
-export { EducationSection, ExperienceSection };
+export const ExperienceSection = () => {
+  const experience = [
+    {
+      type: 'experience',
+      title: 'Frontend Developer',
+      institution: 'Tech Company',
+      period: '2023 - Present',
+      details: [
+        'Building modern web applications',
+        'Leading frontend architecture',
+        'Mentoring junior developers'
+      ]
+    },
+    {
+      type: 'experience',
+      title: 'Junior Developer',
+      institution: 'Startup',
+      period: '2022 - 2023',
+      details: [
+        'Full-stack development',
+        'Agile methodology',
+        'Rapid prototyping'
+      ]
+    }
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="mb-16"
+    >
+      <div className="flex items-center gap-3 mb-12">
+        <Briefcase className="w-8 h-8 text-emerald-500" />
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Experience</h2>
+      </div>
+
+      <div className="relative">
+        <TimelineLine />
+        {experience.map((item, index) => (
+          <TimelineItem
+            key={index}
+            data={item}
+            isLeft={index % 2 === 0}
+            delay={index * 0.2}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+export default { EducationSection, ExperienceSection };
