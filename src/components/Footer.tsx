@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Github, Linkedin, MessageSquare, Code, Cloud } from 'lucide-react';
+import { Github, Linkedin, MessageSquare, Code, Cloud, figma } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Footer = () => {
@@ -12,8 +12,9 @@ const Footer = () => {
   ];
 
   const colophonInfo = [
+    { icon: <figma className="w-5 h-5" />, label: 'Figma', description: 'For Design' },
     { icon: <Code className="w-5 h-5" />, label: 'React + Vite', description: 'For code' },
-    { icon: <Github className="w-5 h-5" />, label: 'GitHub', description: 'For version control' },
+    { icon: <Github className="w-5 h-5" />, label: 'GitHub', description: 'For versions' },
     { icon: <Cloud className="w-5 h-5" />, label: 'Netlify', description: 'For deployment' },
   ];
 
@@ -89,17 +90,17 @@ const Footer = () => {
                         {item.description}
                       </p>
                     </div>
+                    {/* Separator */}
+                    <span className="text-gray-400 dark:text-gray-500">|</span>
+
+                    {/* New paragraph */}
+                    <p className="text-sm text-gray-800 dark:text-gray-300">
+                      Acorn Semibold for Headlines, Nunito Regular for body copy,
+                      Illustrations and cheeky little flourishes.
+                    </p>
                   </motion.div>
                 ))}
               </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowColophon(false)}
-                className="mt-6 w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
-              >
-                Close
-              </motion.button>
             </motion.div>
           </motion.div>
         )}
