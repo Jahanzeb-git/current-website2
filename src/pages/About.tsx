@@ -318,6 +318,13 @@ const About = () => {
         </div>
 
       </motion.div>
+
+      {/* Paragraph .*/}
+      <div className="flex justify-center w-full mt-12 mb-16">
+        <p className="text-center max-w-2xl px-4 text-gray-600 dark:text-gray-300 leading-relaxed">
+          Just as the Faisal Mosque stands as a testament to the blend of innovation and tradition, my approach to data science mirrors this harmony. From my base in Karachi, I work on projects that bridge the gap between complex machine learning solutions and practical business needs. Like the mosque's distinctive architecture that breaks traditional design paradigms while respecting Islamic principles, I strive to develop data solutions that are both groundbreaking and grounded in solid analytical foundations.
+        </p>
+      </div>
   
       {/* Education Section */}
       <EducationSection ref={educationRef} inView={educationInView} />
@@ -341,8 +348,8 @@ const About = () => {
           onClick={() => setShowImage(false)}
         >
           <motion.img
-            src="https://images.unsplash.com/photo-1590273466070-40c466b4432d?auto=format&fit=crop&q=80"
-            alt="Torc Mountain, Kerry"
+            src="https://images.unsplash.com/photo-1608020932658-d0e19a69580b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Faisal Mosque, Pakistan"
             className="max-w-full max-h-full object-contain rounded-lg"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
