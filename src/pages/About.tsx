@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
 import { EducationSection, ExperienceSection } from '../components/Experienceandeducation';
+import Certification1 from '../Assets/images/Certification1.png';
+
 
   
 const skills = [
@@ -367,7 +369,7 @@ const CertificationSection = React.forwardRef((props, ref) => (
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <CertificationCard
-        imgSrc="https://via.placeholder.com/150"
+        imgSrc={Certification1}
         title="IBM Data Science Professional Certificate"
         text="IBM, 2023"
       />
