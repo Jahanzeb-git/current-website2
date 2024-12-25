@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Github, Linkedin, MessageSquare, Code, Cloud, figma } from 'lucide-react';
+import { Github, Linkedin, MessageSquare, Code, Cloud, Figma } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Footer = () => {
