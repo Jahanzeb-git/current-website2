@@ -50,9 +50,8 @@ const EducationSection = React.forwardRef((props, ref) => {
             transition={{ delay: index * 0.2 }}
             className="relative"
           >
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700">
-              <div className="absolute -left-3 top-6 w-6 h-6 bg-emerald-600 rounded-full border-4 border-white dark:border-gray-900" />
-              
+            <div className="relative bg-white dark:bg-gray-800 p-6 pl-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700">
+              <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-emerald-600 rounded-full border-4 border-white dark:border-gray-900" />
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <h3 className="text-xl font-bold text-gray-800 dark:text-white">
