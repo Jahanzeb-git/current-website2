@@ -11,9 +11,17 @@ interface ChatHistoryProps {
   history: HistoryItem[];
   onSelectChat: (id: string) => void;
   selectedId?: string;
+  onStartNewChat: () => void; // New prop
+  onToggleHistory: () => void; // New prop
+  isHistoryOpen: boolean; // New prop
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({ history, onSelectChat, selectedId }) => {
+const ChatHistory: React.FC<ChatHistoryProps> = ({ history,
+  onSelectChat,
+  selectedId,
+  onStartNewChat,
+  onToggleHistory,
+  isHistoryOpen, }) => {
   const groupedHistory = history.reduce((acc, item) => {
     const date = format(item.timestamp, 'yyyy-MM-dd');
     if (!acc[date]) {
@@ -38,7 +46,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ history, onSelectChat, select
   };
 
   return (
-    <div className="w-64 h-full bg-gray-50 dark:bg-gray-900 p-4 overflow-y-auto">
+     <div className={`w-64 h-full bg-gray-50 dark:bg-gray-900 p-4 overflow-y-auto ${isHistoryOpen ? 'block' : 'hidden'}`}>
       {Object.entries(groupedHistory).map(([date, items]) => (
         <div key={date} className="mb-6">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
@@ -63,6 +71,9 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ history, onSelectChat, select
           </div>
         </div>
       ))}
+      <button onClick={onStartNewChat} className="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+        Start New Chat
+      </button>
     </div>
   );
 };
