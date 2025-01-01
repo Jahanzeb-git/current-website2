@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings } from 'lucide-react';
-import ChatInput from './ChatInput';
-import ChatHistory from './ChatHistory';
-import QuickActions from './QuickActions';
+import ChatInput from '../components/ChatInput';
+import ChatHistory from '../components/ChatHistory';
+import QuickActions from '../components/QuickActions';
 import { Message, HistoryItem } from '../types';
 import { formatDate } from '../utils/date';
 
