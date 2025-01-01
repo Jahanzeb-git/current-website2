@@ -43,6 +43,12 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
   const lightImage = "url('https://i.imgur.com/jskuQDa.png')";
   const darkImage = "url('https://images.unsplash.com/photo-1647346425804-34383b95644b?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')";
 
+  // Define routes where Navbar and Footer should not be displayed
+  const noNavbarFooterRoutes = ['/chat'];
+
+  // Determine whether to show Navbar and Footer
+  const shouldShowNavbarFooter = !noNavbarFooterRoutes.includes(location.pathname);
+
   return (
     <div className="relative min-h-screen flex flex-col">
       {/* Light mode background */}
@@ -63,8 +69,8 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
       {/* Main content */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Conditionally render Navbar */}
-        {location.pathname !== '/contact' && <Navbar />}
-        
+        {shouldShowNavbarFooter && <Navbar />}
+
         <main className="flex-grow">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
@@ -82,7 +88,9 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
             </Routes>
           </AnimatePresence>
         </main>
-        <Footer />
+
+        {/* Conditionally render Footer */}
+        {shouldShowNavbarFooter && <Footer />}
       </div>
 
       {/* Modal for documentation */}
