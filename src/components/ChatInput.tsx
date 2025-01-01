@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowUp, Paperclip, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -9,6 +9,12 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSend, isInitial = false }) => {
   const [input, setInput] = useState('');
+  const [rows, setRows] = useState(1);
+
+  useEffect(() => {
+    const rowCount = Math.ceil(input.split('\n').length / 40); // Adjust the divisor as needed
+    setRows(rowCount > 5 ? 5 : rowCount);
+  }, [input]);
 
   const handleSubmit = () => {
     if (input.trim()) {
@@ -26,8 +32,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, isInitial = false }) => {
 
   return (
     <motion.div
-      initial={isInitial ? { y: -100 } : { y: 0 }}
-      animate={{ y: 0 }}
+      initial={isInitial ? { y: -100, opacity: 0 } : { y: 0, opacity: 1 }}
+      animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={`w-full max-w-2xl mx-auto ${isInitial ? 'mt-32' : 'mt-4'}`}
     >
@@ -38,7 +44,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, isInitial = false }) => {
           onKeyDown={handleKeyDown}
           placeholder="Message ChatGPT..."
           className="w-full p-4 pr-20 bg-gray-100 dark:bg-gray-800 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
-          rows={1}
+          rows={rows}
         />
         <div className="absolute right-2 flex items-center space-x-2">
           <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
