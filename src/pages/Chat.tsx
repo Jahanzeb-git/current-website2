@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUp, Check, Cpu, Settings, Trash2, MessageSquare, ChevronLeft } from 'lucide-react';
+import { ArrowUp, Check, Cpu, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -9,24 +9,14 @@ import { solarizedlight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 interface Message {
   type: 'user' | 'bot';
   text: string;
-  timestamp: number;
 }
 
-interface ChatSession {
-  id: string;
-  title: string;
-  messages: Message[];
-  timestamp: number;
+interface ChatbotProps {
+  onIntersect: (isVisible: boolean) => void;
 }
 
-const Chatbot: React.FC = () => {
-  const [currentSession, setCurrentSession] = useState<ChatSession>({
-    id: new Date().toISOString(),
-    title: 'New Chat',
-    messages: [],
-    timestamp: Date.now()
-  });
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -34,30 +24,47 @@ const Chatbot: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState('Qwen 3.2');
   const [showTerms, setShowTerms] = useState(false);
   const [language, setLanguage] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatbotRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const preOptions = ["What is Data Science?", "Explain Machine Learning", "Tell me about AI", "What is Python?"];
 
   useEffect(() => {
-    const storedSessions = localStorage.getItem('chatSessions');
-    if (storedSessions) {
-      setChatSessions(JSON.parse(storedSessions));
+    const observer = new IntersectionObserver(
+      ([entry]) => onIntersect(entry.isIntersecting),
+      { threshold: 0.5 }
+    );
+
+    if (chatbotRef.current) {
+      observer.observe(chatbotRef.current);
+    }
+
+    return () => {
+      if (chatbotRef.current) {
+        observer.unobserve(chatbotRef.current);
+      }
+    };
+  }, [onIntersect]);
+
+  useEffect(() => {
+    const storedMessages = sessionStorage.getItem('chatMessages');
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('chatSessions', JSON.stringify(chatSessions));
-  }, [chatSessions]);
+    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [currentSession.messages, loading]);
+  }, [messages, loading]);
 
   const getUserRequestedLanguage = (input: string): string | null => {
     const languages = ['python', 'c++', 'javascript', 'java', 'ruby', 'php', 'bash'];
@@ -69,30 +76,27 @@ const Chatbot: React.FC = () => {
     setIsTyping(true);
     let i = 0;
 
-    setCurrentSession(prev => ({
-      ...prev,
-      messages: [...prev.messages, { type: 'bot', text: '', timestamp: Date.now() }]
-    }));
+    setMessages(prev => [...prev, { type: 'bot', text: '' }]);
 
     const interval = setInterval(() => {
-      setCurrentSession(prev => {
-        const newMessages = [...prev.messages];
+      setMessages(prev => {
+        const newMessages = [...prev];
         if (newMessages.length > 0) {
           newMessages[newMessages.length - 1].text = message.slice(0, i + 1) + '|';
         }
-        return { ...prev, messages: newMessages };
+        return newMessages;
       });
 
       i += 1;
 
       if (i === message.length) {
         clearInterval(interval);
-        setCurrentSession(prev => {
-          const newMessages = [...prev.messages];
+        setMessages(prev => {
+          const newMessages = [...prev];
           if (newMessages.length > 0) {
             newMessages[newMessages.length - 1].text = message;
           }
-          return { ...prev, messages: newMessages };
+          return newMessages;
         });
         setIsTyping(false);
       }
@@ -105,12 +109,7 @@ const Chatbot: React.FC = () => {
     const sanitizedInput = message.trim();
     const detectedLanguage = getUserRequestedLanguage(sanitizedInput);
     setLanguage(detectedLanguage);
-
-    setCurrentSession(prev => ({
-      ...prev,
-      messages: [...prev.messages, { type: 'user', text: sanitizedInput, timestamp: Date.now() }]
-    }));
-
+    setMessages(prev => [...prev, { type: 'user', text: sanitizedInput }]);
     setInput('');
     setLoading(true);
 
@@ -131,28 +130,12 @@ const Chatbot: React.FC = () => {
 
       const data = await response.json();
       startTypingEffect(data.output || 'Sorry, there was an error.');
-
-      // Update chat sessions
-      if (currentSession.messages.length === 0) {
-        const newSession = {
-          ...currentSession,
-          title: sanitizedInput.slice(0, 30) + (sanitizedInput.length > 30 ? '...' : '')
-        };
-        setCurrentSession(newSession);
-        setChatSessions(prev => [newSession, ...prev]);
-      } else {
-        setChatSessions(prev => 
-          prev.map(session => 
-            session.id === currentSession.id ? currentSession : session
-          )
-        );
-      }
     } catch (error) {
       console.error('Error fetching bot response:', error);
-      setCurrentSession(prev => ({
+      setMessages(prev => [
         ...prev,
-        messages: [...prev.messages, { type: 'bot', text: 'Sorry, something went wrong.', timestamp: Date.now() }]
-      }));
+        { type: 'bot', text: 'Sorry, something went wrong.' },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -164,173 +147,21 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const startNewChat = () => {
-    const newSession: ChatSession = {
-      id: new Date().toISOString(),
-      title: 'New Chat',
-      messages: [],
-      timestamp: Date.now()
-    };
-    setCurrentSession(newSession);
-    setChatSessions(prev => [newSession, ...prev]);
-  };
-
-  const loadChatSession = (session: ChatSession) => {
-    setCurrentSession(session);
-    setSidebarOpen(false);
-  };
-
-  const deleteChatSession = (sessionId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setChatSessions(prev => prev.filter(session => session.id !== sessionId));
-    if (currentSession.id === sessionId) {
-      startNewChat();
-    }
-  };
-
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.aside
-            initial={{ x: -300 }}
-            animate={{ x: 0 }}
-            exit={{ x: -300 }}
-            className="w-80 bg-gray-800 text-white p-4 overflow-y-auto"
-          >
-            <button
-              onClick={startNewChat}
-              className="w-full p-3 mb-4 rounded-lg bg-gray-700 hover:bg-gray-600 flex items-center justify-center gap-2"
-            >
-              <MessageSquare className="w-5 h-5" />
-              New Chat
-            </button>
-
-            <div className="space-y-2">
-              {chatSessions.map(session => (
-                <div
-                  key={session.id}
-                  onClick={() => loadChatSession(session)}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-700 cursor-pointer"
-                >
-                  <span className="truncate flex-1">{session.title}</span>
-                  <button
-                    onClick={(e) => deleteChatSession(session.id, e)}
-                    className="p-1 hover:bg-gray-600 rounded"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm p-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-xl font-semibold">{currentSession.title}</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <Settings className="w-5 h-5" />
-            </button>
-          </div>
-        </header>
-
-        {/* Chat Container */}
-        <div
-          ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4"
-        >
-          {currentSession.messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-3xl p-4 rounded-lg ${
-                  msg.type === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700'
-                }`}
-              >
-                <ReactMarkdown>{msg.text}</ReactMarkdown>
-                {msg.type === 'bot' && !loading && (
-                  <div className="text-sm flex items-center space-x-1 mt-2">
-                    <span className="text-gray-600 dark:text-gray-300">Powered by</span>
-                    <div className="relative group">
-                      <Cpu className="text-gray-600 dark:text-gray-300 w-4 h-4 cursor-pointer" />
-                      <div className="absolute left-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 w-40 hidden group-hover:block">
-                        <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
-                          <span>{selectedModel}</span>
-                          <Check className="w-4 h-4 text-emerald-500" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-          {loading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-                Thinking...
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Input Area */}
-        <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-center gap-4">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Type a message..."
-                className="flex-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-              />
-              <button
-                className="p-4 rounded-full bg-blue-500 hover:bg-blue-600 text-white"
-                onClick={() => handleSend(input)}
-              >
-                <ArrowUp className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-4">
-              {preOptions.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSend(option)}
-                  className="px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600"
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+    <motion.div
+      ref={chatbotRef}
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.5 }}
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 min-h-[calc(100vh-4rem)] flex flex-col relative"
+    >
+      <div
+        className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        <Settings />
       </div>
 
-      {/* Settings Menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -339,7 +170,7 @@ const Chatbot: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="absolute top-[80px] right-[20px] bg-white dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
+            className="absolute top-[40px] left-[20px] bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
           >
             <button
               className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
@@ -392,9 +223,8 @@ const Chatbot: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Terms Modal */}
       {showTerms && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -428,7 +258,92 @@ const Chatbot: React.FC = () => {
           </motion.div>
         </div>
       )}
-    </div>
+
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+          What can I help with?
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300">
+          Ask me anything about Data Science.
+        </p>
+      </div>
+
+      <div className="flex-1 flex flex-col">
+        <div
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto bg-transparent p-4 rounded-lg mb-4"
+        >
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`mb-2 ${msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'}`}
+            >
+              {msg.type === 'bot' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
+              {msg.type === 'bot' && !loading && (
+                <div className="text-sm flex items-center space-x-1 mt-2">
+                  <span className="text-gray-600 dark:text-gray-300">Powered by</span>
+                  <div className="relative group">
+                    <Cpu className="text-gray-600 dark:text-gray-300 w-4 h-4 cursor-pointer" />
+                    <div className="absolute left-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 w-40 hidden group-hover:block">
+                      <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
+                        <span>{selectedModel}</span>
+                        <Check className="w-4 h-4 text-emerald-500" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+          {loading && <div className="mb-2 text-gray-800 dark:text-white">Thinking...</div>}
+        </div>
+
+        <div className="mt-auto">
+          <div className="flex items-center space-x-3 mb-4">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+            <button
+              className="p-3 rounded-full flex items-center justify-center bg-black dark:bg-white hover:opacity-50 active:opacity-100"
+              onClick={() => handleSend(input)}
+            >
+              <ArrowUp className="w-5 h-5 text-white dark:text-black" />
+            </button>
+          </div>
+
+          {language && (
+            <SyntaxHighlighter
+              language={language}
+              style={solarizedlight}
+              customStyle={{ marginTop: '10px' }}
+            >
+              {input}
+            </SyntaxHighlighter>
+          )}
+
+          <div className="flex flex-wrap justify-center gap-2 mb-4">
+            {preOptions.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleSend(option)}
+                className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+
+          <p className="text-sm text-center text-gray-600 dark:text-gray-300">
+            Bot can make mistakes. Check important info.
+          </p>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
