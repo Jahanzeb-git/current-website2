@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
 import ChatInput from '../components/ChatInput';
 import ChatHistory from '../components/ChatHistory';
 import QuickActions from '../components/QuickActions';
@@ -17,12 +16,12 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   const [loading, setLoading] = useState(false);
   const [isInitialView, setIsInitialView] = useState(true);
   const [selectedChat, setSelectedChat] = useState<string | undefined>();
-  
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Added state for toggle
+
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load chat history from session storage
     const storedHistory = sessionStorage.getItem('chatHistory');
     if (storedHistory) {
       setHistory(JSON.parse(storedHistory));
@@ -47,7 +46,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: message,
-          system_prompt: "You are an AI assistant...", // Your existing system prompt
+          system_prompt: "You are an AI assistant...",
           tokens: 1000,
         }),
       });
@@ -55,7 +54,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
       if (!response.ok) throw new Error('API request failed');
 
       const data = await response.json();
-      
+
       const botMessage: Message = {
         type: 'bot',
         text: data.output || 'Sorry, there was an error.',
@@ -64,7 +63,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
 
       setMessages((prev) => [...prev, botMessage]);
 
-      // Update history
       const newHistoryItem: HistoryItem = {
         id: Date.now().toString(),
         title: message.slice(0, 30) + (message.length > 30 ? '...' : ''),
@@ -73,7 +71,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
 
       setHistory((prev) => [newHistoryItem, ...prev]);
       sessionStorage.setItem('chatHistory', JSON.stringify([newHistoryItem, ...history]));
-
     } catch (error) {
       console.error('Error:', error);
       setMessages((prev) => [
@@ -97,17 +94,23 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
     handleSend(actionMessages[action as keyof typeof actionMessages]);
   };
 
+  const toggleHistory = () => {
+    setIsHistoryOpen((prev) => !prev); // Toggle the history panel
+  };
+
   return (
     <div className="flex h-full">
       <ChatHistory
-        history={[]}
-        onSelectChat={() => {}}
-        selectedId={''}
-        onStartNewChat={() => {}}
+        history={history}
+        onSelectChat={setSelectedChat}
+        selectedId={selectedChat}
+        onStartNewChat={() => {
+          setMessages([]);
+          setSelectedChat(undefined);
+        }}
         onToggleHistory={toggleHistory}
         isHistoryOpen={isHistoryOpen}
       />
-      
       <main className="flex-1 flex flex-col">
         <div className="flex-1 overflow-y-auto p-4">
           {isInitialView ? (
@@ -148,7 +151,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
             </div>
           )}
         </div>
-        
         <div className="p-4 border-t dark:border-gray-800">
           <ChatInput onSend={handleSend} isInitial={isInitialView} />
         </div>
@@ -158,3 +160,4 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
 };
 
 export default Chatbot;
+
