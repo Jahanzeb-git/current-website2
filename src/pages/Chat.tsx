@@ -98,11 +98,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-full">
       <ChatHistory
-        history={history}
-        onSelectChat={setSelectedChat}
-        selectedId={selectedChat}
+        history={[]}
+        onSelectChat={() => {}}
+        selectedId={''}
+        onStartNewChat={() => {}}
+        onToggleHistory={toggleHistory}
+        isHistoryOpen={isHistoryOpen}
       />
       
       <main className="flex-1 flex flex-col">
