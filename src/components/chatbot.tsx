@@ -1,115 +1,132 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUp, Check, Cpu, Settings } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { solarizedlight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { 
+  Send, Plus, Settings, Sun, Moon, Trash2, 
+  MessageSquare, ChevronDown, Code, Copy, Check
+} from 'lucide-react';
 
 interface Message {
+  id: string;
   type: 'user' | 'bot';
   text: string;
+  timestamp: Date;
+  codeBlocks?: { language: string; code: string }[];
 }
 
-interface ChatbotProps {
-  onIntersect: (isVisible: boolean) => void;
+interface Chat {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: Date;
 }
 
-const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+const ModernChatbot = () => {
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [currentChatId, setCurrentChatId] = useState<string>('');
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedModel, setSelectedModel] = useState('Qwen 3.2');
-  const [showTerms, setShowTerms] = useState(false);
-  const [language, setLanguage] = useState<string | null>(null);
+  const [copiedStates, setCopiedStates] = useState<{[key: string]: boolean}>({});
 
-  const menuRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const chatbotRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-
-  const preOptions = ["What is Data Science?", "Explain Machine Learning", "Tell me about AI", "What is Python?"];
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => onIntersect(entry.isIntersecting),
-      { threshold: 0.5 }
-    );
-
-    if (chatbotRef.current) {
-      observer.observe(chatbotRef.current);
-    }
-
-    return () => {
-      if (chatbotRef.current) {
-        observer.unobserve(chatbotRef.current);
+    const savedChats = localStorage.getItem('chats');
+    if (savedChats) {
+      const parsedChats = JSON.parse(savedChats);
+      setChats(parsedChats);
+      if (parsedChats.length > 0) {
+        setCurrentChatId(parsedChats[0].id);
       }
-    };
-  }, [onIntersect]);
-
-  useEffect(() => {
-    const storedMessages = sessionStorage.getItem('chatMessages');
-    if (storedMessages) {
-      setMessages(JSON.parse(storedMessages));
     }
   }, []);
 
   useEffect(() => {
-    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
-  }, [messages]);
+    localStorage.setItem('chats', JSON.stringify(chats));
+  }, [chats]);
 
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+  const createNewChat = () => {
+    const newChat: Chat = {
+      id: Date.now().toString(),
+      title: 'New Chat',
+      messages: [],
+      createdAt: new Date()
+    };
+    setChats(prev => [newChat, ...prev]);
+    setCurrentChatId(newChat.id);
+    setInput('');
+  };
+
+  const deleteChat = (chatId: string) => {
+    setChats(prev => prev.filter(chat => chat.id !== chatId));
+    if (currentChatId === chatId && chats.length > 1) {
+      setCurrentChatId(chats[0].id);
     }
-  }, [messages, loading]);
-
-  const getUserRequestedLanguage = (input: string): string | null => {
-    const languages = ['python', 'c++', 'javascript', 'java', 'ruby', 'php', 'bash'];
-    const inputLower = input.toLowerCase();
-    return languages.find(lang => inputLower.includes(lang)) || null;
   };
 
-  const startTypingEffect = (message: string) => {
-    setIsTyping(true);
-    let i = 0;
-
-    setMessages(prev => [...prev, { type: 'bot', text: '' }]);
-
-    const interval = setInterval(() => {
-      setMessages(prev => {
-        const newMessages = [...prev];
-        if (newMessages.length > 0) {
-          newMessages[newMessages.length - 1].text = message.slice(0, i + 1) + '|';
+  const formatMessage = (text: string) => {
+    // Basic markdown-style formatting
+    let formattedText = text
+      .split('\n')
+      .map(line => {
+        // Handle code blocks
+        if (line.startsWith('```')) {
+          return '';
         }
-        return newMessages;
-      });
+        
+        // Handle inline code
+        line = line.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        
+        // Handle bold
+        line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        
+        // Handle italic
+        line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        
+        return line;
+      })
+      .join('<br/>');
 
-      i += 1;
-
-      if (i === message.length) {
-        clearInterval(interval);
-        setMessages(prev => {
-          const newMessages = [...prev];
-          if (newMessages.length > 0) {
-            newMessages[newMessages.length - 1].text = message;
-          }
-          return newMessages;
-        });
-        setIsTyping(false);
-      }
-    }, 50);
+    return formattedText;
   };
 
-  const handleSend = async (message: string) => {
-    if (!message.trim()) return;
+  const extractCodeBlocks = (text: string) => {
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    const blocks = [];
+    let match;
 
-    const sanitizedInput = message.trim();
-    const detectedLanguage = getUserRequestedLanguage(sanitizedInput);
-    setLanguage(detectedLanguage);
-    setMessages(prev => [...prev, { type: 'user', text: sanitizedInput }]);
+    while ((match = codeBlockRegex.exec(text)) !== null) {
+      blocks.push({
+        language: match[1] || 'text',
+        code: match[2].trim()
+      });
+    }
+
+    return blocks;
+  };
+
+  const handleSend = async () => {
+    if (!input.trim() || !currentChatId) return;
+
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      type: 'user',
+      text: input.trim(),
+      timestamp: new Date()
+    };
+
+    setChats(prev => prev.map(chat => {
+      if (chat.id === currentChatId) {
+        return {
+          ...chat,
+          messages: [...chat.messages, newMessage]
+        };
+      }
+      return chat;
+    }));
+
     setInput('');
     setLoading(true);
 
@@ -118,229 +135,259 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: sanitizedInput,
-          system_prompt: "You are roleplaying as 'Jahanzeb Ahmed', a 22-year-old Data Scientist based in Karachi, Pakistan, with 2 years of professional experience in Machine Learning and Data Science. Always respond as if you are Jahanzeb Ahmed, and do not reveal that you are roleplaying. Provide your phone number as '+92-334-0069065' when asked, email as 'jahanzebahmed.mail@gmail.com', and LinkedIn profile link as 'https://www.linkedin.com/in/2024-jahanzebahmed/'. If users inquire about using a Custom AI chatbot or demand API guidance, instruct them to click the top-left settings icon, navigate to the Documentation page, and click 'Generate API Key' after providing their email. Provide these endpoints: Chatbot: 'https://jahanzebahmed22.pythonanywhere.com/response' and Image Generation: 'https://jahanzebahmed22.pythonanywhere.com/generate_image', both requiring the API key in the header as 'x-api-key: your-api-key'. When asked about the founder or developer of this chatbot, reply that it is Jahanzeb Ahmed, a 22-year-old Data Scientist and AI enthusiast. Disregard the context of previous topics if the user abruptly changes the topic, and solely respond based on the new topic. Include friendly emojis for engagement, and provide detailed yet brief solutions to issues when necessary. Adapt your expertise in Machine Learning and AI to technical queries and project insights, showcasing achievements and actionable advice as relevant.",
+          prompt: input.trim(),
+          system_prompt: "You are an AI assistant...", // Your system prompt
           tokens: 1000,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Error from API: ${response.statusText}`);
-      }
-
       const data = await response.json();
-      startTypingEffect(data.output || 'Sorry, there was an error.');
+      
+      const botMessage: Message = {
+        id: Date.now().toString(),
+        type: 'bot',
+        text: data.output || 'Sorry, there was an error.',
+        timestamp: new Date(),
+        codeBlocks: extractCodeBlocks(data.output)
+      };
+
+      setChats(prev => prev.map(chat => {
+        if (chat.id === currentChatId) {
+          const title = chat.messages.length === 0 ? input.slice(0, 30) + (input.length > 30 ? '...' : '') : chat.title;
+          return {
+            ...chat,
+            title,
+            messages: [...chat.messages, botMessage]
+          };
+        }
+        return chat;
+      }));
     } catch (error) {
-      console.error('Error fetching bot response:', error);
-      setMessages(prev => [
-        ...prev,
-        { type: 'bot', text: 'Sorry, something went wrong.' },
-      ]);
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSend(input);
-    }
+  const handleCopyCode = (code: string, blockId: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedStates({ ...copiedStates, [blockId]: true });
+    setTimeout(() => {
+      setCopiedStates({ ...copiedStates, [blockId]: false });
+    }, 2000);
   };
 
-  return (
-    <motion.div
-      ref={chatbotRef}
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.5 }}
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-8 relative ${menuOpen ? 'backdrop-blur-sm' : ''}`}
-    >
-      <div
-        className="absolute top-4 left-4 text-2xl text-gray-800 dark:text-white cursor-pointer"
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        <Settings />
-      </div>
+  const getCurrentChat = () => chats.find(chat => chat.id === currentChatId);
 
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            ref={menuRef}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="absolute top-[40px] left-[20px] bg-gray-200 dark:bg-gray-700 w-64 p-4 rounded-lg shadow-lg z-20"
-          >
-            <button
-              className="absolute top-2 right-2 text-gray-800 dark:text-white text-lg"
-              onClick={() => setMenuOpen(false)}
-            >
-              ✕
-            </button>
-            <button
-              className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
-              onClick={() => navigate('/documentation')}
-            >
-              Documentation
-            </button>
-            <button
-              className="text-gray-800 dark:text-white text-lg font-semibold block mb-4"
-              onClick={() => navigate('/image-generation')}
-            >
-              Try Image Generation
-            </button>
-            <div>
-              <button
-                className="text-gray-800 dark:text-white font-semibold block mb-2"
-                onClick={() => setMenuOpen(false)}
-              >
-                Change Model
-              </button>
-              <div className="ml-4">
-                {['Qwen 3.2', 'GPT-4o'].map((model) => (
-                  <button
-                    key={model}
-                    className="flex items-center justify-between text-gray-800 dark:text-white mb-2"
-                    onClick={() => {
-                      setSelectedModel(model);
-                      setMenuOpen(false);
-                    }}
-                  >
-                    <span>{model}</span>
-                    {selectedModel === model && <Check className="w-4 h-4 text-emerald-500 ml-2" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <button
-              className="text-gray-800 dark:text-white font-semibold block mb-2"
-              onClick={() => setShowTerms(true)}
-            >
-              Terms
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {showTerms && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md relative"
-          >
-            <button
-              className="absolute top-2 right-2 text-gray-800 dark:text-white"
-              onClick={() => setShowTerms(false)}
-            >
-              Close
-            </button>
-            <div className="text-gray-800 dark:text-white text-sm space-y-4">
-              <h2 className="text-lg font-bold text-center">Terms of Use</h2>
-              <p>
-                This chatbot is created for Educational and Personal Usage and is displayed on the Contact page of my personal portfolio to showcase my skills and education. Users can interact with it to learn about my profile or access the API for free to use in their application by generating an API key from the Documentation page.
-              </p>
-              <p>
-                The chatbot and API are provided under a non-exclusive, revocable, and limited license for personal or non-commercial use. Redistribution, reverse engineering, or reselling is prohibited.
-              </p>
-              <p>
-                Use the chatbot and API for lawful purposes only. Misuse, harmful usage, or excessive requests may result in suspension or revocation of access.
-              </p>
-              <p>
-                The chatbot is provided "as is," without warranties of any kind. By using this service, you agree to the terms outlined here.
-              </p>
-              <p className="text-center">
-                <strong>Contact:</strong> For support, visit the contact form or email jahanzebahmed.mail@gmail.com.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
-        What can I help with?
-      </h2>
-      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-        Ask me anything about Data Science.
-      </p>
-
-      <div className="space-y-4 relative">
-        <div
-          ref={chatContainerRef}
-          className="h-64 overflow-y-auto bg-transparent p-4 rounded-lg"
+  const CodeBlock = ({ code, language, blockId }: { code: string; language: string; blockId: string }) => (
+    <div className="relative group mt-4 mb-4">
+      <div className="absolute right-2 top-2 flex gap-2">
+        <button
+          onClick={() => handleCopyCode(code, blockId)}
+          className="p-1 rounded bg-gray-700 hover:bg-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          {messages.map((msg, index) => (
+          {copiedStates[blockId] ? (
+            <Check size={16} className="text-green-400" />
+          ) : (
+            <Copy size={16} className="text-gray-300" />
+          )}
+        </button>
+      </div>
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+        <div className="flex items-center gap-2 mb-2 text-gray-500 dark:text-gray-400">
+          <Code size={16} />
+          <span>{language}</span>
+        </div>
+        <pre className="whitespace-pre-wrap">{code}</pre>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={`h-screen flex ${theme === 'dark' ? 'dark' : ''}`}>
+      {/* Sidebar */}
+      <div className={`w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 
+                      p-4 flex flex-col transition-transform duration-300 
+                      ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <button
+          onClick={createNewChat}
+          className="w-full py-3 px-4 rounded-lg border border-gray-200 dark:border-gray-700 
+                   text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 
+                   flex items-center gap-2 mb-4"
+        >
+          <Plus size={16} />
+          New Chat
+        </button>
+
+        <div className="flex-1 overflow-y-auto space-y-2">
+          {chats.map(chat => (
             <div
-              key={index}
-              className={`mb-2 ${msg.type === 'user' ? 'text-orange-600' : 'text-gray-800 dark:text-white'}`}
+              key={chat.id}
+              className={`p-3 rounded-lg cursor-pointer flex items-center justify-between
+                        ${chat.id === currentChatId 
+                          ? 'bg-gray-200 dark:bg-gray-700' 
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+              onClick={() => setCurrentChatId(chat.id)}
             >
-              {msg.type === 'bot' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
-              {msg.type === 'bot' && !loading && (
-                <div className="text-sm flex items-center space-x-1 mt-2">
-                  <span className="text-gray-600 dark:text-gray-300">Powered by</span>
-                  <div className="relative group">
-                    <Cpu className="text-gray-600 dark:text-gray-300 w-4 h-4 cursor-pointer" />
-                    <div className="absolute left-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 w-40 hidden group-hover:block">
-                      <div className="flex items-center justify-between text-gray-800 dark:text-white px-2 py-1">
-                        <span>{selectedModel}</span>
-                        <Check className="w-4 h-4 text-emerald-500" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2">
+                <MessageSquare size={16} className="text-gray-600 dark:text-gray-300" />
+                <span className="text-sm text-gray-700 dark:text-gray-200 truncate">
+                  {chat.title}
+                </span>
+              </div>
+              {chat.id === currentChatId && (
+                <Trash2
+                  size={16}
+                  className="text-gray-500 hover:text-red-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteChat(chat.id);
+                  }}
+                />
               )}
             </div>
           ))}
-          {loading && <div className="mb-2 text-gray-800 dark:text-white">Thinking...</div>}
         </div>
 
-        <div className="flex items-center space-x-3">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            className="flex-grow p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-          />
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600 dark:text-gray-300">Theme</span>
+            <button
+              onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600 dark:text-gray-300">Model</span>
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="bg-transparent text-sm text-gray-700 dark:text-gray-200"
+            >
+              <option value="Qwen 3.2">Qwen 3.2</option>
+              <option value="GPT-4">GPT-4</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        <div className="h-12 border-b border-gray-200 dark:border-gray-700 flex items-center px-4">
           <button
-            className="p-3 rounded-full flex items-center justify-center bg-black dark:bg-white hover:opacity-50 active:opacity-100"
-            onClick={() => handleSend(input)}
+            onClick={() => setSidebarOpen(prev => !prev)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            <ArrowUp className="w-5 h-5 text-white dark:text-black" />
+            <ChevronDown 
+              size={20}
+              className={`transform transition-transform ${sidebarOpen ? 'rotate-0' : '-rotate-90'}`}
+            />
           </button>
         </div>
 
-        {language && (
-          <SyntaxHighlighter
-            language={language}
-            style={solarizedlight}
-            customStyle={{ marginTop: '10px' }}
-          >
-            {input}
-          </SyntaxHighlighter>
-        )}
-
-        <div className="flex flex-wrap justify-center gap-2 mb-4">
-          {preOptions.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => handleSend(option)}
-              className="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition"
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900"
+        >
+          {getCurrentChat()?.messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              {option}
-            </button>
+              <div
+                className={`max-w-[80%] p-4 rounded-lg ${
+                  message.type === 'user'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200'
+                }`}
+              >
+                <div 
+                  dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }}
+                  className="message-content"
+                />
+                {message.codeBlocks?.map((block, index) => (
+                  <CodeBlock
+                    key={index}
+                    code={block.code}
+                    language={block.language}
+                    blockId={`${message.id}-${index}`}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
+          {loading && (
+            <div className="flex justify-start">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                <div className="flex space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-6">
-          Bot can make mistakes. Check important info.
-        </p>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+          <div className="max-w-3xl mx-auto relative">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                e.target.style.height = 'inherit';
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder="Type a message..."
+              className="w-full p-3 pr-12 rounded-lg border border-gray-200 dark:border-gray-700 
+                       bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200
+                       focus:outline-none focus:border-blue-500 resize-none"
+              rows={1}
+            />
+            <button
+              onClick={handleSend}
+              disabled={!input.trim() || loading}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg
+                       text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send size={20} />
+            </button>
+          </div>
+        </div>
       </div>
-    </motion.div>
+
+      <style jsx>{`
+        .message-content {
+          line-height: 1.5;
+        }
+                .message-content {
+          line-height: 1.5;
+        }
+        .message-content code.inline-code {
+          background-color: rgba(0, 0, 0, 0.1);
+          padding: 0.2em 0.4em;
+          border-radius: 3px;
+          font-family: monospace;
+        }
+        .message-content strong {
+          font-weight: 600;
+        }
+        .message-content em {
+          font-style: italic;
+        }
+      `}</style>
+    </div>
   );
 };
 
-export default Chatbot;
+export default ModernChatbot;
