@@ -13,7 +13,7 @@ import Chatbot from './components/chatbot'; // Import the Chatbot component
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import ProjectDetail from './pages/ProjectDetail';
 import ProjectDetail2 from './pages/ProjectDetail2';
-import chat from './pages/Chat';
+import Chat from './pages/Chat';
 import projectnavigation from './component/projectnavigation';
 
 function App() {
@@ -78,7 +78,7 @@ function AppContent({ isDocumentationOpen, toggleDocumentation }) {
               <Route path="/projects/ai-powered-data-science" element={<ProjectDetail />} />
               <Route path="/projects/neural-network-visualizer" element={<ProjectDetail2 />} />
               <Route path="/not-found" element={<div>404 - Page Not Found</div>} />
-              <Route path="/chat" element={<chat />} />
+              <Route path="/chat" element={<Chat />} />
             </Routes>
           </AnimatePresence>
         </main>
