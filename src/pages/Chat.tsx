@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ChatInput from './ChatInput';
-import ChatHistory from './ChatHistory';
-import QuickActions from './QuickActions';
+import ChatInput from '../components/ChatInput';
+import ChatHistory from '../components/ChatHistory';
+import QuickActions from '../components/QuickActions';
 import { Message, HistoryItem } from '../types';
 import { formatDate, serializeDate, deserializeHistory } from '../utils/date';
 
