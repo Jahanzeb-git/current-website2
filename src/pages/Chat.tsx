@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import ChatInput from '../components/ChatInput';
 import ChatHistory from '../components/ChatHistory';
 import QuickActions from '../components/QuickActions';
@@ -18,16 +17,19 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   const [selectedChat, setSelectedChat] = useState<string | undefined>();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const chatbotRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [messages, loading]);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Load chat history from session storage
   useEffect(() => {
     const storedHistory = sessionStorage.getItem('chatHistory');
     if (storedHistory) {
@@ -106,7 +108,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   };
 
   return (
-    <div className="flex h-full relative">
+    <div className="flex h-screen overflow-hidden">
       <ChatHistory
         history={history}
         onSelectChat={setSelectedChat}
@@ -119,10 +121,10 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
         isHistoryOpen={isHistoryOpen}
       />
       <main className="flex-1 flex flex-col relative">
-        {/* Chat content area with padding bottom to prevent content being hidden behind fixed input */}
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-4 pb-24"
+          className="flex-1 overflow-y-auto p-4 pb-24 scroll-smooth"
+          style={{ scrollbarWidth: 'thin' }}
         >
           {isInitialView ? (
             <div className="text-center mt-32">
@@ -141,11 +143,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
                   <div
                     className={`max-w-2xl p-4 rounded-lg ${
                       msg.type === 'user'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white'
+                        ? 'bg-blue-500 text-white shadow-lg'
+                        : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white shadow-md'
                     }`}
                   >
-                    {msg.text}
+                    <div className="whitespace-pre-wrap break-words">{msg.text}</div>
                     <div className="text-xs mt-1 opacity-70">
                       {formatDate(msg.timestamp)}
                     </div>
@@ -154,16 +156,20 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">
-                    <div className="animate-pulse">Thinking...</div>
+                  <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                    <div className="animate-pulse flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    </div>
                   </div>
                 </div>
               )}
+              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
-        {/* Fixed input area at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-800 p-4">
+        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-800 p-4 shadow-lg">
           <ChatInput onSend={handleSend} isInitial={isInitialView} />
         </div>
       </main>
