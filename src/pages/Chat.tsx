@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import ChatInput from '../components/ChatInput';
 import ChatHistory from '../components/ChatHistory';
 import QuickActions from '../components/QuickActions';
@@ -15,42 +16,19 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   const [loading, setLoading] = useState(false);
   const [isInitialView, setIsInitialView] = useState(true);
   const [selectedChat, setSelectedChat] = useState<string | undefined>();
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Added state for toggle
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
 
-  // Load history from session storage only once on mount
   useEffect(() => {
-    try {
-      const storedHistory = sessionStorage.getItem('chatHistory');
-      if (storedHistory) {
-        setHistory(JSON.parse(storedHistory));
-      }
-    } catch (error) {
-      console.error('Error loading chat history:', error);
+    const storedHistory = sessionStorage.getItem('chatHistory');
+    if (storedHistory) {
+      setHistory(JSON.parse(storedHistory));
     }
   }, []);
 
-  // Update session storage when history changes
-  useEffect(() => {
-    try {
-      sessionStorage.setItem('chatHistory', JSON.stringify(history));
-    } catch (error) {
-      console.error('Error saving chat history:', error);
-    }
-  }, [history]);
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    if (chatContainerRef.current && !isInitialView) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [messages, isInitialView]);
-
   const handleSend = async (message: string) => {
-    if (!message.trim()) return;
-    
     setIsInitialView(false);
     setLoading(true);
 
@@ -85,7 +63,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
 
       setMessages((prev) => [...prev, botMessage]);
 
-      // Create new history item
       const newHistoryItem: HistoryItem = {
         id: Date.now().toString(),
         title: message.slice(0, 30) + (message.length > 30 ? '...' : ''),
@@ -93,6 +70,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
       };
 
       setHistory((prev) => [newHistoryItem, ...prev]);
+      sessionStorage.setItem('chatHistory', JSON.stringify([newHistoryItem, ...history]));
     } catch (error) {
       console.error('Error:', error);
       setMessages((prev) => [
@@ -117,7 +95,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   };
 
   const toggleHistory = () => {
-    setIsHistoryOpen((prev) => !prev);
+    setIsHistoryOpen((prev) => !prev); // Toggle the history panel
   };
 
   return (
@@ -129,25 +107,21 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
         onStartNewChat={() => {
           setMessages([]);
           setSelectedChat(undefined);
-          setIsInitialView(true);
         }}
         onToggleHistory={toggleHistory}
         isHistoryOpen={isHistoryOpen}
       />
-      <main className="flex-1 flex flex-col relative">
-        <div className={`flex-1 overflow-y-auto ${isInitialView ? 'flex flex-col items-center justify-center' : 'p-4'}`}>
+      <main className="flex-1 flex flex-col">
+        <div className="flex-1 overflow-y-auto p-4">
           {isInitialView ? (
-            <div className="w-full max-w-2xl px-4">
-              <h1 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-8">
+            <div className="text-center mt-32">
+              <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">
                 What can I help with?
               </h1>
               <QuickActions onAction={handleQuickAction} />
-              <div className="mt-8">
-                <ChatInput onSend={handleSend} isInitial={isInitialView} />
-              </div>
             </div>
           ) : (
-            <div ref={chatContainerRef} className="space-y-4 pb-24">
+            <div ref={chatContainerRef} className="space-y-4">
               {messages.map((msg, index) => (
                 <div
                   key={index}
@@ -177,11 +151,9 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
             </div>
           )}
         </div>
-        {!isInitialView && (
-          <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900 p-4 border-t dark:border-gray-800">
-            <ChatInput onSend={handleSend} isInitial={isInitialView} />
-          </div>
-        )}
+        <div className="p-4 border-t dark:border-gray-800">
+          <ChatInput onSend={handleSend} isInitial={isInitialView} />
+        </div>
       </main>
     </div>
   );
