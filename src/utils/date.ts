@@ -1,7 +1,10 @@
 import { format } from 'date-fns';
+import { isValid, parseISO } from 'date-fns';
 
-export const formatDate = (date: Date): string => {
-  if (isNaN(date.getTime())) {
+export const formatDate = (date: Date | string): string => {
+  let validDate = typeof date === 'string' ? parseISO(date) : date;
+
+  if (!isValid(validDate)) {
     return 'Invalid Date';
   }
 
@@ -10,11 +13,20 @@ export const formatDate = (date: Date): string => {
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  if (date >= today) {
-    return format(date, 'HH:mm');
-  } else if (date >= yesterday) {
+  if (validDate >= today) {
+    return format(validDate, 'HH:mm');
+  } else if (validDate >= yesterday) {
     return 'Yesterday';
   } else {
-    return format(date, 'MMM d');
+    return format(validDate, 'MMM d');
   }
+};
+
+export const serializeDate = (date: Date): string => {
+  return date.toISOString();
+};
+
+export const deserializeHistory = (historyString: string | null): HistoryItem[] => {
+  if (!historyString) return [];
+  return JSON.parse(historyString);
 };
