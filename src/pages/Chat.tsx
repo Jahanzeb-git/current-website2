@@ -16,10 +16,17 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   const [loading, setLoading] = useState(false);
   const [isInitialView, setIsInitialView] = useState(true);
   const [selectedChat, setSelectedChat] = useState<string | undefined>();
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Added state for toggle
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
 
   useEffect(() => {
     const storedHistory = sessionStorage.getItem('chatHistory');
@@ -95,11 +102,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   };
 
   const toggleHistory = () => {
-    setIsHistoryOpen((prev) => !prev); // Toggle the history panel
+    setIsHistoryOpen((prev) => !prev);
   };
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full relative">
       <ChatHistory
         history={history}
         onSelectChat={setSelectedChat}
@@ -111,8 +118,12 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
         onToggleHistory={toggleHistory}
         isHistoryOpen={isHistoryOpen}
       />
-      <main className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4">
+      <main className="flex-1 flex flex-col relative">
+        {/* Chat content area with padding bottom to prevent content being hidden behind fixed input */}
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto p-4 pb-24"
+        >
           {isInitialView ? (
             <div className="text-center mt-32">
               <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">
@@ -121,7 +132,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
               <QuickActions onAction={handleQuickAction} />
             </div>
           ) : (
-            <div ref={chatContainerRef} className="space-y-4">
+            <div className="space-y-4">
               {messages.map((msg, index) => (
                 <div
                   key={index}
@@ -151,7 +162,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
             </div>
           )}
         </div>
-        <div className="p-4 border-t dark:border-gray-800">
+        {/* Fixed input area at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-800 p-4">
           <ChatInput onSend={handleSend} isInitial={isInitialView} />
         </div>
       </main>
