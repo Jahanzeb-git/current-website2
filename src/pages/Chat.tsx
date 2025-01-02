@@ -74,7 +74,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
 
       const newHistoryItem: HistoryItem = {
         id: Date.now().toString(),
-        title: message.slice(0, 30) + (message.length > 30 ? '...' : ''),
+        title: message.slice(0, 30) + (message.length > 30 ? 'Thinking..' : ''),
         timestamp: new Date(),
       };
 
