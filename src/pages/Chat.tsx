@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ChatInput from '../components/ChatInput';
-import ChatHistory from '../components/ChatHistory';
-import QuickActions from '../components/QuickActions';
+import ChatInput from './ChatInput';
+import ChatHistory from './ChatHistory';
+import QuickActions from './QuickActions';
 import { Message, HistoryItem } from '../types';
-import { formatDate } from '../utils/date';
+import { formatDate, serializeDate, deserializeHistory } from '../utils/date';
 
 interface ChatbotProps {
   onIntersect: (isVisible: boolean) => void;
@@ -20,7 +20,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when messages change
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -29,12 +28,9 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Load chat history from session storage
   useEffect(() => {
-    const storedHistory = sessionStorage.getItem('chatHistory');
-    if (storedHistory) {
-      setHistory(JSON.parse(storedHistory));
-    }
+    const storedHistory = deserializeHistory(sessionStorage.getItem('chatHistory'));
+    setHistory(storedHistory);
   }, []);
 
   const handleSend = async (message: string) => {
@@ -44,7 +40,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
     const newMessage: Message = {
       type: 'user',
       text: message,
-      timestamp: new Date(),
+      timestamp: serializeDate(new Date())
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -67,24 +63,29 @@ const Chatbot: React.FC<ChatbotProps> = ({ onIntersect }) => {
       const botMessage: Message = {
         type: 'bot',
         text: data.output || 'Sorry, there was an error.',
-        timestamp: new Date(),
+        timestamp: serializeDate(new Date())
       };
 
       setMessages((prev) => [...prev, botMessage]);
 
       const newHistoryItem: HistoryItem = {
         id: Date.now().toString(),
-        title: message.slice(0, 30) + (message.length > 30 ? 'Thinking..' : ''),
-        timestamp: new Date(),
+        title: message.slice(0, 30) + (message.length > 30 ? '...' : ''),
+        timestamp: serializeDate(new Date())
       };
 
-      setHistory((prev) => [newHistoryItem, ...prev]);
-      sessionStorage.setItem('chatHistory', JSON.stringify([newHistoryItem, ...history]));
+      const updatedHistory = [newHistoryItem, ...history];
+      setHistory(updatedHistory);
+      sessionStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
     } catch (error) {
       console.error('Error:', error);
       setMessages((prev) => [
         ...prev,
-        { type: 'bot', text: 'Sorry, something went wrong.', timestamp: new Date() },
+        {
+          type: 'bot',
+          text: 'Sorry, something went wrong.',
+          timestamp: serializeDate(new Date())
+        },
       ]);
     } finally {
       setLoading(false);
