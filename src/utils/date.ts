@@ -5,6 +5,7 @@ export const formatDate = (date: Date | string): string => {
   let validDate = typeof date === 'string' ? parseISO(date) : date;
 
   if (!isValid(validDate)) {
+    console.error('Invalid date encountered:', date);
     return 'Invalid Date';
   }
 
@@ -23,9 +24,10 @@ export const formatDate = (date: Date | string): string => {
 };
 
 export const serializeDate = (date: Date | string): string => {
-  const validDate = typeof date === 'string' ? new Date(date) : date;
+  let validDate = typeof date === 'string' ? new Date(date) : date;
 
   if (isNaN(validDate.getTime())) {
+    console.error('Invalid date encountered:', date);
     return 'Invalid Date';
   }
 
