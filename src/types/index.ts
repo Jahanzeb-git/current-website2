@@ -1,11 +1,11 @@
 export interface Message {
   type: 'user' | 'bot';
   text: string;
-  timestamp: Date;
+  timestamp: string; // Store as ISO string for serialization
 }
 
 export interface HistoryItem {
   id: string;
   title: string;
-  timestamp: Date;
+  timestamp: string; // Store as ISO string for serialization
 }
