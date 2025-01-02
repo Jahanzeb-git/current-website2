@@ -22,8 +22,14 @@ export const formatDate = (date: Date | string): string => {
   }
 };
 
-export const serializeDate = (date: Date): string => {
-  return date.toISOString();
+export const serializeDate = (date: Date | string): string => {
+  const validDate = typeof date === 'string' ? new Date(date) : date;
+
+  if (isNaN(validDate.getTime())) {
+    return 'Invalid Date';
+  }
+
+  return validDate.toISOString();
 };
 
 export const deserializeHistory = (historyString: string | null): HistoryItem[] => {
