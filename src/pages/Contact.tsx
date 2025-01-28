@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import Chatbot from '../components/chatbot';
 import Navbar from '../components/Navbar';
+import Product from '../components/product';
 
 const Contact = () => {
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
@@ -127,6 +128,8 @@ const Contact = () => {
         </div>
         {/* Add the chatbot component */}
         <Chatbot onIntersect={handleChatbotIntersect} />
+        {/*Add a product*/}
+        <Product />
       </motion.div>
     </>
   );
