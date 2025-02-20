@@ -60,7 +60,7 @@ const GitHubPortfolio: React.FC<GitHubPortfolioProps> = ({
         setLoading(true);
         const headers: HeadersInit = {
           'Accept': 'application/vnd.github.v3+json',
-          'Authorization': 'token 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'
+          'Authorization': `token ${process.env.REACT_APP_GITHUB_TOKEN}`
         };
 
         // Fetch user data
