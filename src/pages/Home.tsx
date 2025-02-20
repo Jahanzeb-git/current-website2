@@ -12,7 +12,7 @@ import quantum from '../Assets/images/quantum.png';
 import sustainable from '../Assets/images/sustainable.jpeg';
 import ToolsAndTitles from '../components/ToolsAndTitles';
 import DataScienceApproach from '../components/DataScienceApproach';
-import Assessment from '../components/Assessment';
+import Github from '../components/GithubPortfolio';
 
 const completedProjects = [
   {
@@ -207,7 +207,7 @@ const Home = () => {
       <DataScienceApproach />
 
       {/*Assessment section*/}
-      <Assessment />
+      <Github />
 
       {/* Testimonials */}
       <Testimonials />
