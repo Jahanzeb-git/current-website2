@@ -58,25 +58,31 @@ const GitHubPortfolio: React.FC<GitHubPortfolioProps> = ({
     const fetchGitHubData = async () => {
       try {
         setLoading(true);
+        
+        // Basic headers for public API access
         const headers: HeadersInit = {
-          'Accept': 'application/vnd.github.v3+json',
-          'Authorization': 'token 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'
+          'Accept': 'application/vnd.github.v3+json'
         };
 
-        // Fetch user data
+        // Fetch user data and repos in parallel
         const [userResponse, reposResponse] = await Promise.all([
           fetch(`https://api.github.com/users/${username}`, { headers }),
           fetch(`https://api.github.com/users/${username}/repos?sort=stars&per_page=5`, { headers })
         ]);
+
+        // Check for rate limiting or other errors
+        if (userResponse.status === 403 || reposResponse.status === 403) {
+          throw new Error('GitHub API rate limit exceeded. Please try again later.');
+        }
         
         if (!userResponse.ok || !reposResponse.ok) {
-          throw new Error('Failed to fetch GitHub data');
+          throw new Error('Failed to fetch GitHub data. Please check the username and try again.');
         }
         
         const userData = await userResponse.json();
         const reposData: Repository[] = await reposResponse.json();
 
-        // Calculate total commits (approximate from available data)
+        // Calculate stats from available data
         const totalStars = reposData.reduce((acc, repo) => acc + repo.stargazers_count, 0);
         const totalForks = reposData.reduce((acc, repo) => acc + repo.forks_count, 0);
 
