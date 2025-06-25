@@ -6,14 +6,13 @@ import {
   Database,
   LineChart,
   Download,
-  ExternalLink,
   MapPin,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
 import profileImage from '../Assets/images/Me.png';
 import { EducationSection, ExperienceSection } from '../components/Experienceandeducation';
-import Certification1 from '../Assets/images/Certificate1.png';
+import CertificationSection from '../components/CertificationSection';
 
 // Type definitions
 interface WeatherData {
@@ -63,16 +62,6 @@ interface WeatherData {
 interface CachedWeatherData {
   data: WeatherData;
   timestamp: number;
-}
-
-interface CertificationCardProps {
-  imgSrc: string;
-  title: string;
-  text: string;
-}
-
-interface SectionProps {
-  inView: boolean;
 }
 
 const skills = [
@@ -452,10 +441,9 @@ const About: React.FC = () => {
       </div>
 
       {/* Certification Section */}
-      <CertificationSection
-        ref={certificationRef}
-        inView={certificationInView}
-      />
+      <div ref={certificationRef}>
+        <CertificationSection inView={certificationInView} />
+      </div>
 
       {/* Fullscreen Image Modal */}
       {showImage && (
@@ -479,55 +467,4 @@ const About: React.FC = () => {
   );
 };
 
-const CertificationSection = React.forwardRef<HTMLDivElement, SectionProps>((props, ref) => (
-  <motion.div
-    ref={ref}
-    className="mb-16"
-    initial={{ y: 50, opacity: 0 }}
-    animate={props.inView ? { y: 0, opacity: 1 } : {}}
-    transition={{ duration: 0.6 }}
-  >
-    <h2 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white">
-      Certification
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <CertificationCard
-        imgSrc={Certification1}
-        title="IBM Data Science Professional Certificate"
-        text="IBM, 2023"
-      />
-      <CertificationCard
-        imgSrc="https://via.placeholder.com/150"
-        title="Google Data Analytics Certificate"
-        text="Google, 2023"
-      />
-    </div>
-  </motion.div>
-));
-
-CertificationSection.displayName = 'CertificationSection';
-
-const CertificationCard: React.FC<CertificationCardProps> = ({ imgSrc, title, text }) => (
-  <motion.div
-    className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg flex items-center"
-    whileHover={{ scale: 1.05 }}
-    transition={{ duration: 0.3 }}
-  >
-    <img
-      src={imgSrc}
-      alt="Certification Thumbnail"
-      className="w-32 h-32 rounded-lg mr-4" // Larger size
-    />
-    <div>
-      <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-        {title}
-      </h3>
-      <p className="text-gray-600 dark:text-gray-300">{text}</p>
-      <button className="mt-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full transition-colors">
-        Verify Certification
-      </button>
-    </div>
-  </motion.div>
-);
-                              
 export default About;
