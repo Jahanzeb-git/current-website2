@@ -15,8 +15,66 @@ import profileImage from '../Assets/images/Me.png';
 import { EducationSection, ExperienceSection } from '../components/Experienceandeducation';
 import Certification1 from '../Assets/images/Certificate1.png';
 
+// Type definitions
+interface WeatherData {
+  base: string;
+  clouds: {
+    all: number;
+  };
+  cod: number;
+  coord: {
+    lat: number;
+    lon: number;
+  };
+  dt: number;
+  id: number;
+  main: {
+    feels_like: number;
+    grnd_level: number;
+    humidity: number;
+    pressure: number;
+    sea_level: number;
+    temp: number;
+    temp_max: number;
+    temp_min: number;
+  };
+  name: string;
+  sys: {
+    country: string;
+    id: number;
+    sunrise: number;
+    sunset: number;
+    type: number;
+  };
+  timezone: number;
+  visibility: number;
+  weather: Array<{
+    id: number;
+    main: string;
+    description: string;
+    icon: string;
+  }>;
+  wind: {
+    speed: number;
+    deg: number;
+  };
+}
 
-  
+interface CachedWeatherData {
+  data: WeatherData;
+  timestamp: number;
+}
+
+interface CertificationCardProps {
+  imgSrc: string;
+  title: string;
+  text: string;
+}
+
+interface SectionProps {
+  inView: boolean;
+}
+
 const skills = [
   {
     icon: <Brain className="w-8 h-8" />,
@@ -62,10 +120,10 @@ const milestones = [
   },
 ];
 
-const About = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [showImage, setShowImage] = useState(false);
-  const [weather, setWeather] = useState(null);
+const About: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [showImage, setShowImage] = useState<boolean>(false);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
 
   const [headerRef, headerInView] = useInView({
     triggerOnce: true,
@@ -92,10 +150,57 @@ const About = () => {
     threshold: 0.1,
   });
 
-  
+  const WEATHER_CACHE_KEY = 'weather_data_cache';
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+  const getWeatherFromCache = (): WeatherData | null => {
+    try {
+      const cachedData = localStorage.getItem(WEATHER_CACHE_KEY);
+      if (!cachedData) return null;
+
+      const parsed: CachedWeatherData = JSON.parse(cachedData);
+      const now = Date.now();
+      
+      // Check if cache is still valid (less than 5 minutes old)
+      if (now - parsed.timestamp < CACHE_DURATION) {
+        return parsed.data;
+      } else {
+        // Cache expired, remove it
+        localStorage.removeItem(WEATHER_CACHE_KEY);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error reading weather cache:', error);
+      localStorage.removeItem(WEATHER_CACHE_KEY);
+      return null;
+    }
+  };
+
+  const saveWeatherToCache = (weatherData: WeatherData): void => {
+    try {
+      const cacheData: CachedWeatherData = {
+        data: weatherData,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Error saving weather to cache:', error);
+    }
+  };
+
   useEffect(() => {
     async function fetchWeatherData() {
       try {
+        // First, check if we have valid cached data
+        const cachedWeather = getWeatherFromCache();
+        if (cachedWeather) {
+          console.log('Using cached weather data');
+          setWeather(cachedWeather);
+          return;
+        }
+
+        // If no valid cache, fetch from API
+        console.log('Fetching fresh weather data from API');
         const response = await fetch('https://jahanzebahmed22.pythonanywhere.com/weather', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -106,10 +211,23 @@ const About = () => {
           throw new Error('Failed to fetch weather data');
         }
 
-        const weatherData = await response.json();
+        const weatherData: WeatherData = await response.json();
+        
+        // Save to cache and state
+        saveWeatherToCache(weatherData);
         setWeather(weatherData);
       } catch (error) {
         console.error('Error fetching weather data:', error);
+        // Try to use cached data even if expired as fallback
+        const cachedWeather = localStorage.getItem(WEATHER_CACHE_KEY);
+        if (cachedWeather) {
+          try {
+            const parsed: CachedWeatherData = JSON.parse(cachedWeather);
+            setWeather(parsed.data);
+          } catch (parseError) {
+            console.error('Error parsing fallback cache:', parseError);
+          }
+        }
       }
     }
 
@@ -155,14 +273,14 @@ const About = () => {
               that are as sophisticated as they are temperamental (but don't
               worry, I keep them in check). I turn raw data into stories that
               even your grandma could understand — if she were into algorithms
-              and predictive models, of course. I’m not just here for the data
+              and predictive models, of course. I'm not just here for the data
               crunching; I believe in bringing the human touch to the tech
               world, turning complex problems into practical, easy-to-understand
               solutions. My favorite hobbies include cleaning messy datasets
-              (don't judge me, it’s therapeutic) and testing machine learning
+              (don't judge me, it's therapeutic) and testing machine learning
               models until they finally agree with me. If you need someone who
               can mix creativity, logic, and a touch of humor into data-driven
-              solutions, well, you’ve found the right person.
+              solutions, well, you've found the right person.
               {!isExpanded && '...'}
             </motion.div>
             <button
@@ -195,19 +313,17 @@ const About = () => {
           className="md:w-1/2 flex justify-center"
           whileHover={{ scale: 1.05 }}
         >
-        <div className="w-64 h-64 rounded-lg overflow-hidden shadow-xl">
+          <div className="w-64 h-64 rounded-lg overflow-hidden shadow-xl">
             <img
               src={profileImage}
               alt="Profile"
               className="w-full h-full object-cover"
               style={{
-              transform: "scale(1.36)", // Zoom the image itself
-              objectPosition: "center",
+                transform: "scale(1.36)", // Zoom the image itself
+                objectPosition: "center",
               }}
             />
-        </div>
-
-
+          </div>
         </motion.div>
       </motion.div>
 
@@ -316,10 +432,9 @@ const About = () => {
             <MapPin className="mr-2 w-5 h-5 text-white" /> Faisal Mosque, Pakistan
           </h3>
         </div>
-
       </motion.div>
 
-      {/* Paragraph .*/}
+      {/* Paragraph */}
       <div className="flex justify-center w-full mt-12 mb-16">
         <p className="text-center max-w-2xl px-4 text-gray-600 dark:text-gray-300 leading-relaxed">
           Just as the Faisal Mosque stands as a testament to the blend of innovation and tradition, my approach to data science mirrors this harmony. From my base in Karachi, I work on projects that bridge the gap between complex machine learning solutions and practical business needs. Like the mosque's distinctive architecture that breaks traditional design paradigms while respecting Islamic principles, I strive to develop data solutions that are both groundbreaking and grounded in solid analytical foundations.
@@ -327,12 +442,16 @@ const About = () => {
       </div>
   
       {/* Education Section */}
-      <EducationSection ref={educationRef} inView={educationInView} />
+      <div ref={educationRef}>
+        <EducationSection inView={educationInView} />
+      </div>
 
       {/* Experience Section */}
-      <ExperienceSection ref={experienceRef} inView={experienceInView} />
+      <div ref={experienceRef}>
+        <ExperienceSection inView={experienceInView} />
+      </div>
 
-      {/* New Sections */}
+      {/* Certification Section */}
       <CertificationSection
         ref={certificationRef}
         inView={certificationInView}
@@ -360,10 +479,7 @@ const About = () => {
   );
 };
 
-{/* Experience and Education section*/}
-<expedu />
-
-const CertificationSection = React.forwardRef((props, ref) => (
+const CertificationSection = React.forwardRef<HTMLDivElement, SectionProps>((props, ref) => (
   <motion.div
     ref={ref}
     className="mb-16"
@@ -389,7 +505,9 @@ const CertificationSection = React.forwardRef((props, ref) => (
   </motion.div>
 ));
 
-const CertificationCard = ({ imgSrc, title, text }) => (
+CertificationSection.displayName = 'CertificationSection';
+
+const CertificationCard: React.FC<CertificationCardProps> = ({ imgSrc, title, text }) => (
   <motion.div
     className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg flex items-center"
     whileHover={{ scale: 1.05 }}

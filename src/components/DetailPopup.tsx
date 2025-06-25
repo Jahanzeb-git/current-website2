@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 
 interface DetailPopupProps {

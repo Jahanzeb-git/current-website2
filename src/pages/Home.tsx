@@ -81,19 +81,25 @@ const Home = () => {
     threshold: 0.1,
   });
 
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+    };
+
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = debounce(() => {
       const skillsSection = document.getElementById('skills-section');
       if (skillsSection) {
         const rect = skillsSection.getBoundingClientRect();
         setInView(rect.top <= window.innerHeight && rect.bottom >= 0);
       }
-    };
+    }, 100)
 
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
@@ -111,10 +117,10 @@ const Home = () => {
         initial={{ y: 20, opacity: 0 }}
         animate={headerInView ? { y: 0, opacity: 1 } : {}}
         transition={{ delay: 0.2 }}
-        className="text-center mb-16"
+        className="text-center mb-16 animated-section"
       >
         <StarDecoration>
-          <h1 className="text-6xl md:text-9xl font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
+          <h1 className="text-6xl md:text-9xl font-acorn font-extrabold mb-8 bg-gradient-to-r from-[#025A4E] to-teal-600 dark:from-emerald-400 dark:to-teal-400 text-transparent bg-clip-text">
               I'm Jahánzeb. <br />
               <span className="block">Ai Enthusiást.</span>
           </h1>
