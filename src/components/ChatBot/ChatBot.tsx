@@ -1,5 +1,3 @@
-// ChatBot.tsx (Final Recommended Version)
-
 import React, { useState } from 'react';
 import FloatingChatButton from './FloatingChatButton';
 import ChatInterface from './ChatInterface';
